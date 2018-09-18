@@ -1,3 +1,18 @@
+/*   ZoomLayout and Garden Grid Population Test
+
+September 17th, 2018 -- David Barry
+Added basic ZoomLayout functionality
+ - Small representative grid of 13 squares can be 'pinch-zoomed' and scrolled in center of screen
+ - Each square can be clicked, activating a button listener function, and showing a 'Toast' message on screen
+
+September 18th, 2018
+Added function for creating a list of known squares (called createSquareList)
+ - Function takes an int representing total # of squares on grid and a blank, mutable list to hold square names
+
+
+ */
+
+
 package com.example.android.zoomlayouttest
 
 import android.os.Bundle
@@ -8,12 +23,21 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    val squareList = mutableListOf<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
 
+        createSquareList(13,squareList)
+      //  createSquareListeners(squareList)
+        //sq000.setOnClickListener{ println(squareList)}
+
+
         /* Square listeners, output a simple Toast text response. Will be made in code with for loop eventually */
+
+
 
         sq000.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 0'", Toast.LENGTH_SHORT).show() }
         sq001.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 1'", Toast.LENGTH_SHORT).show() }
@@ -35,3 +59,38 @@ class MainActivity : AppCompatActivity() {
 
 
 }
+/* Function for populating a list of all squares in garden grid */
+
+fun createSquareList(numberOfSquares: Int,squareList: MutableList<String>)
+{
+
+    for(i in 0..(numberOfSquares-1)){
+
+       if(numberOfSquares < 10)
+        {
+            var tempString: String = "sq00" + i.toString()
+            squareList.add(tempString)
+
+        }
+
+        else if(numberOfSquares < 100)
+        {
+            var tempString: String = "sq0" + i.toString()
+            squareList.add(tempString)
+        }
+
+        else if(numberOfSquares < 1000)
+        {
+            squareList.add(i.toString())
+        }
+    }
+}
+
+fun createSquareListeners(listOfSquares: MutableList<String>)
+{
+    for(squares in listOfSquares)
+    {
+
+    }
+}
+
