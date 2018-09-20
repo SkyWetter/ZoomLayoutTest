@@ -22,8 +22,11 @@ Added test functionality (push button to zoom) for top button in garden grid are
 
 package com.example.android.zoomlayouttest
 
+import android.content.Context
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AppCompatActivity
+import android.widget.Button
 import android.widget.Toast
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
@@ -42,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         /* Test Code */
 
         createSquareList(13,squareList)
-
+        buttonCreate(1,1,buttonContainer,this@MainActivity)
 
         //  createSquareListeners(squareList)
         //sq000.setOnClickListener{ println(squareList)}
@@ -73,6 +76,29 @@ class MainActivity : AppCompatActivity() {
 }
 /* Function for populating a list of all squares in garden grid */
 
+
+fun buttonCreate(numberOfButtons: Int, sideLength: Int, whereToPlaceButton: ConstraintLayout, context : Context){
+
+    var currentButtonNumber: Int = 0;
+    var currentRowLength = sideLength
+    var currentRowSquares = 0
+    var getSmaller = false
+
+    for(eachButton in 0..numberOfButtons){
+
+        //Create a button
+
+        val newButton = Button(context)
+        var param = newButton.layoutParams
+         
+
+        newButton.setTag(buttonIdToString(currentButtonNumber))
+        newButton.setBackgroundColor(0xFFFFFF)
+        newButton.setText("this is a new button")
+
+    }
+}
+
 fun createSquareList(numberOfSquares: Int,squareList: MutableList<String>)
 {
 
@@ -98,6 +124,23 @@ fun createSquareList(numberOfSquares: Int,squareList: MutableList<String>)
     }
 }
 
+fun buttonIdToString(currentButtonNumber: Int):String{
+
+    if(currentButtonNumber < 10){
+        return "sq00 + $currentButtonNumber"
+    }
+
+    else if(currentButtonNumber < 100){
+        return "sq0 + $currentButtonNumber"
+    }
+
+    else {
+        return "sq + $currentButtonNumber"
+    }
+
+
+}
+
 fun createSquareListeners(listOfSquares: MutableList<String>)
 {
     for(squares in listOfSquares)
@@ -105,6 +148,7 @@ fun createSquareListeners(listOfSquares: MutableList<String>)
 
     }
 }
+
 
 fun zoomCustom(viewToZoom : ZoomLayout, amountToZoom : Float, animateZoom : Boolean )
 {
