@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:id="@+id/mainLayout">
 
     <com.otaliastudios.zoom.ZoomLayout
         android:id="@+id/zoomLayout"
@@ -16,12 +17,12 @@
         app:horizontalPanEnabled="true"
         app:layout_constraintBottom_toTopOf="@+id/bottomText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topText"
-        app:maxZoom="2.0"
+        app:maxZoom="5.0"
         app:maxZoomType="zoom"
-        app:minZoom="0.06"
+        app:minZoom="1.0"
         app:minZoomType="zoom"
         app:overPinchable="true"
         app:overScrollHorizontal="true"
@@ -37,133 +38,13 @@
             android:layout_centerInParent="true"
 
             android:layout_margin="0dp"
-            android:background="#ffec59"
+            android:background="#000000"
             android:gravity="fill"
             android:padding="0dp">
 
 
             /* Button widgets*/
 
-            <Button
-                android:id="@+id/sq000"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="46dp"
-                android:background="#3ecdf1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/sq001"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sq000" />
-
-            <Button
-                android:id="@+id/sq002"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintBaseline_toBaselineOf="@+id/sq001"
-                app:layout_constraintStart_toEndOf="@+id/sq001" />
-
-            <Button
-                android:id="@+id/sq003"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintBaseline_toBaselineOf="@+id/sq002"
-                app:layout_constraintStart_toEndOf="@+id/sq002" />
-
-            <Button
-                android:id="@+id/sq004"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="2dp"
-                android:layout_marginTop="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sq002" />
-
-            <Button
-                android:id="@+id/sq005"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintBaseline_toBaselineOf="@+id/sq004"
-                app:layout_constraintStart_toEndOf="@+id/sq004" />
-
-            <Button
-                android:id="@+id/sq006"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintBaseline_toBaselineOf="@+id/sq005"
-                app:layout_constraintStart_toEndOf="@+id/sq005" />
-
-            <Button
-                android:id="@+id/sq007"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintBaseline_toBaselineOf="@+id/sq006"
-                app:layout_constraintStart_toEndOf="@+id/sq006" />
-
-            <Button
-                android:id="@+id/sq008"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintBaseline_toBaselineOf="@+id/sq007"
-                app:layout_constraintStart_toEndOf="@+id/sq007" />
-
-            <Button
-                android:id="@+id/sq009"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sq006" />
-
-            <Button
-                android:id="@+id/sq010"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintBaseline_toBaselineOf="@+id/sq009"
-                app:layout_constraintStart_toEndOf="@+id/sq009" />
-
-            <Button
-                android:id="@+id/sq011"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintBaseline_toBaselineOf="@+id/sq010"
-                app:layout_constraintStart_toEndOf="@+id/sq010" />
-
-            <Button
-                android:id="@+id/sq012"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="46dp"
-                android:layout_marginTop="2dp"
-                android:background="#3ecdf1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sq010" />
 
         </android.support.constraint.ConstraintLayout>
 

@@ -17,14 +17,27 @@ Fixed constraints for top and bottom menu bar
 Sept. 20th, 2018 -- David Barry
 Added test functionality (push button to zoom) for top button in garden grid area
 
+Sept. 22nd, 2018 -- David Barry
+
+Grid-based button instantiation added. Program will hang if you choose too large of a number for your grid size, so we may
+need to limit overall grid size.
+
+25/row seems to load in a reasonable amount of time
+35/row will hang for 5 seconds before loading in, and the grid size is so small at min zoom that it's difficult to tell what's happening.
+
+Possibly removing pinch zoom options and changing to discrete zoom levels may make it more readable, however, we'll need to overlay some sort of
+information so the user knows where in the garden the are at any given moment.
+
  */
 
 
 package com.example.android.zoomlayouttest
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
+import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.Toast
@@ -42,115 +55,144 @@ class MainActivity : AppCompatActivity() {
 
         val gardenBedView = findViewById<ZoomLayout>(R.id.zoomLayout)  // zoom
 
-        /* Test Code */
 
-        createSquareList(13,squareList)
-        buttonCreate(1,1,buttonContainer,this@MainActivity)
+        val constraintSet = ConstraintSet()    //Creates a new constraint set variable
+        constraintSet.clone(buttonContainer)  //Clones the buttonContainer constraint layout settings
+        val constraintLayout = findViewById(R.id.buttonContainer) as ConstraintLayout
 
-        //  createSquareListeners(squareList)
-        //sq000.setOnClickListener{ println(squareList)}
-
-        /* Square listeners, output a simple Toast text response. Will be made in code with for loop eventually */
-
-
-
-        sq000.setOnClickListener{ zoomCustom(gardenBedView,2.0f,true) }
-        sq001.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 1'", Toast.LENGTH_SHORT).show() }
-        sq002.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 2'", Toast.LENGTH_SHORT).show() }
-        sq003.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 3'", Toast.LENGTH_SHORT).show() }
-        sq004.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 4'", Toast.LENGTH_SHORT).show() }
-        sq005.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 5'", Toast.LENGTH_SHORT).show() }
-        sq006.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 6'", Toast.LENGTH_SHORT).show() }
-        sq007.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 7'", Toast.LENGTH_SHORT).show() }
-        sq008.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 8'", Toast.LENGTH_SHORT).show() }
-        sq009.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 9'", Toast.LENGTH_SHORT).show() }
-        sq010.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 10'", Toast.LENGTH_SHORT).show() }
-        sq011.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 11'", Toast.LENGTH_SHORT).show() }
-        sq012.setOnClickListener{ Toast.makeText(this@MainActivity,"Square 12'", Toast.LENGTH_SHORT).show() }
-
-
+        createSquareList(1200,squareList)
+        gridCreate(50,2,25,constraintSet,constraintLayout,this@MainActivity)
 
     }
 
 
 }
+//GRID CREATE
 /* Function for populating a list of all squares in garden grid */
 
+//Takes a button size (how large each individual button is), margins between each button, buttons per row (grid is always square)
+//Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
 
-fun buttonCreate(numberOfButtons: Int, sideLength: Int, whereToPlaceButton: ConstraintLayout, context : Context){
+fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constraintSet : ConstraintSet,constraintLayout: ConstraintLayout,context : Context){
 
-    var currentButtonNumber: Int = 0;
-    var currentRowLength = sideLength
-    var currentRowSquares = 0
-    var getSmaller = false
+    var previousButton = Button(context)            //Tracks the previous button created
+    var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
+    var idNumber = 100000                           //id#, increments with each created button
 
-    for(eachButton in 0..numberOfButtons){
 
-        //Create a button
+    for(row in 0..(buttonsPerRow - 1))             //For this given row
+    {
 
-        val newButton = Button(context)
-        var param = newButton.layoutParams
-         
+            for (i in 0..(buttonsPerRow - 1))      //And this given square
+            {
 
-        newButton.setTag(buttonIdToString(currentButtonNumber))
-        newButton.setBackgroundColor(0xFFFFFF)
-        newButton.setText("this is a new button")
+                val button = Button(context)       //Create a new button
+                button.setId(idNumber)             //Set id based on idNumber incrementor
+                idNumber = idNumber + 1            //increment id number
+
+                if (i == 0)                         //If its the first square in a row
+                {
+                    if (row == 0)                   //If its the first row of the grid
+                    {
+
+                        constraintSet.connect(button.id, ConstraintSet.LEFT, constraintLayout.id, ConstraintSet.LEFT, buttonMargin)         //SETS CONSTRAINTS
+                        constraintSet.connect(button.id, ConstraintSet.TOP, constraintLayout.id, ConstraintSet.TOP, buttonMargin)
+                        constraintSet.setMargin(button.id, ConstraintSet.TOP, 0)
+                        constraintSet.setMargin(button.id, ConstraintSet.LEFT, 0)
+
+                    }
+
+                    else
+                    {
+                        constraintSet.connect(button.id, ConstraintSet.LEFT, constraintLayout.id, ConstraintSet.LEFT, buttonMargin)         //SETS CONSTRAINTS
+                        constraintSet.connect(button.id, ConstraintSet.TOP, previousRowLeadButton.id, ConstraintSet.BOTTOM, buttonMargin)
+                        constraintSet.setMargin(button.id, ConstraintSet.LEFT, 0)
+                    }
+
+                    previousRowLeadButton = button
+
+                }
+
+                else
+                {
+
+                        constraintSet.connect(button.id, ConstraintSet.LEFT, previousButton.id, ConstraintSet.RIGHT, buttonMargin)          //SETS CONSTRAINTS
+                        constraintSet.connect(button.id, ConstraintSet.BASELINE, previousButton.id, ConstraintSet.BASELINE, buttonMargin)
+                        constraintSet.setMargin(button.id, ConstraintSet.TOP, 0)
+
+                }
+
+
+                    constraintSet.constrainWidth(button.id, buttonSize)                 //Sets size of created button
+                    constraintSet.constrainHeight(button.id, buttonSize)
+
+                    button.setBackgroundColor(Color.WHITE)                              //Sets color (To be replaced with final button styling)
+                    constraintLayout.addView(button)                                    //Add button into Constraint Layout view
+                    constraintSet.applyTo(constraintLayout)                             //Apply constraint styling
+
+                    button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
+                    {
+
+                        Toast.makeText(context, "You clicked me." + button.id, Toast.LENGTH_SHORT).show()
+                    }
+
+                    previousButton = button
+            }
 
     }
 }
 
-fun createSquareList(numberOfSquares: Int,squareList: MutableList<String>)
+
+
+
+
+
+
+fun createSquareList(buttonsPerRow: Int, squareList: MutableList<String>)
 {
 
-    for(i in 0..(numberOfSquares-1)){
+    for(i in 0..(buttonsPerRow-1)){
 
-        if(numberOfSquares < 10)
+        if(i < 10)
         {
-            var tempString: String = "sq00" + i.toString()
+            var tempString: String = "sq000" + i.toString()
             squareList.add(tempString)
 
         }
 
-        else if(numberOfSquares < 100)
+        else if(i < 100)
+        {
+            var tempString: String = "sq00" + i.toString()
+            squareList.add(tempString)
+        }
+
+        else if(i < 1000)
         {
             var tempString: String = "sq0" + i.toString()
             squareList.add(tempString)
         }
 
-        else if(numberOfSquares < 1000)
-        {
+        else{
             squareList.add(i.toString())
         }
     }
 }
 
+
+
 fun buttonIdToString(currentButtonNumber: Int):String{
 
     if(currentButtonNumber < 10){
-        return "sq00 + $currentButtonNumber"
+        return "sq00$currentButtonNumber"
     }
 
     else if(currentButtonNumber < 100){
-        return "sq0 + $currentButtonNumber"
+        return "sq0$currentButtonNumber"
     }
 
     else {
-        return "sq + $currentButtonNumber"
+        return "sq$currentButtonNumber"
     }
 
 
-}
-
-fun createSquareListeners(listOfSquares: MutableList<String>)
-{
-    for(squares in listOfSquares)
-    {
-
-    }
-}
-
-
-fun zoomCustom(viewToZoom : ZoomLayout, amountToZoom : Float, animateZoom : Boolean )
-{
-    viewToZoom.zoomTo(amountToZoom,animateZoom)
 }
