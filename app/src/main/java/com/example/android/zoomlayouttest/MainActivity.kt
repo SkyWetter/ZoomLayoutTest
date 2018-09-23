@@ -28,6 +28,8 @@ need to limit overall grid size.
 Possibly removing pinch zoom options and changing to discrete zoom levels may make it more readable, however, we'll need to overlay some sort of
 information so the user knows where in the garden the are at any given moment.
 
+
+
  */
 
 
@@ -126,7 +128,16 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
                     constraintSet.constrainWidth(button.id, buttonSize)                 //Sets size of created button
                     constraintSet.constrainHeight(button.id, buttonSize)
 
-                    button.setBackgroundColor(Color.WHITE)                              //Sets color (To be replaced with final button styling)
+                    var tempNum = (buttonsPerRow - 1) / 2
+
+                    if(i == tempNum && row == tempNum)
+                    {
+                        button.setBackgroundColor(Color.RED)
+                    }
+                    else {
+                        button.setBackgroundColor(Color.WHITE)                              //Sets color (To be replaced with final button styling)
+                    }
+
                     constraintLayout.addView(button)                                    //Add button into Constraint Layout view
                     constraintSet.applyTo(constraintLayout)                             //Apply constraint styling
 
@@ -134,6 +145,7 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
                     {
 
                         Toast.makeText(context, "You clicked me." + button.id, Toast.LENGTH_SHORT).show()
+                        button.setBackgroundColor(Color.BLUE)
                     }
 
                     previousButton = button
@@ -141,11 +153,6 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
 
     }
 }
-
-
-
-
-
 
 
 fun createSquareList(buttonsPerRow: Int, squareList: MutableList<String>)
