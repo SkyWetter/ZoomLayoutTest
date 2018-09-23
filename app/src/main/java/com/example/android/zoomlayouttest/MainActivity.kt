@@ -43,9 +43,9 @@ import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.Toast
+import com.github.ivbaranov.rxbluetooth.RxBluetooth
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,8 +54,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val gardenBedView = findViewById<ZoomLayout>(R.id.zoomLayout)  // Object used to apply zoom changes to
 
-        val gardenBedView = findViewById<ZoomLayout>(R.id.zoomLayout)  // zoom
+
+
+
+        /* Bluetooth code */
+        val rxBluetooth = RxBluetooth(this)
+
+
+
+
+
 
 
         val constraintSet = ConstraintSet()    //Creates a new constraint set variable
