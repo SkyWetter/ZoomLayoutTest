@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity() {
 
 
 }
+
 //GRID CREATE
 /* Function for populating a list of all squares in garden grid */
 
