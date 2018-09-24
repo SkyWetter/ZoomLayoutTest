@@ -35,21 +35,30 @@ information so the user knows where in the garden the are at any given moment.
 
 package com.example.android.zoomlayouttest
 
+import android.bluetooth.BluetoothDevice
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.support.annotation.NonNull
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.system.Os.accept
 import android.widget.Button
 import android.widget.Toast
 import com.github.ivbaranov.rxbluetooth.RxBluetooth
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
+
 class MainActivity : AppCompatActivity() {
 
     val squareList = mutableListOf<String>()
+    private val COARSE_LOCATION_REQUEST_CODE = 101
+    private val REQUEST_ENABLE_BT = 102
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,10 +69,39 @@ class MainActivity : AppCompatActivity() {
 
 
         /* Bluetooth code */
-        val rxBluetooth = RxBluetooth(this)
 
 
 
+        val rxBluetooth = RxBluetooth(this)   //Creates a new Bluetooth object
+
+
+        /* Checks for bluetooth permissions, requests them if not found */
+        if (ContextCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this@MainActivity,  arrayOf (android.Manifest.permission.ACCESS_COARSE_LOCATION ), COARSE_LOCATION_REQUEST_CODE );
+        }
+
+        // check if bluetooth is supported on your hardware
+        if  (!rxBluetooth.isBluetoothAvailable()) {
+            // handle the lack of bluetooth support
+        } else {
+            // check if bluetooth is currently enabled and ready for use
+            if (!rxBluetooth.isBluetoothEnabled()) {
+                // to enable bluetooth via startActivityForResult()
+                rxBluetooth.enableBluetooth(this, REQUEST_ENABLE_BT);
+            } else {
+                // you are ready
+            }
+        }
+
+
+        rxBluetooth.observeDevices()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.computation())
+                .subscribe(new Consumer<BluetoothDevice>() {
+                    @Override public void accept(@NonNull BluetoothDevice bluetoothDevice) throws Exception {
+                        //
+                    }
+                }))
 
 
 
@@ -73,7 +111,7 @@ class MainActivity : AppCompatActivity() {
         val constraintLayout = findViewById(R.id.buttonContainer) as ConstraintLayout
 
         createSquareList(1200,squareList)
-        gridCreate(50,2,25,constraintSet,constraintLayout,this@MainActivity)
+        gridCreate(50,2,11,constraintSet,constraintLayout,this@MainActivity)
 
     }
 
@@ -157,11 +195,11 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
 
                         Toast.makeText(context, "You clicked me." + button.id, Toast.LENGTH_SHORT).show()
                         button.setBackgroundColor(Color.BLUE)
+
                     }
 
                     previousButton = button
             }
-
     }
 }
 
