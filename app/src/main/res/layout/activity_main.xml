@@ -65,34 +65,35 @@
     <TextView
         android:id="@+id/bottomText"
         android:layout_width="0dp"
-        android:layout_height="100dp"
+        android:layout_height="125dp"
         android:background="#737aff"
         android:gravity="center"
         android:text="GARDEN BED MENU"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/zoomLayout" />
 
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="73dp"
-        app:layout_constraintEnd_toEndOf="@+id/bottomText"
-        app:layout_constraintStart_toStartOf="@+id/bottomText"
-        tools:layout_editor_absoluteY="422dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
-
     <Button
-        android:id="@+id/button"
+        android:id="@+id/select_device_refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_editor_absoluteX="54dp"
-        tools:layout_editor_absoluteY="16dp" />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="REFRESH"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/select_device_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/bottomText"
+        app:layout_constraintEnd_toEndOf="@+id/bottomText"
+        app:layout_constraintStart_toStartOf="@+id/bottomText"
+        app:layout_constraintTop_toTopOf="@+id/bottomText" />
 
 </android.support.constraint.ConstraintLayout>
