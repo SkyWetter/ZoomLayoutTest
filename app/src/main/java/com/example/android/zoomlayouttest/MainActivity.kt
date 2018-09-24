@@ -28,6 +28,11 @@ need to limit overall grid size.
 Possibly removing pinch zoom options and changing to discrete zoom levels may make it more readable, however, we'll need to overlay some sort of
 information so the user knows where in the garden the are at any given moment.
 
+Sept 23, 2018 -- James Gillis
+Add/remove tiles to a bed list
+
+Sept 24, 2018 -- James
+Each tile has object containing row, column, and bed data
 
 
  */
@@ -50,6 +55,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     val squareList = mutableListOf<String>()
+    val bedTiles = mutableListOf<String>()      //temp list of tiles to go in to a bed
+    val allTiles = mutableListOf<Tile>()       //full list of all Tile objects
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,14 +64,13 @@ class MainActivity : AppCompatActivity() {
 
         val gardenBedView = findViewById<ZoomLayout>(R.id.zoomLayout)  // zoom
 
-
         val constraintSet = ConstraintSet()    //Creates a new constraint set variable
         constraintSet.clone(buttonContainer)  //Clones the buttonContainer constraint layout settings
         val constraintLayout = findViewById(R.id.buttonContainer) as ConstraintLayout
 
         createSquareList(1200,squareList)
-        gridCreate(50,2,25,constraintSet,constraintLayout,this@MainActivity)
-
+        gridCreate(50,2,9,constraintSet,constraintLayout,this@MainActivity, bedTiles, allTiles)
+        doneBed(bedTiles)
     }
 
 
@@ -76,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 //Takes a button size (how large each individual button is), margins between each button, buttons per row (grid is always square)
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
 
-fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constraintSet : ConstraintSet,constraintLayout: ConstraintLayout,context : Context){
+fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constraintSet : ConstraintSet,constraintLayout: ConstraintLayout,context : Context, bedTiles: MutableList<String>, allTiles: MutableList<Tile>){
 
     var previousButton = Button(context)            //Tracks the previous button created
     var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
@@ -91,6 +97,14 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
 
                 val button = Button(context)       //Create a new button
                 button.setId(idNumber)             //Set id based on idNumber incrementor
+
+                var tempTile = Tile(idNumber)
+
+                tempTile.column = i
+                tempTile.row = row
+
+                allTiles.add(tempTile)
+
                 idNumber = idNumber + 1            //increment id number
 
                 if (i == 0)                         //If its the first square in a row
@@ -135,7 +149,8 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
                     {
                         button.setBackgroundColor(Color.RED)
                     }
-                    else {
+                    else
+                    {
                         button.setBackgroundColor(Color.WHITE)                              //Sets color (To be replaced with final button styling)
                     }
 
@@ -145,8 +160,7 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
                     button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                     {
 
-                        Toast.makeText(context, "You clicked me." + button.id, Toast.LENGTH_SHORT).show()
-                        button.setBackgroundColor(Color.BLUE)
+                            addTileToBed(context, button, bedTiles)                         //add/remove tiles from bed when clicked
                     }
 
                     previousButton = button
@@ -155,6 +169,34 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
     }
 }
 
+fun addTileToBed(context: Context, button: Button, bedTiles: MutableList<String>)
+{
+    if (bedTiles.contains(button.id.toString()))    //remove from bed if present in list
+    {
+        bedTiles.remove(button.id.toString())
+        Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
+        button.setBackgroundColor(Color.WHITE)
+    }
+    else    //add to bed if not
+    {
+        bedTiles.add(button.id.toString())
+        Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+        button.setBackgroundColor(Color.BLUE)
+    }
+}
+
+fun doneBed(bedTiles: MutableList<String>)
+{
+
+}
+
+class Tile (val tileID: Int)
+{
+    var row: Int = 0
+    var column: Int = 0
+    var bedID: Int = 0
+    var hasBed: Boolean = false
+}
 
 fun createSquareList(buttonsPerRow: Int, squareList: MutableList<String>)
 {
@@ -185,8 +227,6 @@ fun createSquareList(buttonsPerRow: Int, squareList: MutableList<String>)
         }
     }
 }
-
-
 
 fun buttonIdToString(currentButtonNumber: Int):String{
 
