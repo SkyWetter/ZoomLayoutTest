@@ -224,7 +224,7 @@ fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<In
     Toast.makeText(context, "Bed #" + bedCount + " created", Toast.LENGTH_SHORT).show()
 }
 
-class Square (val tileID: Int)        //object containing tile information
+data class Square (val tileID: Int)        //object containing tile information
 {
     var row: Int = 0
     var column: Int = 0
@@ -275,6 +275,7 @@ private fun getAngleDistance(thisTile:Square,turretTile:Square){
     var x = (thisTile.column - turretTile.column)
     var y = (thisTile.row - thisTile.column)
 
+
     var quadrant: Int
 
     if(x.sign==-1) {
@@ -283,7 +284,9 @@ private fun getAngleDistance(thisTile:Square,turretTile:Square){
         if(y.sign == -1) { quadrant = 1 } else { quadrant = 4 }
     }
 
-    
+    if(quadrant == 1){
+
+    }
 }
 
 
