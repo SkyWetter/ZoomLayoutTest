@@ -34,6 +34,8 @@ Add/remove tiles to a bed list
 Sept 24, 2018 -- James
 Each tile has object containing row, column, and bed data
 Added "Done Bed" button
+Added function to construct beds
+Added function to add bed to master bed list
 
 
  */
@@ -52,15 +54,15 @@ import android.widget.Toast
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 class MainActivity : AppCompatActivity() {
 
     val squareList = mutableListOf<String>()
     var allTiles = mutableListOf<Tile>()       //full list of all Tile objects
-    var tempBedTiles = mutableListOf<String>()      //temp list of tiles to go in to a bed
-    var bedList = mutableMapOf<Int, Bed>()
 
-    var bedNum: Int = 0
+    var tempBed = mutableListOf<Int>()
+    var bedList = mutableListOf<Bed>()
+
+    var bedCount = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,8 +77,8 @@ class MainActivity : AppCompatActivity() {
         val doneButton = findViewById(R.id.doneButton) as Button
 
         createSquareList(1200, squareList)
-        gridCreate(50, 2, 9, constraintSet, constraintLayout, this@MainActivity, tempBedTiles, allTiles, bedList)
-        initializeButtons(this@MainActivity, doneButton, tempBedTiles, bedNum, bedList)
+        gridCreate(50, 2, 9, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed)
+        initializeButtons(this@MainActivity, doneButton, bedList, tempBed, bedCount)
     }
 }
 
@@ -87,11 +89,12 @@ class MainActivity : AppCompatActivity() {
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
 
 fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constraintSet : ConstraintSet,constraintLayout: ConstraintLayout,
-               context : Context, tempBedTiles: MutableList<String>, allTiles: MutableList<Tile>, bedList: Map<Int, Bed>){
+               context : Context, allTiles: MutableList<Tile>, tempBed: MutableList<Int>)
+{
 
     var previousButton = Button(context)            //Tracks the previous button created
     var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
-    var idNumber = 100000                           //id#, increments with each created button
+    var idNumber = 10000                           //id#, increments with each created button
 
 
     for(row in 0..(buttonsPerRow - 1))             //For this given row
@@ -165,7 +168,7 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
                     button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                     {
 
-                            addTileToBed(context, button, tempBedTiles)                         //add/remove tiles from bed when clicked
+                            buildBed(context, button, allTiles, tempBed)                         //add/remove tiles from bed when clicked
                     }
 
                     previousButton = button
@@ -174,48 +177,43 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
     }
 }
 
-fun initializeButtons(context: Context, doneButton: Button, tempBedTiles: MutableList<String>, bedNum: Int, bedList: Map<Int, Bed>)
+fun initializeButtons(context: Context, doneButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: Int)
 {
     doneButton.setOnClickListener()
     {
-        doneBed(context,tempBedTiles, bedNum, bedList)
+        doneBed(context, bedList, tempBed, bedCount)
     }
 
     //space for further buttons (setting, bluetooth, etc)
 }
 
-fun addTileToBed(context: Context, button: Button, tempBedTiles: MutableList<String>)
+fun buildBed(context: Context, button: Button, allTiles: MutableList<Tile>, tempBed: MutableList<Int> )
 {
-    if (tempBedTiles.contains(button.id.toString()))    //remove from bed if present in list
+    val buttonID: Int = button.id - 10000
+
+    if (allTiles[buttonID].hasBed == true)    //remove from bed if present in list
     {
-        tempBedTiles.remove(button.id.toString())
-        Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
+        tempBed.remove(buttonID + 10000)
+        allTiles[buttonID].hasBed = false
         button.setBackgroundColor(Color.WHITE)
+        Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
     }
     else    //add to bed if not
     {
-        tempBedTiles.add(button.id.toString())
-        Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+        tempBed.add(buttonID + 10000)
+        allTiles[buttonID].hasBed = true
         button.setBackgroundColor(Color.BLUE)
+        Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
     }
 }
 
-fun doneBed(context: Context, tempBedTiles: MutableList<String>, bedNum: Int, bedList: Map<Int, Bed>)
+fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: Int)
 {
-    if(tempBedTiles.isEmpty())
-    {
-        Toast.makeText(context, "Select some tiles for your bed", Toast.LENGTH_SHORT).show()
-    }
-    else
-    {
-        var tempBed = Bed(bedNum)
-        tempBed.tilesInBed = tempBedTiles
-        bedList[bedNum] = tempBed                       //whack
-        tempBedTiles.clear()
-        bedNum.inc()
-        Toast.makeText(context, "Bed created", Toast.LENGTH_SHORT).show()
-
-    }
+    var finalBed = Bed(bedCount)
+    finalBed.tilesInBed = tempBed
+    bedList.add(finalBed)
+    tempBed.clear()
+    Toast.makeText(context, "Bed #" + bedCount + " created", Toast.LENGTH_SHORT).show()
 }
 
 class Tile (val tileID: Int)        //object containing tile information
@@ -228,7 +226,8 @@ class Tile (val tileID: Int)        //object containing tile information
 
 class Bed (val bedID: Int)
 {
-    var tilesInBed = mutableListOf<String>()
+    var tilesInBed = mutableListOf<Int>()
+    //other variables
 }
 
 fun createSquareList(buttonsPerRow: Int, squareList: MutableList<String>)
@@ -277,3 +276,26 @@ fun buttonIdToString(currentButtonNumber: Int):String{
 
 
 }
+
+/*
+Dave increment code
+
+myNumber.x += 1
+
+class MainActivity : AppCompatActivity() {
+
+val myNumber = IncVar(2)
+
+override fun onCreate(savedInstanceState: Bundle?) {
+super.onCreate(savedInstanceState)
+setContentView(R.layout.activity_main)
+}
+
+fun incremNumber(intToChange: IncVar){
+intToChange.number +=1
+}
+
+data class IncVar(var number: Int)
+}
+
+ */
