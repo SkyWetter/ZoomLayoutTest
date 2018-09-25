@@ -43,6 +43,7 @@ Added function to add bed to master bed list
 
 package com.example.android.zoomlayouttest
 
+
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -54,7 +55,11 @@ import android.widget.Button
 import android.widget.Toast
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.PI
 import kotlin.math.sign
+import kotlin.math.sqrt
+import kotlin.math.atan
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -63,7 +68,10 @@ class MainActivity : AppCompatActivity() {
 
     var tempBed = mutableListOf<Int>()
     var bedList = mutableListOf<Bed>()
+    var turretSquare : Square? = null
 
+
+    var buttonsPerRow = 5
     var bedCount = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,8 +89,17 @@ class MainActivity : AppCompatActivity() {
         createSquareList(1200, squareList)
 
         //buttons per row parameter in gridCreate must be odd
-        gridCreate(50, 2, 9, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed)
+        gridCreate(50, 2, buttonsPerRow, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed)
+
+        turretSquare = allTiles[((buttonsPerRow*buttonsPerRow) -1 )/2]
+
+        getAngleDistanceAll(allTiles,turretSquare!!)
+        var tempSq = 3
+        Log.i("Squareid: ",allTiles[tempSq].squareId.toString())
+        Log.i("angle and dis",allTiles[tempSq].angle.toString() + " " + allTiles[tempSq].distance.toString())
         initializeButtons(this@MainActivity, doneButton, bedList, tempBed, bedCount)
+
+
     }
 }
 
@@ -224,17 +241,17 @@ fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<In
     Toast.makeText(context, "Bed #" + bedCount + " created", Toast.LENGTH_SHORT).show()
 }
 
-data class Square (val tileID: Int)        //object containing tile information
+data class Square (val squareId: Int)        //object containing tile information
 {
     var row: Int = 0
     var column: Int = 0
     var bedID: Int = 0
     var hasBed: Boolean = false
-    var angle: Float? = null
-    var distance: Float? = null
+    var angle: Double? = null
+    var distance: Double? = null
 }
 
-class Bed (val bedID: Int)
+data class Bed (val bedID: Int)
 {
     var tilesInBed = mutableListOf<Int>()
     //other variables
@@ -270,10 +287,26 @@ fun createSquareList(buttonsPerRow: Int, squareList: MutableList<String>)
     }
 }
 
-private fun getAngleDistance(thisTile:Square,turretTile:Square){
+/* Angle and Distance Function
+    Takes a target square and a central turret square
+ */
 
-    var x = (thisTile.column - turretTile.column)
-    var y = (thisTile.row - thisTile.column)
+private fun getAngleDistanceAll(allTiles: MutableList<Square>,turretSquare: Square){
+    for(square in allTiles.indices){
+        getAngleDistance(allTiles[square],turretSquare)
+    }
+}
+
+
+private fun getAngleDistance(targetSquare:Square, turretSquare:Square){
+
+    var x = (targetSquare.column - turretSquare.column)
+    var y = (targetSquare.row - turretSquare.column)
+
+
+    val squaredCoords = (x*x) + (y*y)
+
+    targetSquare.distance = sqrt(squaredCoords.toDouble())
 
 
     var quadrant: Int
@@ -284,8 +317,22 @@ private fun getAngleDistance(thisTile:Square,turretTile:Square){
         if(y.sign == -1) { quadrant = 1 } else { quadrant = 4 }
     }
 
+    val temp : Double = (x.toDouble()/y.toDouble())
+
     if(quadrant == 1){
 
+        targetSquare.angle = (atan(temp)*180)/ PI
+    }
+    else if(quadrant == 2){
+
+        targetSquare.angle = 180 - ((atan(temp)*180)/ PI)
+    }
+    else if(quadrant == 3){
+
+        targetSquare.angle = 180 + (atan(temp)*180)/ PI
+    }else{
+
+        targetSquare.angle = 360 - (atan(temp)*180)/ PI
     }
 }
 
