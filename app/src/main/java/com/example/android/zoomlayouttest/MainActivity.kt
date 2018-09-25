@@ -37,6 +37,13 @@ Added "Done Bed" button
 Added function to construct beds
 Added function to add bed to master bed list
 
+Sept 25, 2018 -- Dave Barry
+
+Changed references of 'Tile' to references to 'Square', to avoid issues with pre-existing classes in the Android API
+Added function for getting distance and angle measurements from central turret square
+Added function for grabbing position of central square
+Removed CreateSquareList function
+
 
  */
 
@@ -86,7 +93,6 @@ class MainActivity : AppCompatActivity() {
 
         val doneButton = findViewById(R.id.doneButton) as Button
 
-        createSquareList(1200, squareList)
 
         //buttons per row parameter in gridCreate must be odd
         gridCreate(50, 2, buttonsPerRow, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed)
@@ -94,9 +100,13 @@ class MainActivity : AppCompatActivity() {
         turretSquare = allTiles[((buttonsPerRow*buttonsPerRow) -1 )/2]
 
         getAngleDistanceAll(allTiles,turretSquare!!)
+
+   /*   //Test code for getAngleDistanceAll function
         var tempSq = 3
         Log.i("Squareid: ",allTiles[tempSq].squareId.toString())
         Log.i("angle and dis",allTiles[tempSq].angle.toString() + " " + allTiles[tempSq].distance.toString())
+
+   */
         initializeButtons(this@MainActivity, doneButton, bedList, tempBed, bedCount)
 
 
@@ -257,35 +267,6 @@ data class Bed (val bedID: Int)
     //other variables
 }
 
-fun createSquareList(buttonsPerRow: Int, squareList: MutableList<String>)
-{
-
-    for(i in 0..(buttonsPerRow-1)){
-
-        if(i < 10)
-        {
-            var tempString: String = "sq000" + i.toString()
-            squareList.add(tempString)
-
-        }
-
-        else if(i < 100)
-        {
-            var tempString: String = "sq00" + i.toString()
-            squareList.add(tempString)
-        }
-
-        else if(i < 1000)
-        {
-            var tempString: String = "sq0" + i.toString()
-            squareList.add(tempString)
-        }
-
-        else{
-            squareList.add(i.toString())
-        }
-    }
-}
 
 /* Angle and Distance Function
     Takes a target square and a central turret square
