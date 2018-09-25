@@ -33,6 +33,7 @@ Add/remove tiles to a bed list
 
 Sept 24, 2018 -- James
 Each tile has object containing row, column, and bed data
+Added "Done Bed" button
 
 
  */
@@ -55,8 +56,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     val squareList = mutableListOf<String>()
-    val bedTiles = mutableListOf<String>()      //temp list of tiles to go in to a bed
-    val allTiles = mutableListOf<Tile>()       //full list of all Tile objects
+    var allTiles = mutableListOf<Tile>()       //full list of all Tile objects
+    var tempBedTiles = mutableListOf<String>()      //temp list of tiles to go in to a bed
+    var bedList = mutableMapOf<Int, Bed>()
+
+    var bedNum: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,12 +72,12 @@ class MainActivity : AppCompatActivity() {
         constraintSet.clone(buttonContainer)  //Clones the buttonContainer constraint layout settings
         val constraintLayout = findViewById(R.id.buttonContainer) as ConstraintLayout
 
-        createSquareList(1200,squareList)
-        gridCreate(50,2,9,constraintSet,constraintLayout,this@MainActivity, bedTiles, allTiles)
-        doneBed(bedTiles)
+        val doneButton = findViewById(R.id.doneButton) as Button
+
+        createSquareList(1200, squareList)
+        gridCreate(50, 2, 9, constraintSet, constraintLayout, this@MainActivity, tempBedTiles, allTiles, bedList)
+        initializeButtons(this@MainActivity, doneButton, tempBedTiles, bedNum, bedList)
     }
-
-
 }
 
 //GRID CREATE
@@ -82,7 +86,8 @@ class MainActivity : AppCompatActivity() {
 //Takes a button size (how large each individual button is), margins between each button, buttons per row (grid is always square)
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
 
-fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constraintSet : ConstraintSet,constraintLayout: ConstraintLayout,context : Context, bedTiles: MutableList<String>, allTiles: MutableList<Tile>){
+fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constraintSet : ConstraintSet,constraintLayout: ConstraintLayout,
+               context : Context, tempBedTiles: MutableList<String>, allTiles: MutableList<Tile>, bedList: Map<Int, Bed>){
 
     var previousButton = Button(context)            //Tracks the previous button created
     var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
@@ -98,12 +103,12 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
                 val button = Button(context)       //Create a new button
                 button.setId(idNumber)             //Set id based on idNumber incrementor
 
-                var tempTile = Tile(idNumber)
+                var tempTile = Tile(idNumber)      //create new tile object with tileID
 
-                tempTile.column = i
+                tempTile.column = i                 //set rows and columns
                 tempTile.row = row
 
-                allTiles.add(tempTile)
+                allTiles.add(tempTile)              //add to master list of tiles
 
                 idNumber = idNumber + 1            //increment id number
 
@@ -160,7 +165,7 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
                     button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                     {
 
-                            addTileToBed(context, button, bedTiles)                         //add/remove tiles from bed when clicked
+                            addTileToBed(context, button, tempBedTiles)                         //add/remove tiles from bed when clicked
                     }
 
                     previousButton = button
@@ -169,33 +174,61 @@ fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constrain
     }
 }
 
-fun addTileToBed(context: Context, button: Button, bedTiles: MutableList<String>)
+fun initializeButtons(context: Context, doneButton: Button, tempBedTiles: MutableList<String>, bedNum: Int, bedList: Map<Int, Bed>)
 {
-    if (bedTiles.contains(button.id.toString()))    //remove from bed if present in list
+    doneButton.setOnClickListener()
     {
-        bedTiles.remove(button.id.toString())
+        doneBed(context,tempBedTiles, bedNum, bedList)
+    }
+
+    //space for further buttons (setting, bluetooth, etc)
+}
+
+fun addTileToBed(context: Context, button: Button, tempBedTiles: MutableList<String>)
+{
+    if (tempBedTiles.contains(button.id.toString()))    //remove from bed if present in list
+    {
+        tempBedTiles.remove(button.id.toString())
         Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
         button.setBackgroundColor(Color.WHITE)
     }
     else    //add to bed if not
     {
-        bedTiles.add(button.id.toString())
+        tempBedTiles.add(button.id.toString())
         Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
         button.setBackgroundColor(Color.BLUE)
     }
 }
 
-fun doneBed(bedTiles: MutableList<String>)
+fun doneBed(context: Context, tempBedTiles: MutableList<String>, bedNum: Int, bedList: Map<Int, Bed>)
 {
+    if(tempBedTiles.isEmpty())
+    {
+        Toast.makeText(context, "Select some tiles for your bed", Toast.LENGTH_SHORT).show()
+    }
+    else
+    {
+        var tempBed = Bed(bedNum)
+        tempBed.tilesInBed = tempBedTiles
+        bedList[bedNum] = tempBed                       //whack
+        tempBedTiles.clear()
+        bedNum.inc()
+        Toast.makeText(context, "Bed created", Toast.LENGTH_SHORT).show()
 
+    }
 }
 
-class Tile (val tileID: Int)
+class Tile (val tileID: Int)        //object containing tile information
 {
     var row: Int = 0
     var column: Int = 0
     var bedID: Int = 0
     var hasBed: Boolean = false
+}
+
+class Bed (val bedID: Int)
+{
+    var tilesInBed = mutableListOf<String>()
 }
 
 fun createSquareList(buttonsPerRow: Int, squareList: MutableList<String>)
