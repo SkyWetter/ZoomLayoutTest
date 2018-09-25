@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">zoomLayoutTest</string>
+
+    <string name="On">On</string>
+    <string name="Off">Off</string>
+
+    <string name="Disconnect">Disconnect</string>
 </resources>

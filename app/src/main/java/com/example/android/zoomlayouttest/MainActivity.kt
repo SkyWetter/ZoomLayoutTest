@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
     val squareList = mutableListOf<String>()
 
 
+
     //Bluetooth Variables
 
    private  var m_bluetoothAdapter : BluetoothAdapter? = null
