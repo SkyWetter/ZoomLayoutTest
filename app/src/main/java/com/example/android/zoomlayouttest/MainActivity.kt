@@ -49,15 +49,17 @@ import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.sign
 
 class MainActivity : AppCompatActivity() {
 
     val squareList = mutableListOf<String>()
-    var allTiles = mutableListOf<Tile>()       //full list of all Tile objects
+    var allTiles = mutableListOf<Square>()       //full list of all Tile objects
 
     var tempBed = mutableListOf<Int>()
     var bedList = mutableListOf<Bed>()
@@ -77,6 +79,8 @@ class MainActivity : AppCompatActivity() {
         val doneButton = findViewById(R.id.doneButton) as Button
 
         createSquareList(1200, squareList)
+
+        //buttons per row parameter in gridCreate must be odd
         gridCreate(50, 2, 9, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed)
         initializeButtons(this@MainActivity, doneButton, bedList, tempBed, bedCount)
     }
@@ -88,92 +92,96 @@ class MainActivity : AppCompatActivity() {
 //Takes a button size (how large each individual button is), margins between each button, buttons per row (grid is always square)
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
 
-fun gridCreate(buttonSize : Int,buttonMargin : Int, buttonsPerRow: Int,constraintSet : ConstraintSet,constraintLayout: ConstraintLayout,
-               context : Context, allTiles: MutableList<Tile>, tempBed: MutableList<Int>)
+fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constraintSet : ConstraintSet, constraintLayout: ConstraintLayout,
+               context : Context, allTiles: MutableList<Square>, tempBed: MutableList<Int>)
 {
 
     var previousButton = Button(context)            //Tracks the previous button created
     var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
     var idNumber = 10000                           //id#, increments with each created button
 
+    if((buttonsPerRow % 2) !=0)
+    {   for(row in 0..(buttonsPerRow - 1))             //For this given row
+        {
 
-    for(row in 0..(buttonsPerRow - 1))             //For this given row
-    {
-
-            for (i in 0..(buttonsPerRow - 1))      //And this given square
-            {
-
-                val button = Button(context)       //Create a new button
-                button.setId(idNumber)             //Set id based on idNumber incrementor
-
-                var tempTile = Tile(idNumber)      //create new tile object with tileID
-
-                tempTile.column = i                 //set rows and columns
-                tempTile.row = row
-
-                allTiles.add(tempTile)              //add to master list of tiles
-
-                idNumber = idNumber + 1            //increment id number
-
-                if (i == 0)                         //If its the first square in a row
+                for (i in 0..(buttonsPerRow - 1))      //And this given square
                 {
-                    if (row == 0)                   //If its the first row of the grid
-                    {
 
-                        constraintSet.connect(button.id, ConstraintSet.LEFT, constraintLayout.id, ConstraintSet.LEFT, buttonMargin)         //SETS CONSTRAINTS
-                        constraintSet.connect(button.id, ConstraintSet.TOP, constraintLayout.id, ConstraintSet.TOP, buttonMargin)
-                        constraintSet.setMargin(button.id, ConstraintSet.TOP, 0)
-                        constraintSet.setMargin(button.id, ConstraintSet.LEFT, 0)
+                    val button = Button(context)       //Create a new button
+                    button.setId(idNumber)             //Set id based on idNumber incrementor
+
+                    var tempTile = Square(idNumber)      //create new tile object with tileID
+
+                    tempTile.column = i                 //set rows and columns
+                    tempTile.row = row
+
+                    allTiles.add(tempTile)              //add to master list of tiles
+
+                    idNumber = idNumber + 1            //increment id number
+
+                    if (i == 0)                         //If its the first square in a row
+                    {
+                        if (row == 0)                   //If its the first row of the grid
+                        {
+
+                            constraintSet.connect(button.id, ConstraintSet.LEFT, constraintLayout.id, ConstraintSet.LEFT, buttonMargin)         //SETS CONSTRAINTS
+                            constraintSet.connect(button.id, ConstraintSet.TOP, constraintLayout.id, ConstraintSet.TOP, buttonMargin)
+                            constraintSet.setMargin(button.id, ConstraintSet.TOP, 0)
+                            constraintSet.setMargin(button.id, ConstraintSet.LEFT, 0)
+
+                        }
+
+                        else
+                        {
+                            constraintSet.connect(button.id, ConstraintSet.LEFT, constraintLayout.id, ConstraintSet.LEFT, buttonMargin)         //SETS CONSTRAINTS
+                            constraintSet.connect(button.id, ConstraintSet.TOP, previousRowLeadButton.id, ConstraintSet.BOTTOM, buttonMargin)
+                            constraintSet.setMargin(button.id, ConstraintSet.LEFT, 0)
+                        }
+
+                        previousRowLeadButton = button
 
                     }
 
                     else
                     {
-                        constraintSet.connect(button.id, ConstraintSet.LEFT, constraintLayout.id, ConstraintSet.LEFT, buttonMargin)         //SETS CONSTRAINTS
-                        constraintSet.connect(button.id, ConstraintSet.TOP, previousRowLeadButton.id, ConstraintSet.BOTTOM, buttonMargin)
-                        constraintSet.setMargin(button.id, ConstraintSet.LEFT, 0)
+
+                            constraintSet.connect(button.id, ConstraintSet.LEFT, previousButton.id, ConstraintSet.RIGHT, buttonMargin)          //SETS CONSTRAINTS
+                            constraintSet.connect(button.id, ConstraintSet.BASELINE, previousButton.id, ConstraintSet.BASELINE, buttonMargin)
+                            constraintSet.setMargin(button.id, ConstraintSet.TOP, 0)
+
                     }
 
-                    previousRowLeadButton = button
 
+                        constraintSet.constrainWidth(button.id, buttonSize)                 //Sets size of created button
+                        constraintSet.constrainHeight(button.id, buttonSize)
+
+                        var tempNum = (buttonsPerRow - 1) / 2
+
+                        if(i == tempNum && row == tempNum)
+                        {
+                            button.setBackgroundColor(Color.RED)
+                        }
+                        else
+                        {
+                            button.setBackgroundColor(Color.WHITE)                              //Sets color (To be replaced with final button styling)
+                        }
+
+                        constraintLayout.addView(button)                                    //Add button into Constraint Layout view
+                        constraintSet.applyTo(constraintLayout)                             //Apply constraint styling
+
+                        button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
+                        {
+
+                                buildBed(context, button, allTiles, tempBed)                         //add/remove tiles from bed when clicked
+                        }
+
+                        previousButton = button
                 }
 
-                else
-                {
+        }
 
-                        constraintSet.connect(button.id, ConstraintSet.LEFT, previousButton.id, ConstraintSet.RIGHT, buttonMargin)          //SETS CONSTRAINTS
-                        constraintSet.connect(button.id, ConstraintSet.BASELINE, previousButton.id, ConstraintSet.BASELINE, buttonMargin)
-                        constraintSet.setMargin(button.id, ConstraintSet.TOP, 0)
-
-                }
-
-
-                    constraintSet.constrainWidth(button.id, buttonSize)                 //Sets size of created button
-                    constraintSet.constrainHeight(button.id, buttonSize)
-
-                    var tempNum = (buttonsPerRow - 1) / 2
-
-                    if(i == tempNum && row == tempNum)
-                    {
-                        button.setBackgroundColor(Color.RED)
-                    }
-                    else
-                    {
-                        button.setBackgroundColor(Color.WHITE)                              //Sets color (To be replaced with final button styling)
-                    }
-
-                    constraintLayout.addView(button)                                    //Add button into Constraint Layout view
-                    constraintSet.applyTo(constraintLayout)                             //Apply constraint styling
-
-                    button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
-                    {
-
-                            buildBed(context, button, allTiles, tempBed)                         //add/remove tiles from bed when clicked
-                    }
-
-                    previousButton = button
-            }
-
+    } else{
+        Log.i("ERROR!","You can't have gridCreate buttonsPerRow == an even number")
     }
 }
 
@@ -187,7 +195,7 @@ fun initializeButtons(context: Context, doneButton: Button, bedList: MutableList
     //space for further buttons (setting, bluetooth, etc)
 }
 
-fun buildBed(context: Context, button: Button, allTiles: MutableList<Tile>, tempBed: MutableList<Int> )
+fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int> )
 {
     val buttonID: Int = button.id - 10000
 
@@ -216,12 +224,14 @@ fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<In
     Toast.makeText(context, "Bed #" + bedCount + " created", Toast.LENGTH_SHORT).show()
 }
 
-class Tile (val tileID: Int)        //object containing tile information
+class Square (val tileID: Int)        //object containing tile information
 {
     var row: Int = 0
     var column: Int = 0
     var bedID: Int = 0
     var hasBed: Boolean = false
+    var angle: Float? = null
+    var distance: Float? = null
 }
 
 class Bed (val bedID: Int)
@@ -260,22 +270,22 @@ fun createSquareList(buttonsPerRow: Int, squareList: MutableList<String>)
     }
 }
 
-fun buttonIdToString(currentButtonNumber: Int):String{
+private fun getAngleDistance(thisTile:Square,turretTile:Square){
 
-    if(currentButtonNumber < 10){
-        return "sq00$currentButtonNumber"
+    var x = (thisTile.column - turretTile.column)
+    var y = (thisTile.row - thisTile.column)
+
+    var quadrant: Int
+
+    if(x.sign==-1) {
+        if (y.sign == -1) { quadrant = 2 } else { quadrant = 3 }
+    } else {
+        if(y.sign == -1) { quadrant = 1 } else { quadrant = 4 }
     }
 
-    else if(currentButtonNumber < 100){
-        return "sq0$currentButtonNumber"
-    }
-
-    else {
-        return "sq$currentButtonNumber"
-    }
-
-
+    
 }
+
 
 /*
 Dave increment code
