@@ -105,9 +105,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         println("coolcool")
-        initializeButtons(this@MainActivity, doneButton, bedList, tempBed, bedCount)
 
+        initializeButtons(this@MainActivity, doneButton, bedList, tempBed, bedCount, allTiles)
 
+        println("whack")
     }
 }
 
@@ -210,11 +211,11 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
     }
 }
 
-fun initializeButtons(context: Context, doneButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray)
+fun initializeButtons(context: Context, doneButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allTiles: MutableList<Square>)
 {
     doneButton.setOnClickListener()
     {
-        doneBed(context, bedList, tempBed, bedCount)
+        doneBed(context, bedList, tempBed, bedCount, allTiles)
     }
 
     //space for further buttons (setting, bluetooth, etc)
@@ -242,15 +243,18 @@ fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, te
     }
 }
 
-fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray)
+fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allTiles: MutableList<Square> )
 {
     if (tempBed.isNotEmpty())
     {
         var finalBed = Bed(bedCount[0])
 
+        for(i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID
+        {
+            allTiles[tempBed[i] - 10000].bedID = bedCount[0]
+        }
 
-
-        finalBed.tilesInBed = tempBed
+        finalBed.tilesInBed = tempBed       //this breaks right now - doesnt add list of IDs to the bed object
         bedList.add(finalBed)
         tempBed.clear()
         Toast.makeText(context, "Bed #" + bedCount[0] + " created", Toast.LENGTH_SHORT).show()
