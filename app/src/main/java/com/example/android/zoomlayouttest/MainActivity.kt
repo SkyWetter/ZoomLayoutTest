@@ -62,10 +62,7 @@ import android.widget.Button
 import android.widget.Toast
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.math.PI
-import kotlin.math.sign
-import kotlin.math.sqrt
-import kotlin.math.atan
+import kotlin.math.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -78,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     var turretSquare : Square? = null
 
 
-    var buttonsPerRow = 5
+    var buttonsPerRow = 25
     var bedCount = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,12 +98,12 @@ class MainActivity : AppCompatActivity() {
 
         getAngleDistanceAll(allTiles,turretSquare!!)
 
-   /*   //Test code for getAngleDistanceAll function
-        var tempSq = 3
-        Log.i("Squareid: ",allTiles[tempSq].squareId.toString())
-        Log.i("angle and dis",allTiles[tempSq].angle.toString() + " " + allTiles[tempSq].distance.toString())
+    // Test code for getAngleDistanceAll function
+        for(square in allTiles.indices){
+            Log.i("AngleDis","SquareId: " + allTiles[square].squareId.toString() + " Angle: " + allTiles[square].angle.toString()+ " Distance: " + allTiles[square].distance.toString() )
+        }
 
-   */
+        println("coolcool")
         initializeButtons(this@MainActivity, doneButton, bedList, tempBed, bedCount)
 
 
@@ -279,43 +276,74 @@ private fun getAngleDistanceAll(allTiles: MutableList<Square>,turretSquare: Squa
 }
 
 
-private fun getAngleDistance(targetSquare:Square, turretSquare:Square){
+private fun getAngleDistance(targetSquare:Square, turretSquare:Square) {
+
 
     var x = (targetSquare.column - turretSquare.column)
     var y = (targetSquare.row - turretSquare.column)
-
-
-    val squaredCoords = (x*x) + (y*y)
+    val squaredCoords = (x * x) + (y * y)
+    var quadrant: Int? = null
 
     targetSquare.distance = sqrt(squaredCoords.toDouble())
+/*
+    Log.i("xy", "square" + targetSquare.squareId)
+    Log.i("xy", "tS: " + targetSquare.column + " " + targetSquare.row)
+    Log.i("xy", "trtS: " + turretSquare.column + " " + turretSquare.row)
+    Log.i("xy", "coords: " + x + " " + y)
+*/
 
+    if (x != 0 && y != 0) {
 
-    var quadrant: Int
+        if (x.sign == -1) {
+            if (y.sign == -1) {
+                quadrant = 4
+            } else {
+                quadrant = 3
+            }
+        } else {
+            if (y.sign == -1) {
+                quadrant = 1
+            } else {
+                quadrant = 2
+            }
+        }
 
-    if(x.sign==-1) {
-        if (y.sign == -1) { quadrant = 2 } else { quadrant = 3 }
     } else {
-        if(y.sign == -1) { quadrant = 1 } else { quadrant = 4 }
+
+        quadrant = 0
+
+        if (x == 0 && y == 0) {
+            targetSquare.angle = Double.NaN
+        } else if (x == 0) {
+            if (y.sign == -1) {
+                targetSquare.angle = 0.0
+            } else {
+                targetSquare.angle = 180.0
+            }
+        } else {
+            if (x.sign == -1) { targetSquare.angle = 270.0
+            } else {
+                targetSquare.angle = 90.0
+            }
+
+        }
     }
+    //  Log.i("quadrant", "SquareId: " + targetSquare.squareId.toString() + " Quad: " + quadrant.toString())
+    val temp: Double = (abs(x).toDouble() / abs(y).toDouble())
 
-    val temp : Double = (x.toDouble()/y.toDouble())
+    if (quadrant == 1) {
+        targetSquare.angle = (atan(temp) * 180) / PI
+    } else if (quadrant == 2) {
+        targetSquare.angle = 180 - ((atan(temp) * 180) / PI)
+    } else if (quadrant == 3) {
+        targetSquare.angle = 180 + (atan(temp) * 180) / PI
+    } else if (quadrant == 4) {
+        targetSquare.angle = 360 - (atan(temp) * 180) / PI
+    } else {// Empty for squares at perp/parallel angles
 
-    if(quadrant == 1){
-
-        targetSquare.angle = (atan(temp)*180)/ PI
-    }
-    else if(quadrant == 2){
-
-        targetSquare.angle = 180 - ((atan(temp)*180)/ PI)
-    }
-    else if(quadrant == 3){
-
-        targetSquare.angle = 180 + (atan(temp)*180)/ PI
-    }else{
-
-        targetSquare.angle = 360 - (atan(temp)*180)/ PI
     }
 }
+
 
 
 /*
