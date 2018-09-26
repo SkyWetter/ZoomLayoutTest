@@ -67,13 +67,11 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
 
-    val squareList = mutableListOf<String>()
-    var allTiles = mutableListOf<Square>()       //full list of all Tile objects
 
+    var allTiles = mutableListOf<Square>()       //full list of all Tile objects
     var tempBed = mutableListOf<Int>()
     var bedList = mutableListOf<Bed>()
     var turretSquare : Square? = null
-
 
     var buttonsPerRow = 25
     var bedCount = 1
@@ -94,16 +92,15 @@ class MainActivity : AppCompatActivity() {
         //buttons per row parameter in gridCreate must be odd
         gridCreate(50, 2, buttonsPerRow, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed)
 
-        turretSquare = allTiles[((buttonsPerRow*buttonsPerRow) -1 )/2]
+        turretSquare = allTiles[((buttonsPerRow*buttonsPerRow) -1 )/2]   //Gets the central square id and sets it to turretSquare
 
-        getAngleDistanceAll(allTiles,turretSquare!!)
+        getAngleDistanceAll(allTiles,turretSquare!!)                    //Finds all angles and distances for each square and stores data in allTiles
 
     // Test code for getAngleDistanceAll function
         for(square in allTiles.indices){
             Log.i("AngleDis","SquareId: " + allTiles[square].squareId.toString() + " Angle: " + allTiles[square].angle.toString()+ " Distance: " + allTiles[square].distance.toString() )
         }
 
-        println("coolcool")
         initializeButtons(this@MainActivity, doneButton, bedList, tempBed, bedCount)
 
 
@@ -265,10 +262,10 @@ data class Bed (val bedID: Int)
 }
 
 
-/* Angle and Distance Function
+/* Angle and Distance Functions
     Takes a target square and a central turret square
- */
 
+ */
 private fun getAngleDistanceAll(allTiles: MutableList<Square>,turretSquare: Square){
     for(square in allTiles.indices){
         getAngleDistance(allTiles[square],turretSquare)
@@ -278,19 +275,23 @@ private fun getAngleDistanceAll(allTiles: MutableList<Square>,turretSquare: Squa
 
 private fun getAngleDistance(targetSquare:Square, turretSquare:Square) {
 
+    var quadrant: Int? = null //Variable holds the target square's quadrant position
 
-    var x = (targetSquare.column - turretSquare.column)
+    var x = (targetSquare.column - turretSquare.column)   //Gets difference between target and turret square's x and y coords
     var y = (targetSquare.row - turretSquare.column)
-    val squaredCoords = (x * x) + (y * y)
-    var quadrant: Int? = null
 
+    val squaredCoords = (x * x) + (y * y)                   //Calculates distance from turret to target
     targetSquare.distance = sqrt(squaredCoords.toDouble())
+
+
 /*
     Log.i("xy", "square" + targetSquare.squareId)
     Log.i("xy", "tS: " + targetSquare.column + " " + targetSquare.row)
     Log.i("xy", "trtS: " + turretSquare.column + " " + turretSquare.row)
     Log.i("xy", "coords: " + x + " " + y)
 */
+
+    //Quadrant Position -- Returns 1,2,3 or 4, unless square is parallel or perpendicular to the turret, in which case returns 5 and sets angle directly
 
     if (x != 0 && y != 0) {
 
@@ -329,18 +330,19 @@ private fun getAngleDistance(targetSquare:Square, turretSquare:Square) {
         }
     }
     //  Log.i("quadrant", "SquareId: " + targetSquare.squareId.toString() + " Quad: " + quadrant.toString())
+
     val temp: Double = (abs(x).toDouble() / abs(y).toDouble())
 
-    if (quadrant == 1) {
-        targetSquare.angle = (atan(temp) * 180) / PI
-    } else if (quadrant == 2) {
-        targetSquare.angle = 180 - ((atan(temp) * 180) / PI)
-    } else if (quadrant == 3) {
-        targetSquare.angle = 180 + (atan(temp) * 180) / PI
-    } else if (quadrant == 4) {
-        targetSquare.angle = 360 - (atan(temp) * 180) / PI
-    } else {// Empty for squares at perp/parallel angles
-
+    if(quadrant!=5) {
+        if (quadrant == 1) {
+            targetSquare.angle = (atan(temp) * 180) / PI
+        } else if (quadrant == 2) {
+            targetSquare.angle = 180 - ((atan(temp) * 180) / PI)
+        } else if (quadrant == 3) {
+            targetSquare.angle = 180 + (atan(temp) * 180) / PI
+        } else  {
+            targetSquare.angle = 360 - (atan(temp) * 180) / PI
+        }
     }
 }
 
