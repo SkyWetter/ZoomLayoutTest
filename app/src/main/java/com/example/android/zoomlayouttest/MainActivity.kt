@@ -72,11 +72,12 @@ class MainActivity : AppCompatActivity() {
 
     var tempBed = mutableListOf<Int>()
     var bedList = mutableListOf<Bed>()
+
     var turretSquare : Square? = null
 
 
-    var buttonsPerRow = 25
-    var bedCount = 1
+    var buttonsPerRow = 9
+    var bedCount = intArrayOf(1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,7 +210,7 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
     }
 }
 
-fun initializeButtons(context: Context, doneButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: Int)
+fun initializeButtons(context: Context, doneButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray)
 {
     doneButton.setOnClickListener()
     {
@@ -221,31 +222,40 @@ fun initializeButtons(context: Context, doneButton: Button, bedList: MutableList
 
 fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int> )
 {
-    val buttonID: Int = button.id - 10000
+    val buttonID: Int = button.id - 10000       //adjust button ID to match list position
 
-    if (allTiles[buttonID].hasBed == true)    //remove from bed if present in list
+    if (allTiles[buttonID].bedID == 0)          //check if tile is currently in a bed
     {
-        tempBed.remove(buttonID + 10000)
-        allTiles[buttonID].hasBed = false
-        button.setBackgroundColor(Color.WHITE)
-        Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
-    }
-    else    //add to bed if not
-    {
-        tempBed.add(buttonID + 10000)
-        allTiles[buttonID].hasBed = true
-        button.setBackgroundColor(Color.BLUE)
-        Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+        if (allTiles[buttonID].hasBed == true)    //'unselect' a selected tile from the new bed
+        {
+            tempBed.remove(buttonID + 10000)
+            allTiles[buttonID].hasBed = false
+            button.setBackgroundColor(Color.WHITE)
+            Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
+        } else                                     //select tile for the new bed
+        {
+            tempBed.add(buttonID + 10000)
+            allTiles[buttonID].hasBed = true
+            button.setBackgroundColor(Color.BLUE)
+            Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+        }
     }
 }
 
-fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: Int)
+fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray)
 {
-    var finalBed = Bed(bedCount)
-    finalBed.tilesInBed = tempBed
-    bedList.add(finalBed)
-    tempBed.clear()
-    Toast.makeText(context, "Bed #" + bedCount + " created", Toast.LENGTH_SHORT).show()
+    if (tempBed.isNotEmpty())
+    {
+        var finalBed = Bed(bedCount[0])
+
+
+
+        finalBed.tilesInBed = tempBed
+        bedList.add(finalBed)
+        tempBed.clear()
+        Toast.makeText(context, "Bed #" + bedCount[0] + " created", Toast.LENGTH_SHORT).show()
+        bedCount[0]++
+    }
 }
 
 data class Square (val squareId: Int)        //object containing tile information
@@ -343,28 +353,3 @@ private fun getAngleDistance(targetSquare:Square, turretSquare:Square) {
 
     }
 }
-
-
-
-/*
-Dave increment code
-
-myNumber.x += 1
-
-class MainActivity : AppCompatActivity() {
-
-val myNumber = IncVar(2)
-
-override fun onCreate(savedInstanceState: Bundle?) {
-super.onCreate(savedInstanceState)
-setContentView(R.layout.activity_main)
-}
-
-fun incremNumber(intToChange: IncVar){
-intToChange.number +=1
-}
-
-data class IncVar(var number: Int)
-}
-
- */
