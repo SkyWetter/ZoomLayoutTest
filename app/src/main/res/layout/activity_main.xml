@@ -56,7 +56,7 @@
         android:layout_height="80dp"
         android:background="#54f9ae"
         android:gravity="center"
-        android:text="This is a text view box inplace of our menu bar"
+        android:text="This is a text view box in place of our menu bar"
         app:layout_constraintBottom_toTopOf="@+id/zoomLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,6 +85,7 @@
         app:layout_constraintTop_toTopOf="@+id/bottomText" />
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvBedList"
         android:layout_width="295dp"
         android:layout_height="95dp"
         android:layout_marginStart="8dp"

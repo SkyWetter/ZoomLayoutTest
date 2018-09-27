@@ -57,8 +57,11 @@ import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Toast
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
@@ -90,6 +93,21 @@ class MainActivity : AppCompatActivity() {
         val constraintLayout = findViewById(R.id.buttonContainer) as ConstraintLayout
 
         val doneButton = findViewById(R.id.doneButton) as Button
+
+        //recyclerview for bedlist
+        //https://youtu.be/67hthq6Y2J8
+        val rvBedList = rvBedList as RecyclerView
+        rvBedList.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
+
+        val rvBeds = ArrayList<rvBed>()
+
+        rvBeds.add(rvBed("Bed # 1"))
+        rvBeds.add(rvBed("Bed # 2"))
+        rvBeds.add(rvBed("Bed # 3"))
+
+        val adapter = CustomAdapter(rvBeds)
+
+        rvBedList.adapter = adapter
 
 
         //buttons per row parameter in gridCreate must be odd
@@ -186,6 +204,7 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
                         if(i == tempNum && row == tempNum)
                         {
                             button.setBackgroundColor(Color.RED)
+                            allTiles[((buttonsPerRow*buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
                         }
                         else
                         {
@@ -247,15 +266,15 @@ fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<In
 {
     if (tempBed.isNotEmpty())
     {
-        var finalBed = Bed(bedCount[0])
+        var finalBed = Bed(bedCount[0])     //contains final tile IDs
 
-        for(i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID
+        for(i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
         {
             allTiles[tempBed[i] - 10000].bedID = bedCount[0]
+            finalBed.tilesInBed.add(tempBed[i])
         }
 
-        finalBed.tilesInBed = tempBed       //this breaks right now - doesnt add list of IDs to the bed object
-        bedList.add(finalBed)
+        bedList.add(finalBed)               //add completed Bed to master list and set up for the next
         tempBed.clear()
         Toast.makeText(context, "Bed #" + bedCount[0] + " created", Toast.LENGTH_SHORT).show()
         bedCount[0]++
