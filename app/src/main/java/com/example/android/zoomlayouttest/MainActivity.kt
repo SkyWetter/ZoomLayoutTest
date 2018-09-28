@@ -44,6 +44,12 @@ Added function for getting distance and angle measurements from central turret s
 Added function for grabbing position of central square
 Removed CreateSquareList function
 
+Sept 26th -- James Gillis
+Added tileIDs to completed Beds
+Added rudimentary recyclerView
+
+Sept 27th -- James Gillis
+Added edit button + functionality
 
  */
 
@@ -65,6 +71,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.NumberFormatException
 import kotlin.math.*
 
 
@@ -81,6 +88,7 @@ class MainActivity : AppCompatActivity() {
 
     var buttonsPerRow = 9
     var bedCount = intArrayOf(1)
+    var bedEdit = intArrayOf(0,0)   //first is "boolean" for editing mode, second is bedID to be edited
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,20 +106,10 @@ class MainActivity : AppCompatActivity() {
         //https://youtu.be/67hthq6Y2J8
         val rvBedList = rvBedList as RecyclerView
         rvBedList.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-
         val rvBeds = ArrayList<rvBed>()
 
-        rvBeds.add(rvBed("Bed # 1"))
-        rvBeds.add(rvBed("Bed # 2"))
-        rvBeds.add(rvBed("Bed # 3"))
-
-        val adapter = CustomAdapter(rvBeds)
-
-        rvBedList.adapter = adapter
-
-
         //buttons per row parameter in gridCreate must be odd
-        gridCreate(50, 2, buttonsPerRow, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed)
+        gridCreate(50, 2, buttonsPerRow, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed, bedEdit, bedList)
 
         turretSquare = allTiles[((buttonsPerRow*buttonsPerRow) -1 )/2]
 
@@ -124,9 +122,7 @@ class MainActivity : AppCompatActivity() {
 
         println("coolcool")
 
-        initializeButtons(this@MainActivity, doneButton, bedList, tempBed, bedCount, allTiles)
-
-        println("whack")
+        initializeButtons(this@MainActivity, doneButton, editButton, bedList, tempBed, bedCount, allTiles, rvBeds, rvBedList, bedEdit)
     }
 }
 
@@ -137,7 +133,7 @@ class MainActivity : AppCompatActivity() {
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
 
 fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constraintSet : ConstraintSet, constraintLayout: ConstraintLayout,
-               context : Context, allTiles: MutableList<Square>, tempBed: MutableList<Int>)
+               context : Context, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>)
 {
 
     var previousButton = Button(context)            //Tracks the previous button created
@@ -217,12 +213,11 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
                         button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                         {
 
-                                buildBed(context, button, allTiles, tempBed)                         //add/remove tiles from bed when clicked
+                                buildBed(context, button, allTiles, tempBed, bedEdit, bedList)                         //add/remove tiles from bed when clicked
                         }
 
                         previousButton = button
                 }
-
         }
 
     } else{
@@ -230,42 +225,95 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
     }
 }
 
-fun initializeButtons(context: Context, doneButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allTiles: MutableList<Square>)
+fun initializeButtons(context: Context, doneButton: Button, editButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray,
+                      allTiles: MutableList<Square>, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray)
 {
     doneButton.setOnClickListener()
     {
-        doneBed(context, bedList, tempBed, bedCount, allTiles)
+        doneBed(context, bedList, tempBed, bedCount, allTiles, rvBeds, rvBedList, bedEdit)
+    }
+
+    editButton.setOnClickListener()
+    {
+        editBed(bedEdit)
     }
 
     //space for further buttons (setting, bluetooth, etc)
 }
 
-fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int> )
+fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed> )
 {
     val buttonID: Int = button.id - 10000       //adjust button ID to match list position
 
-    if (allTiles[buttonID].bedID == 0)          //check if tile is currently in a bed
+    if(bedEdit[0] == 0)     //if not in editing
     {
-        if (allTiles[buttonID].hasBed == true)    //'unselect' a selected tile from the new bed
+        if (allTiles[buttonID].bedID == 0)          //check if tile is currently in a bed
         {
-            tempBed.remove(buttonID + 10000)
+            if (allTiles[buttonID].hasBed == true)    //'unselect' a selected tile from the new bed
+            {
+                tempBed.remove(buttonID + 10000)
+                allTiles[buttonID].hasBed = false
+                button.setBackgroundColor(Color.WHITE)
+                Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
+            }
+            else                                     //select tile for the new bed
+            {
+                tempBed.add(buttonID + 10000)
+                allTiles[buttonID].hasBed = true
+                button.setBackgroundColor(Color.BLUE)
+                Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    else    //if in editing
+    {
+        if (allTiles[buttonID].bedID == bedEdit[1])     //remove if tile is in bed
+        {
+            bedList[bedEdit[1]].tilesInBed.remove(buttonID + 10000)
+            allTiles[buttonID].bedID = 0
             allTiles[buttonID].hasBed = false
             button.setBackgroundColor(Color.WHITE)
-            Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
-        } else                                     //select tile for the new bed
+            Toast.makeText(context, "Removed " + button.id + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+        }
+        else                                     //add new tiles to bed
         {
-            tempBed.add(buttonID + 10000)
+            bedList[bedEdit[1]].tilesInBed.add(buttonID + 10000)
+            allTiles[buttonID].bedID = bedEdit[1]
             allTiles[buttonID].hasBed = true
             button.setBackgroundColor(Color.BLUE)
-            Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
         }
+
     }
 }
 
-fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allTiles: MutableList<Square> )
+fun editBed(bedEdit: IntArray)
 {
-    if (tempBed.isNotEmpty())
+    val bedToEdit = 1   //figure out for to set this via clicking card in RV
+
+    bedEdit[0] = 1      //bool to toggle editing mode
+    bedEdit[1] = bedToEdit      //bedID that is being edited
+
+}
+
+//adds numbered cards to recyclerview for each bed
+fun addBedToRV(rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedNum: Int )
+{
+    rvBeds.add(rvBed("Bed #" + bedNum))
+
+    val adapter = CustomAdapter(rvBeds)
+
+    rvBedList.adapter = adapter
+}
+
+//creates bed object, adds completed bed to list, sets stage for next bed
+fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allTiles: MutableList<Square>,
+            rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray)
+{
+    if (tempBed.isNotEmpty() && bedEdit[0] == 0)
     {
+        addBedToRV(rvBeds, rvBedList, bedCount[0])
+
         var finalBed = Bed(bedCount[0])     //contains final tile IDs
 
         for(i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
@@ -278,6 +326,10 @@ fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<In
         tempBed.clear()
         Toast.makeText(context, "Bed #" + bedCount[0] + " created", Toast.LENGTH_SHORT).show()
         bedCount[0]++
+    }
+    else
+    {
+        bedEdit[0] = 0      //reset editing bool
     }
 }
 
