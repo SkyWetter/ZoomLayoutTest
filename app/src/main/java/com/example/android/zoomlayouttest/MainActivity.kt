@@ -157,6 +157,8 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
 
                     tempTile.column = i                 //set rows and columns
                     tempTile.row = row
+                    tempTile.button = button
+
 
                     allTiles.add(tempTile)              //add to master list of tiles
 
@@ -202,12 +204,12 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
 
                         if(i == tempNum && row == tempNum)
                         {
-                            button.setBackgroundColor(Color.RED)
+                            tempTile.changeColor(ColorData.turret)
                             allTiles[((buttonsPerRow*buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
                         }
                         else
                         {
-                            button.setBackgroundColor(Color.WHITE)                              //Sets color (To be replaced with final button styling)
+                            tempTile.changeColor(ColorData.deselected)                            //Sets color (To be replaced with final button styling)
                         }
 
                         constraintLayout.addView(button)                                    //Add button into Constraint Layout view
@@ -246,26 +248,27 @@ fun initializeButtons(context: Context, doneButton: Button, editButton: Button, 
 
 fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed> )
 {
-    val buttonID: Int = button.id - 10000       //adjust button ID to match list position
+
+    val thisSquare = allTiles[button.id - 10000]
 
     if(bedEdit[0] == 0)     //if not in editing
     {
-        if (allTiles[buttonID].bedID == 0)          //check if tile is currently in a bed
+        if (thisSquare.bedID == 0)          //check if tile is currently in a bed
         {
-            if (allTiles[buttonID].hasBed)    //'unselect' a selected tile from the new bed
+            if (thisSquare.hasBed == true)    //'unselect' a selected tile from the new bed
             {
-                tempBed.remove(buttonID + 10000)
-                allTiles[buttonID].hasBed = false
-                button.setBackgroundColor(Color.WHITE)
+                tempBed.remove(button.id)
+                thisSquare.hasBed = false
+                thisSquare.changeColor(ColorData.deselected)
                 Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
             }
             else                                     //select tile for the new bed
             {
                 if (isTileAdjacent(button, tempBed, allTiles))
                 {
-                    tempBed.add(buttonID + 10000)
-                    allTiles[buttonID].hasBed = true
-                    button.setBackgroundColor(Color.BLUE)
+                    tempBed.add(button.id)
+                    thisSquare.hasBed = true
+                    thisSquare.changeColor(ColorData.selected)
                     Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -273,22 +276,22 @@ fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, te
     }
     else  //if in editing
     {
-        if (allTiles[buttonID].bedID == bedEdit[1])     //remove if tile is in bed
+        if (thisSquare.bedID == bedEdit[1])     //remove if tile is in bed
         {
-            bedList[bedEdit[1]].tilesInBed.remove(buttonID + 10000)
-            allTiles[buttonID].bedID = 0
-            allTiles[buttonID].hasBed = false
-            button.setBackgroundColor(Color.WHITE)
+            bedList[bedEdit[1]].tilesInBed.remove(button.id)
+            thisSquare.bedID = 0
+            thisSquare.hasBed = false
+            thisSquare.changeColor(ColorData.deselected)
             Toast.makeText(context, "Removed " + button.id + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
         }
-        else if (allTiles[buttonID].bedID == 0)                                    //add new tiles to bed
+        else if (thisSquare.bedID == 0)                                    //add new tiles to bed
         {
             if (isTileAdjacent(button, bedList[bedEdit[1]].tilesInBed, allTiles))
             {
-                bedList[bedEdit[1]].tilesInBed.add(buttonID + 10000)
-                allTiles[buttonID].bedID = bedEdit[1]
-                allTiles[buttonID].hasBed = true
-                button.setBackgroundColor(Color.BLUE)
+                bedList[bedEdit[1]].tilesInBed.add(button.id)
+                thisSquare.bedID = bedEdit[1]
+                thisSquare.hasBed = true
+                thisSquare.changeColor(ColorData.selected)
                 Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
             }
         }
@@ -402,6 +405,12 @@ data class Square (val squareId: Int)        //object containing tile informatio
     var hasBed: Boolean = false
     var angle: Double? = null
     var distance: Double? = null
+    var button: Button? = null
+    var color:Color? = null
+
+    fun changeColor(newColor: Int){
+        button!!.setBackgroundColor(newColor)
+    }
 }
 
 data class Bed (val bedID: Int)
