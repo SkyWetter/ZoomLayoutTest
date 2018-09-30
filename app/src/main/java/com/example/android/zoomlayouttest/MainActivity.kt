@@ -77,28 +77,28 @@ import kotlin.math.*
 
 
 class MainActivity : AppCompatActivity() {
-companion object {
-    var editMode = 0
-}
+    companion object {
+        var editMode = 0
+    }
+
     val squareList = mutableListOf<String>()
     var allTiles = mutableListOf<Square>()       //full list of all Tile objects
 
     var tempBed = mutableListOf<Int>()
     var bedList = mutableListOf<Bed>()
 
-    var turretSquare : Square? = null
+    var turretSquare: Square? = null
 
 
     var buttonsPerRow = 9
     var bedCount = intArrayOf(1)
-    var bedEdit = intArrayOf(0,0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
+    var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val gardenBedView = findViewById<ZoomLayout>(R.id.zoomLayout)  // zoom
 
         val constraintSet = ConstraintSet()    //Creates a new constraint set variable
         constraintSet.clone(buttonContainer)  //Clones the buttonContainer constraint layout settings
@@ -118,38 +118,37 @@ companion object {
         //buttons per row parameter in gridCreate must be odd
         gridCreate(50, 2, buttonsPerRow, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed, bedEdit, bedList)
 
-        turretSquare = allTiles[((buttonsPerRow*buttonsPerRow) -1 )/2]
+        turretSquare = allTiles[((buttonsPerRow * buttonsPerRow) - 1) / 2]
 
-        getAngleDistanceAll(allTiles,turretSquare!!)
+        getAngleDistanceAll(allTiles, turretSquare!!)
 
-    // Test code for getAngleDistanceAll function
-        for(square in allTiles.indices){
-            Log.i("AngleDis","SquareId: " + allTiles[square].squareId.toString() + " Angle: " + allTiles[square].angle.toString()+ " Distance: " + allTiles[square].distance.toString() )
+        // Test code for getAngleDistanceAll function
+        for (square in allTiles.indices) {
+            Log.i("AngleDis", "SquareId: " + allTiles[square].squareId.toString() + " Angle: " + allTiles[square].angle.toString() + " Distance: " + allTiles[square].distance.toString())
         }
 
         println("coolcool")
 
         initializeButtons(this@MainActivity, doneButton, editButton, bedList, tempBed, bedCount, allTiles, rvBeds, rvBedList, bedEdit)
     }
-}
 
+}
 //GRID CREATE
 /* Function for populating a list of all squares in garden grid */
 
 //Takes a button size (how large each individual button is), margins between each button, buttons per row (grid is always square)
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
 
-fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constraintSet : ConstraintSet, constraintLayout: ConstraintLayout,
-               context : Context, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>)
-{
+    fun gridCreate(buttonSize: Int, buttonMargin: Int, buttonsPerRow: Int, constraintSet: ConstraintSet, constraintLayout: ConstraintLayout,
+                   context: Context, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>) {
 
-    var previousButton = Button(context)            //Tracks the previous button created
-    var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
-    var idNumber = 10000                           //id#, increments with each created button
+        var previousButton = Button(context)            //Tracks the previous button created
+        var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
+        var idNumber = 10000                           //id#, increments with each created button
 
-    if((buttonsPerRow % 2) !=0)
-    {   for(row in 0..(buttonsPerRow - 1))             //For this given row
-        {
+        if ((buttonsPerRow % 2) != 0) {
+            for (row in 0..(buttonsPerRow - 1))             //For this given row
+            {
 
                 for (i in 0..(buttonsPerRow - 1))      //And this given square
                 {
@@ -178,10 +177,7 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
                             constraintSet.setMargin(button.id, ConstraintSet.TOP, 0)
                             constraintSet.setMargin(button.id, ConstraintSet.LEFT, 0)
 
-                        }
-
-                        else
-                        {
+                        } else {
                             constraintSet.connect(button.id, ConstraintSet.LEFT, constraintLayout.id, ConstraintSet.LEFT, buttonMargin)         //SETS CONSTRAINTS
                             constraintSet.connect(button.id, ConstraintSet.TOP, previousRowLeadButton.id, ConstraintSet.BOTTOM, buttonMargin)
                             constraintSet.setMargin(button.id, ConstraintSet.LEFT, 0)
@@ -189,263 +185,243 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
 
                         previousRowLeadButton = button
 
+                    } else {
+
+                        constraintSet.connect(button.id, ConstraintSet.LEFT, previousButton.id, ConstraintSet.RIGHT, buttonMargin)          //SETS CONSTRAINTS
+                        constraintSet.connect(button.id, ConstraintSet.BASELINE, previousButton.id, ConstraintSet.BASELINE, buttonMargin)
+                        constraintSet.setMargin(button.id, ConstraintSet.TOP, 0)
+
                     }
 
-                    else
+
+                    constraintSet.constrainWidth(button.id, buttonSize)                 //Sets size of created button
+                    constraintSet.constrainHeight(button.id, buttonSize)
+
+                    var tempNum = (buttonsPerRow - 1) / 2
+
+                    if (i == tempNum && row == tempNum) {
+                        tempTile.changeColor(ColorData.turret)
+                        allTiles[((buttonsPerRow * buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
+                    } else {
+                        tempTile.changeColor(ColorData.deselected)                            //Sets color (To be replaced with final button styling)
+                    }
+
+                    constraintLayout.addView(button)                                    //Add button into Constraint Layout view
+                    constraintSet.applyTo(constraintLayout)                             //Apply constraint styling
+
+                    button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                     {
 
-                            constraintSet.connect(button.id, ConstraintSet.LEFT, previousButton.id, ConstraintSet.RIGHT, buttonMargin)          //SETS CONSTRAINTS
-                            constraintSet.connect(button.id, ConstraintSet.BASELINE, previousButton.id, ConstraintSet.BASELINE, buttonMargin)
-                            constraintSet.setMargin(button.id, ConstraintSet.TOP, 0)
-
+                        buildBed(context, button, allTiles, tempBed, bedEdit, bedList)                         //add/remove tiles from bed when clicked
                     }
 
-
-                        constraintSet.constrainWidth(button.id, buttonSize)                 //Sets size of created button
-                        constraintSet.constrainHeight(button.id, buttonSize)
-
-                        var tempNum = (buttonsPerRow - 1) / 2
-
-                        if(i == tempNum && row == tempNum)
-                        {
-                            tempTile.changeColor(ColorData.turret)
-                            allTiles[((buttonsPerRow*buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
-                        }
-                        else
-                        {
-                            tempTile.changeColor(ColorData.deselected)                            //Sets color (To be replaced with final button styling)
-                        }
-
-                        constraintLayout.addView(button)                                    //Add button into Constraint Layout view
-                        constraintSet.applyTo(constraintLayout)                             //Apply constraint styling
-
-                        button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
-                        {
-
-                                buildBed(context, button, allTiles, tempBed, bedEdit, bedList)                         //add/remove tiles from bed when clicked
-                        }
-
-                        previousButton = button
+                    previousButton = button
                 }
+            }
+
+        } else {
+            Log.i("ERROR!", "You can't have gridCreate buttonsPerRow == an even number")
+        }
+    }
+
+    fun initializeButtons(context: Context, doneButton: Button, editButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray,
+                          allTiles: MutableList<Square>, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray) {
+        doneButton.setOnClickListener()
+        {
+            doneBed(context, bedList, tempBed, bedCount, allTiles, rvBeds, rvBedList, bedEdit)
         }
 
-    } else{
-        Log.i("ERROR!","You can't have gridCreate buttonsPerRow == an even number")
-    }
-}
-
-fun initializeButtons(context: Context, doneButton: Button, editButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray,
-                      allTiles: MutableList<Square>, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray)
-{
-    doneButton.setOnClickListener()
-    {
-        doneBed(context, bedList, tempBed, bedCount, allTiles, rvBeds, rvBedList, bedEdit)
-    }
-
-    editButton.setOnClickListener()
-    {
-        editBed(bedEdit)
-    }
-
-    //space for further buttons (setting, bluetooth, etc)
-}
-
-fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed> )
-{
-
-    val thisSquare = allTiles[button.id - 10000]
-
-    if(bedEdit[0] == 0)     //if not in editing
-    {
-        if (thisSquare.bedID == 0)          //check if tile is currently in a bed
+        editButton.setOnClickListener()
         {
-            if (thisSquare.hasBed == true)    //'unselect' a selected tile from the new bed
+            editBed(bedEdit)
+        }
+
+        //space for further buttons (setting, bluetooth, etc)
+    }
+
+    fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>) {
+
+        val thisSquare = allTiles[button.id - 10000]
+
+        if (bedEdit[0] == 0)     //if not in editing
+        {
+            if (thisSquare.bedID == 0)          //check if tile is currently in a bed
             {
-                tempBed.remove(button.id)
+                if (thisSquare.hasBed == true)    //'unselect' a selected tile from the new bed
+                {
+                    tempBed.remove(button.id)
+                    thisSquare.hasBed = false
+                    thisSquare.changeColor(ColorData.deselected)
+                    Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
+                } else                                     //select tile for the new bed
+                {
+                    if (isTileAdjacent(button, tempBed, allTiles)) {
+                        tempBed.add(button.id)
+                        thisSquare.hasBed = true
+                        thisSquare.changeColor(ColorData.selected)
+                        Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        } else  //if in editing
+        {
+            if (thisSquare.bedID == bedEdit[1])     //remove if tile is in bed
+            {
+                bedList[bedEdit[1]].tilesInBed.remove(button.id)
+                thisSquare.bedID = 0
                 thisSquare.hasBed = false
                 thisSquare.changeColor(ColorData.deselected)
-                Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
-            }
-            else                                     //select tile for the new bed
+                Toast.makeText(context, "Removed " + button.id + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+            } else if (thisSquare.bedID == 0)                                    //add new tiles to bed
             {
-                if (isTileAdjacent(button, tempBed, allTiles))
-                {
-                    tempBed.add(button.id)
+                if (isTileAdjacent(button, bedList[bedEdit[1]].tilesInBed, allTiles)) {
+                    bedList[bedEdit[1]].tilesInBed.add(button.id)
+                    thisSquare.bedID = bedEdit[1]
                     thisSquare.hasBed = true
                     thisSquare.changeColor(ColorData.selected)
-                    Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
-    else  //if in editing
-    {
-        if (thisSquare.bedID == bedEdit[1])     //remove if tile is in bed
+
+    fun editBed(bedEdit: IntArray) {
+        val bedToEdit = 1   //figure out for to set this via clicking card in RV
+
+        bedEdit[0] = 1      //bool to toggle editing mode
+        bedEdit[1] = bedToEdit      //bedID that is being edited
+        editMode = 1
+
+    }
+
+    fun isTileAdjacent(button: Button, bedTiles: MutableList<Int>, allTiles: MutableList<Square>): Boolean {
+        var tileIsAdjacent = false
+
+        var xBed = IntArray(bedTiles.size)      //x & y for each tile in bed
+        var yBed = IntArray(bedTiles.size)
+
+        val xButton = allTiles[button.id - 10000].column       //x & y for tile selected
+        val yButton = allTiles[button.id - 10000].row
+
+        var xPermitted = IntArray(bedTiles.size * 4)      //array of permitted tile positions
+        var yPermitted = IntArray(bedTiles.size * 4)
+
+        if (bedTiles.isEmpty()) //allow any tile for first selection of new bed
         {
-            bedList[bedEdit[1]].tilesInBed.remove(button.id)
-            thisSquare.bedID = 0
-            thisSquare.hasBed = false
-            thisSquare.changeColor(ColorData.deselected)
-            Toast.makeText(context, "Removed " + button.id + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+            tileIsAdjacent = true
         }
-        else if (thisSquare.bedID == 0)                                    //add new tiles to bed
-        {
-            if (isTileAdjacent(button, bedList[bedEdit[1]].tilesInBed, allTiles))
+
+        if (tileIsAdjacent == false) {
+            for (i in 0..bedTiles.size - 1)     //parse the x&y coordinates from the bed
             {
-                bedList[bedEdit[1]].tilesInBed.add(button.id)
-                thisSquare.bedID = bedEdit[1]
-                thisSquare.hasBed = true
-                thisSquare.changeColor(ColorData.selected)
-                Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+                xBed[i] = allTiles[bedTiles[i] - 10000].column
+                yBed[i] = allTiles[bedTiles[i] - 10000].row
+            }
+
+            for (i in 0..bedTiles.size * 4 - 1 step 4)        //create list of permitted positions
+            {
+                xPermitted[i] = xBed[i / 4] - 1
+                xPermitted[i + 1] = xBed[i / 4]
+                xPermitted[i + 2] = xBed[i / 4]
+                xPermitted[i + 3] = xBed[i / 4] + 1
+
+                yPermitted[i] = yBed[i / 4]
+                yPermitted[i + 1] = yBed[i / 4] - 1
+                yPermitted[i + 2] = yBed[i / 4] + 1
+                yPermitted[i + 3] = yBed[i / 4]
+            }
+
+            for (i in 0..bedTiles.size * 4 - 1)        //check button x&y against permitted x&y
+            {
+                if (xButton == xPermitted[i] && yButton == yPermitted[i]) {
+                    tileIsAdjacent = true
+
+                }
+                if (tileIsAdjacent) {
+                    break
+                }
             }
         }
-    }
-}
 
-fun editBed(bedEdit: IntArray)
-{
-    val bedToEdit = 1   //figure out for to set this via clicking card in RV
-
-    bedEdit[0] = 1      //bool to toggle editing mode
-    bedEdit[1] = bedToEdit      //bedID that is being edited
-    editMode = 1
-
-}
-
-fun isTileAdjacent(button: Button, bedTiles: MutableList<Int>, allTiles: MutableList<Square>): Boolean
-{
-    var tileIsAdjacent = false
-
-    var xBed = IntArray(bedTiles.size)      //x & y for each tile in bed
-    var yBed = IntArray(bedTiles.size)
-
-    val xButton = allTiles[button.id - 10000].column       //x & y for tile selected
-    val yButton = allTiles[button.id - 10000].row
-
-    var xPermitted = IntArray(bedTiles.size*4)      //array of permitted tile positions
-    var yPermitted = IntArray(bedTiles.size*4)
-
-    if(bedTiles.isEmpty()) //allow any tile for first selection of new bed
-    {
-        tileIsAdjacent = true
+        return tileIsAdjacent
     }
 
-    if(tileIsAdjacent == false)
-    {
-        for (i in 0..bedTiles.size - 1)     //parse the x&y coordinates from the bed
-        {
-            xBed[i] = allTiles[bedTiles[i] - 10000].column
-            yBed[i] = allTiles[bedTiles[i] - 10000].row
-        }
+    //adds numbered cards to recyclerview for each bed
+    fun addBedToRV(rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedNum: Int) {
+        rvBeds.add(rvBed("Bed #" + bedNum))
 
-        for (i in 0..bedTiles.size  * 4 - 1 step 4)        //create list of permitted positions
-        {
-            xPermitted[i] = xBed[i / 4] - 1
-            xPermitted[i + 1] = xBed[i / 4]
-            xPermitted[i + 2] = xBed[i / 4]
-            xPermitted[i + 3] = xBed[i / 4] + 1
+        val adapter = CustomAdapter(rvBeds)
 
-            yPermitted[i] = yBed[i / 4]
-            yPermitted[i + 1] = yBed[i / 4] - 1
-            yPermitted[i + 2] = yBed[i / 4] + 1
-            yPermitted[i + 3] = yBed[i / 4]
-        }
+        rvBedList.adapter = adapter
+    }
 
-        for (i in 0..bedTiles.size * 4 - 1)        //check button x&y against permitted x&y
-        {
-            if (xButton == xPermitted[i] && yButton == yPermitted[i]) {
-                tileIsAdjacent = true
+    //creates bed object, adds completed bed to list, sets stage for next bed
+    fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allTiles: MutableList<Square>,
+                rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray) {
+        if (tempBed.isNotEmpty() && bedEdit[0] == 0) {
+            addBedToRV(rvBeds, rvBedList, bedCount[0])
 
+            var finalBed = Bed(bedCount[0])     //contains final tile IDs
+            ColorData.newRandomBedColor()
+            for (i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
+            {
+                allTiles[tempBed[i] - 10000].bedID = bedCount[0]
+
+                allTiles[tempBed[i]-10000].changeColor(ColorData.nextBedColor!!)
+                finalBed.tilesInBed.add(tempBed[i])
             }
-            if (tileIsAdjacent) {
-                break
-            }
+
+            bedList.add(finalBed)               //add completed Bed to master list and set up for the next
+            tempBed.clear()
+            Toast.makeText(context, "Bed #" + bedCount[0] + " created", Toast.LENGTH_SHORT).show()
+            bedCount[0]++
+        } else {
+            bedEdit[0] = 0      //reset editing bool
         }
     }
 
-    return tileIsAdjacent
-}
-
-//adds numbered cards to recyclerview for each bed
-fun addBedToRV(rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedNum: Int )
-{
-    rvBeds.add(rvBed("Bed #" + bedNum))
-
-    val adapter = CustomAdapter(rvBeds)
-
-    rvBedList.adapter = adapter
-}
-
-//creates bed object, adds completed bed to list, sets stage for next bed
-fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allTiles: MutableList<Square>,
-            rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray)
-{
-    if (tempBed.isNotEmpty() && bedEdit[0] == 0)
+    data class Square(val squareId: Int)        //object containing tile information
     {
-        addBedToRV(rvBeds, rvBedList, bedCount[0])
+        var row: Int = 0
+        var column: Int = 0
+        var bedID: Int = 0
+        var hasBed: Boolean = false
+        var angle: Double? = null
+        var distance: Double? = null
+        var button: Button? = null
+        var color: Color? = null
 
-        var finalBed = Bed(bedCount[0])     //contains final tile IDs
-
-        for(i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
-        {
-            allTiles[tempBed[i] - 10000].bedID = bedCount[0]
-            finalBed.tilesInBed.add(tempBed[i])
+        fun changeColor(newColor: Int) {
+            button!!.setBackgroundColor(newColor)
         }
-
-        bedList.add(finalBed)               //add completed Bed to master list and set up for the next
-        tempBed.clear()
-        Toast.makeText(context, "Bed #" + bedCount[0] + " created", Toast.LENGTH_SHORT).show()
-        bedCount[0]++
     }
-    else
-    {
-        bedEdit[0] = 0      //reset editing bool
+
+    data class Bed(val bedID: Int) {
+        var tilesInBed = mutableListOf<Int>()
+        //other variables
     }
-}
-
-data class Square (val squareId: Int)        //object containing tile information
-{
-    var row: Int = 0
-    var column: Int = 0
-    var bedID: Int = 0
-    var hasBed: Boolean = false
-    var angle: Double? = null
-    var distance: Double? = null
-    var button: Button? = null
-    var color:Color? = null
-
-    fun changeColor(newColor: Int){
-        button!!.setBackgroundColor(newColor)
-    }
-}
-
-data class Bed (val bedID: Int)
-{
-    var tilesInBed = mutableListOf<Int>()
-    //other variables
-}
 
 
 /* Angle and Distance Function
     Takes a target square and a central turret square
  */
 
-private fun getAngleDistanceAll(allTiles: MutableList<Square>,turretSquare: Square){
-    for(square in allTiles.indices){
-        getAngleDistance(allTiles[square],turretSquare)
+    private fun getAngleDistanceAll(allTiles: MutableList<Square>, turretSquare: Square) {
+        for (square in allTiles.indices) {
+            getAngleDistance(allTiles[square], turretSquare)
+        }
     }
-}
 
 
-private fun getAngleDistance(targetSquare:Square, turretSquare:Square) {
+    private fun getAngleDistance(targetSquare: Square, turretSquare: Square) {
 
 
-    var x = (targetSquare.column - turretSquare.column)
-    var y = (targetSquare.row - turretSquare.column)
-    val squaredCoords = (x * x) + (y * y)
-    var quadrant: Int? = null
+        var x = (targetSquare.column - turretSquare.column)
+        var y = (targetSquare.row - turretSquare.column)
+        val squaredCoords = (x * x) + (y * y)
+        var quadrant: Int? = null
 
-    targetSquare.distance = sqrt(squaredCoords.toDouble())
+        targetSquare.distance = sqrt(squaredCoords.toDouble())
 /*
     Log.i("xy", "square" + targetSquare.squareId)
     Log.i("xy", "tS: " + targetSquare.column + " " + targetSquare.row)
@@ -453,54 +429,55 @@ private fun getAngleDistance(targetSquare:Square, turretSquare:Square) {
     Log.i("xy", "coords: " + x + " " + y)
 */
 
-    if (x != 0 && y != 0) {
+        if (x != 0 && y != 0) {
 
-        if (x.sign == -1) {
-            if (y.sign == -1) {
-                quadrant = 4
+            if (x.sign == -1) {
+                if (y.sign == -1) {
+                    quadrant = 4
+                } else {
+                    quadrant = 3
+                }
             } else {
-                quadrant = 3
+                if (y.sign == -1) {
+                    quadrant = 1
+                } else {
+                    quadrant = 2
+                }
             }
+
         } else {
-            if (y.sign == -1) {
-                quadrant = 1
+
+            quadrant = 0
+
+            if (x == 0 && y == 0) {
+                targetSquare.angle = Double.NaN
+            } else if (x == 0) {
+                if (y.sign == -1) {
+                    targetSquare.angle = 0.0
+                } else {
+                    targetSquare.angle = 180.0
+                }
             } else {
-                quadrant = 2
+                if (x.sign == -1) {
+                    targetSquare.angle = 270.0
+                } else {
+                    targetSquare.angle = 90.0
+                }
+
             }
         }
+        //  Log.i("quadrant", "SquareId: " + targetSquare.squareId.toString() + " Quad: " + quadrant.toString())
+        val temp: Double = (abs(x).toDouble() / abs(y).toDouble())
 
-    } else {
-
-        quadrant = 0
-
-        if (x == 0 && y == 0) {
-            targetSquare.angle = Double.NaN
-        } else if (x == 0) {
-            if (y.sign == -1) {
-                targetSquare.angle = 0.0
-            } else {
-                targetSquare.angle = 180.0
-            }
-        } else {
-            if (x.sign == -1) { targetSquare.angle = 270.0
-            } else {
-                targetSquare.angle = 90.0
-            }
+        if (quadrant == 1) {
+            targetSquare.angle = (atan(temp) * 180) / PI
+        } else if (quadrant == 2) {
+            targetSquare.angle = 180 - ((atan(temp) * 180) / PI)
+        } else if (quadrant == 3) {
+            targetSquare.angle = 180 + (atan(temp) * 180) / PI
+        } else if (quadrant == 4) {
+            targetSquare.angle = 360 - (atan(temp) * 180) / PI
+        } else {// Empty for squares at perp/parallel angles
 
         }
     }
-    //  Log.i("quadrant", "SquareId: " + targetSquare.squareId.toString() + " Quad: " + quadrant.toString())
-    val temp: Double = (abs(x).toDouble() / abs(y).toDouble())
-
-    if (quadrant == 1) {
-        targetSquare.angle = (atan(temp) * 180) / PI
-    } else if (quadrant == 2) {
-        targetSquare.angle = 180 - ((atan(temp) * 180) / PI)
-    } else if (quadrant == 3) {
-        targetSquare.angle = 180 + (atan(temp) * 180) / PI
-    } else if (quadrant == 4) {
-        targetSquare.angle = 360 - (atan(temp) * 180) / PI
-    } else {// Empty for squares at perp/parallel angles
-
-    }
-}

@@ -19,26 +19,29 @@ class ColorData{
         val adjacent = Color.argb(255,0,0,0)
         val turret = Color.argb(255,255,0,0)
         val listOfColors = mutableListOf(deselected, selected, adjacent,turret)
-
+        var nextBedColor : Int? = null
         /**
          * random bed color generator -- simplified version, could be replaced with hardcoded colors
          */
 
-        fun randomBedColor():Int{
+
+
+        fun newRandomBedColor(){
             var newColor : Int? = null
 
             while(newColor == null || listOfColors.contains(newColor)){
 
-                var a = (0..255).shuffled().first()
-                var r = (0..255).shuffled().first()
-                var g = (0..255).shuffled().first()
-                var b = (0..255).shuffled().first()
+                var a = (34..255).shuffled().first()
+                var r = (34..255).shuffled().first()
+                var g = (34..255).shuffled().first()
+                var b = (34..255).shuffled().first()
 
                 newColor = Color.argb(a,r,b,g)
 
             }
             listOfColors.add(newColor)
-            return newColor
+            nextBedColor = newColor
+
         }
     }
 
