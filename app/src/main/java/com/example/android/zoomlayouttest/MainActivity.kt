@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
     var buttonsPerRow = 9
     var bedCount = intArrayOf(1)
-    var bedEdit = intArrayOf(0,0)   //first is "boolean" for editing mode, second is bedID to be edited
+    var bedEdit = intArrayOf(0,0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -258,10 +258,13 @@ fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, te
             }
             else                                     //select tile for the new bed
             {
-                tempBed.add(buttonID + 10000)
-                allTiles[buttonID].hasBed = true
-                button.setBackgroundColor(Color.BLUE)
-                Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+                if (isTileAdjacent(button, tempBed, allTiles))
+                {
+                    tempBed.add(buttonID + 10000)
+                    allTiles[buttonID].hasBed = true
+                    button.setBackgroundColor(Color.BLUE)
+                    Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -277,11 +280,14 @@ fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, te
         }
         else if (allTiles[buttonID].bedID == 0)                                    //add new tiles to bed
         {
-            bedList[bedEdit[1]].tilesInBed.add(buttonID + 10000)
-            allTiles[buttonID].bedID = bedEdit[1]
-            allTiles[buttonID].hasBed = true
-            button.setBackgroundColor(Color.BLUE)
-            Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+            if (isTileAdjacent(button, bedList[bedEdit[1]].tilesInBed, allTiles))
+            {
+                bedList[bedEdit[1]].tilesInBed.add(buttonID + 10000)
+                allTiles[buttonID].bedID = bedEdit[1]
+                allTiles[buttonID].hasBed = true
+                button.setBackgroundColor(Color.BLUE)
+                Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
@@ -293,6 +299,59 @@ fun editBed(bedEdit: IntArray)
     bedEdit[0] = 1      //bool to toggle editing mode
     bedEdit[1] = bedToEdit      //bedID that is being edited
 
+}
+
+fun isTileAdjacent(button: Button, bedTiles: MutableList<Int>, allTiles: MutableList<Square>): Boolean
+{
+    var tileIsAdjacent = false
+
+    var xBed = IntArray(bedTiles.size)      //x & y for each tile in bed
+    var yBed = IntArray(bedTiles.size)
+
+    val xButton = allTiles[button.id - 10000].column       //x & y for tile selected
+    val yButton = allTiles[button.id - 10000].row
+
+    var xPermitted = IntArray(bedTiles.size*4)      //array of permitted tile positions
+    var yPermitted = IntArray(bedTiles.size*4)
+
+    if(bedTiles.isEmpty()) //allow any tile for first selection of new bed
+    {
+        tileIsAdjacent = true
+    }
+
+    if(tileIsAdjacent == false)
+    {
+        for (i in 0..bedTiles.size - 1)     //parse the x&y coordinates from the bed
+        {
+            xBed[i] = allTiles[bedTiles[i] - 10000].column
+            yBed[i] = allTiles[bedTiles[i] - 10000].row
+        }
+
+        for (i in 0..bedTiles.size  * 4 - 1 step 4)        //create list of permitted positions
+        {
+            xPermitted[i] = xBed[i] - 1
+            xPermitted[i + 1] = xBed[i]
+            xPermitted[i + 2] = xBed[i]
+            xPermitted[i + 3] = xBed[i] + 1
+
+            yPermitted[i] = yBed[i]
+            yPermitted[i + 1] = yBed[i] - 1
+            yPermitted[i + 2] = yBed[i] + 1
+            yPermitted[i + 3] = yBed[i]
+        }
+
+        for (i in 0..bedTiles.size * 4 - 1)        //check button x&y against permitted x&y
+        {
+            if (xButton == xPermitted[i] && yButton == yPermitted[i]) {
+                tileIsAdjacent = true
+            }
+            if (tileIsAdjacent) {
+                break
+            }
+        }
+    }
+
+    return tileIsAdjacent
 }
 
 //adds numbered cards to recyclerview for each bed
