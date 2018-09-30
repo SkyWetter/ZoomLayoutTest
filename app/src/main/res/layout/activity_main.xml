@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topText"
+        app:layout_constraintTop_toBottomOf="@+id/topBar"
         app:maxZoom="3.0"
         app:maxZoomType="zoom"
         app:minZoom="1.0"
@@ -49,19 +49,21 @@
         </android.support.constraint.ConstraintLayout>
 
     </com.otaliastudios.zoom.ZoomLayout>
-
-    <TextView
-
-        android:id="@+id/topText"
-        android:layout_width="0dp"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="#54f9ae"
-        android:gravity="center"
-        android:text="This is a text view box in place of our menu bar"
         app:layout_constraintBottom_toTopOf="@+id/zoomLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center"
+
+        >
+
+    </android.support.constraint.ConstraintLayout>
+
 
     <TextView
         android:id="@+id/bottomText"

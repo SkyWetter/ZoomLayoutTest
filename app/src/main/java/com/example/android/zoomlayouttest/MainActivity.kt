@@ -353,16 +353,18 @@ class MainActivity : AppCompatActivity() {
         val adapter = CustomAdapter(rvBeds)
 
         rvBedList.adapter = adapter
+        rvBedList.setBackgroundColor(ColorData.nextBedColor!!)
     }
 
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allTiles: MutableList<Square>,
                 rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray) {
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {
+            ColorData.newRandomBedColor()
             addBedToRV(rvBeds, rvBedList, bedCount[0])
 
             var finalBed = Bed(bedCount[0])     //contains final tile IDs
-            ColorData.newRandomBedColor()
+
             for (i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
             {
                 allTiles[tempBed[i] - 10000].bedID = bedCount[0]
