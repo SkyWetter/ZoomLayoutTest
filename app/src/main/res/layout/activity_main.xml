@@ -51,6 +51,7 @@
     </com.otaliastudios.zoom.ZoomLayout>
 
     <TextView
+
         android:id="@+id/topText"
         android:layout_width="0dp"
         android:layout_height="80dp"
