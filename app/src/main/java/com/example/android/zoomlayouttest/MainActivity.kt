@@ -265,7 +265,7 @@ fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, te
             }
         }
     }
-    else    //if in editing
+    else  //if in editing
     {
         if (allTiles[buttonID].bedID == bedEdit[1])     //remove if tile is in bed
         {
@@ -275,7 +275,7 @@ fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, te
             button.setBackgroundColor(Color.WHITE)
             Toast.makeText(context, "Removed " + button.id + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
         }
-        else                                     //add new tiles to bed
+        else if (allTiles[buttonID].bedID == 0)                                    //add new tiles to bed
         {
             bedList[bedEdit[1]].tilesInBed.add(buttonID + 10000)
             allTiles[buttonID].bedID = bedEdit[1]
@@ -283,7 +283,6 @@ fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, te
             button.setBackgroundColor(Color.BLUE)
             Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
         }
-
     }
 }
 
