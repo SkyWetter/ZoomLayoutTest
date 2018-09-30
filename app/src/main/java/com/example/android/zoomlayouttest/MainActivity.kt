@@ -69,6 +69,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.example.android.zoomlayouttest.MainActivity.Companion.editMode
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.NumberFormatException
@@ -76,7 +77,9 @@ import kotlin.math.*
 
 
 class MainActivity : AppCompatActivity() {
-
+companion object {
+    var editMode = 0
+}
     val squareList = mutableListOf<String>()
     var allTiles = mutableListOf<Square>()       //full list of all Tile objects
 
@@ -89,6 +92,7 @@ class MainActivity : AppCompatActivity() {
     var buttonsPerRow = 9
     var bedCount = intArrayOf(1)
     var bedEdit = intArrayOf(0,0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -304,6 +308,7 @@ fun editBed(bedEdit: IntArray)
 
     bedEdit[0] = 1      //bool to toggle editing mode
     bedEdit[1] = bedToEdit      //bedID that is being edited
+    editMode = 1
 
 }
 
@@ -350,6 +355,7 @@ fun isTileAdjacent(button: Button, bedTiles: MutableList<Int>, allTiles: Mutable
         {
             if (xButton == xPermitted[i] && yButton == yPermitted[i]) {
                 tileIsAdjacent = true
+
             }
             if (tileIsAdjacent) {
                 break
