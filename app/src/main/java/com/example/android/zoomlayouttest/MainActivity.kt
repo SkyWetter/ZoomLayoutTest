@@ -329,15 +329,15 @@ fun isTileAdjacent(button: Button, bedTiles: MutableList<Int>, allTiles: Mutable
 
         for (i in 0..bedTiles.size  * 4 - 1 step 4)        //create list of permitted positions
         {
-            xPermitted[i] = xBed[i] - 1
-            xPermitted[i + 1] = xBed[i]
-            xPermitted[i + 2] = xBed[i]
-            xPermitted[i + 3] = xBed[i] + 1
+            xPermitted[i] = xBed[i / 4] - 1
+            xPermitted[i + 1] = xBed[i / 4]
+            xPermitted[i + 2] = xBed[i / 4]
+            xPermitted[i + 3] = xBed[i / 4] + 1
 
-            yPermitted[i] = yBed[i]
-            yPermitted[i + 1] = yBed[i] - 1
-            yPermitted[i + 2] = yBed[i] + 1
-            yPermitted[i + 3] = yBed[i]
+            yPermitted[i] = yBed[i / 4]
+            yPermitted[i + 1] = yBed[i / 4] - 1
+            yPermitted[i + 2] = yBed[i / 4] + 1
+            yPermitted[i + 3] = yBed[i / 4]
         }
 
         for (i in 0..bedTiles.size * 4 - 1)        //check button x&y against permitted x&y
