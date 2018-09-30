@@ -71,7 +71,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.NumberFormatException
 import kotlin.math.*
 
 
@@ -133,7 +132,7 @@ class MainActivity : AppCompatActivity() {
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
 
 fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constraintSet : ConstraintSet, constraintLayout: ConstraintLayout,
-               context : Context, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>)
+               context : Context, allSquares: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>)
 {
 
     var previousButton = Button(context)            //Tracks the previous button created
@@ -147,17 +146,26 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
                 for (i in 0..(buttonsPerRow - 1))      //And this given square
                 {
 
+                    /**
+                     * Set new square parameters
+                     */
+
                     val button = Button(context)       //Create a new button
+
                     button.setId(idNumber)             //Set id based on idNumber incrementor
 
-                    var tempTile = Square(idNumber)      //create new tile object with tileID
 
-                    tempTile.column = i                 //set rows and columns
-                    tempTile.row = row
+                    var tempSquare = Square(idNumber)      //create new tile object with tileID
 
-                    allTiles.add(tempTile)              //add to master list of tiles
+                    tempSquare.column = i                 //set rows and columns
+                    tempSquare.row = row
 
-                    idNumber = idNumber + 1            //increment id number
+                    tempSquare.squareColor = ColorData.deselected
+                    tempSquare.button = button
+                    allSquares.add(tempSquare)              //add to master list of tiles
+
+
+                    idNumber += 1            //increment id number
 
                     if (i == 0)                         //If its the first square in a row
                     {
@@ -199,12 +207,12 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
 
                         if(i == tempNum && row == tempNum)
                         {
-                            button.setBackgroundColor(Color.RED)
-                            allTiles[((buttonsPerRow*buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
+                            tempSquare.changeColor(ColorData.turret)
+                            allSquares[((buttonsPerRow*buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
                         }
                         else
                         {
-                            button.setBackgroundColor(Color.WHITE)                              //Sets color (To be replaced with final button styling)
+                            tempSquare.changeColor(ColorData.deselected)                      //Sets color (To be replaced with final button styling)
                         }
 
                         constraintLayout.addView(button)                                    //Add button into Constraint Layout view
@@ -213,7 +221,7 @@ fun gridCreate(buttonSize : Int, buttonMargin : Int, buttonsPerRow: Int, constra
                         button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                         {
 
-                                buildBed(context, button, allTiles, tempBed, bedEdit, bedList)                         //add/remove tiles from bed when clicked
+                                buildBed(context, button, allSquares, tempBed, bedEdit, bedList)                         //add/remove tiles from bed when clicked
                         }
 
                         previousButton = button
@@ -241,48 +249,52 @@ fun initializeButtons(context: Context, doneButton: Button, editButton: Button, 
     //space for further buttons (setting, bluetooth, etc)
 }
 
-fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed> )
+fun buildBed(context: Context, button: Button, allSquares: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed> )
 {
     val buttonID: Int = button.id - 10000       //adjust button ID to match list position
+    val thisSquare = allSquares[button.id - 10000]
 
     if(bedEdit[0] == 0)     //if not in editing
     {
-        if (allTiles[buttonID].bedID == 0)          //check if tile is currently in a bed
+        if (thisSquare.bedID == 0)          //check if tile is currently in a bed
         {
-            if (allTiles[buttonID].hasBed == true)    //'unselect' a selected tile from the new bed
+            if (thisSquare.hasBed)    //'unselect' a selected tile from the new bed
             {
                 tempBed.remove(buttonID + 10000)
-                allTiles[buttonID].hasBed = false
-                button.setBackgroundColor(Color.WHITE)
+                thisSquare.hasBed = false
+                thisSquare.changeColor(ColorData.deselected)
                 Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
             }
             else                                     //select tile for the new bed
             {
                 tempBed.add(buttonID + 10000)
-                allTiles[buttonID].hasBed = true
-                button.setBackgroundColor(Color.BLUE)
+                thisSquare.hasBed = true
+                thisSquare.changeColor(ColorData.selected)
                 Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
             }
         }
     }
     else  //if in editing
     {
-        if (allTiles[buttonID].bedID == bedEdit[1])     //remove if tile is in bed
-        {
-            bedList[bedEdit[1]].tilesInBed.remove(buttonID + 10000)
-            allTiles[buttonID].bedID = 0
-            allTiles[buttonID].hasBed = false
-            button.setBackgroundColor(Color.WHITE)
-            Toast.makeText(context, "Removed " + button.id + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
-        }
-        else if (allTiles[buttonID].bedID == 0)                                    //add new tiles to bed
-        {
-            bedList[bedEdit[1]].tilesInBed.add(buttonID + 10000)
-            allTiles[buttonID].bedID = bedEdit[1]
-            allTiles[buttonID].hasBed = true
-            button.setBackgroundColor(Color.BLUE)
-            Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
-        }
+
+
+            if (thisSquare.bedID == bedEdit[1])     //remove if tile is in bed
+            {
+                Log.d("editBed: ","The bed")
+                bedList[bedEdit[1]].tilesInBed.remove(buttonID + 10000)
+                thisSquare.bedID = 0
+                thisSquare.hasBed = false
+                thisSquare.changeColor(ColorData.deselected)
+                Toast.makeText(context, "Removed " + button.id + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+            } else                                  //add new tiles to bed
+            {
+                bedList[bedEdit[1]].tilesInBed.add(buttonID + 10000)
+                thisSquare.bedID = bedEdit[1]
+                thisSquare.hasBed = true
+                thisSquare.changeColor(ColorData.selected)
+                Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+            }
+
     }
 }
 
@@ -332,7 +344,7 @@ fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<In
     }
 }
 
-data class Square (val squareId: Int)        //object containing tile information
+class Square (val squareId: Int)        //object containing tile information
 {
     var row: Int = 0
     var column: Int = 0
@@ -340,6 +352,14 @@ data class Square (val squareId: Int)        //object containing tile informatio
     var hasBed: Boolean = false
     var angle: Double? = null
     var distance: Double? = null
+
+    var squareColor = Color.argb(255,0,0,0)
+    var button : Button? = null
+
+    fun changeColor(newColor: Int){
+        button!!.setBackgroundColor(newColor)
+    }
+
 }
 
 data class Bed (val bedID: Int)
