@@ -281,6 +281,7 @@ fun buildBed(context: Context, button: Button, allSquares: MutableList<Square>, 
             if (thisSquare.bedID == bedEdit[1])     //remove if tile is in bed
             {
                 Log.d("editBed: ","The bed")
+                Log.d("editBed: " , bedEdit[1].toString())
                 bedList[bedEdit[1]].tilesInBed.remove(buttonID + 10000)
                 thisSquare.bedID = 0
                 thisSquare.hasBed = false
@@ -294,6 +295,7 @@ fun buildBed(context: Context, button: Button, allSquares: MutableList<Square>, 
                 thisSquare.changeColor(ColorData.selected)
                 Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
             }
+
 
     }
 }
