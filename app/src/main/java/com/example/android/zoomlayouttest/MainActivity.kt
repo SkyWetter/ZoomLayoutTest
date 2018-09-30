@@ -108,6 +108,9 @@ class MainActivity : AppCompatActivity() {
         rvBedList.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         val rvBeds = ArrayList<rvBed>()
 
+        val bedZero = Bed(0)        //load bedList[0] so bed1 can be in bedList[1] lol
+        bedList.add(bedZero)
+
         //buttons per row parameter in gridCreate must be odd
         gridCreate(50, 2, buttonsPerRow, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed, bedEdit, bedList)
 
@@ -249,7 +252,7 @@ fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, te
     {
         if (allTiles[buttonID].bedID == 0)          //check if tile is currently in a bed
         {
-            if (allTiles[buttonID].hasBed == true)    //'unselect' a selected tile from the new bed
+            if (allTiles[buttonID].hasBed)    //'unselect' a selected tile from the new bed
             {
                 tempBed.remove(buttonID + 10000)
                 allTiles[buttonID].hasBed = false
