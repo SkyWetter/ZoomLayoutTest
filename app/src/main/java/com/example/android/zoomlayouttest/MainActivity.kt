@@ -141,6 +141,14 @@ class MainActivity : AppCompatActivity() {
         var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
         var idNumber = 10000                           //id#, increments with each created button
 
+        fun getXY(column: Int, row: Int):String{
+            var xy = ""
+            if(column < 10) { xy = "0$column"} else{xy = "$column"}
+            if(row < 10) { xy += "0$row"} else{xy += "$row"}
+
+            return xy
+        }
+
         if ((buttonsPerRow % 2) != 0) {
             for (row in 0..(buttonsPerRow - 1))             //For this given row
             {
@@ -157,11 +165,12 @@ class MainActivity : AppCompatActivity() {
                     tempSquare.column = i                 //set rows and columns
                     tempSquare.row = row
                     tempSquare.button = button
-                    button.tag =
+                    button.tag = getXY(i,row)
+                    Log.d("Coords","Button id = " + button.id.toString() + " and coord = " + button.tag )
 
                     allSquares.add(tempSquare)              //add to master list of tiles
 
-                    idNumber = idNumber + 1            //increment id number
+                    idNumber += 1                       //increment id number
 
                     if (i == 0)                         //If its the first square in a row
                     {
@@ -216,34 +225,42 @@ class MainActivity : AppCompatActivity() {
             }
 
         } else {
-            Log.i("ERROR!", "You can't have gridCreate buttonsPerRow == an even number")
+            Log.i("ERROR!", "You can't have gridCreate" +
+                    " buttonsPerRow == an even number")
         }
 
-        fun getXY(column: Int, row: Int):String{
-           var xy = ""
-            if(column < 10) {
-
-           }
-            return xy
-        }
     }
 
     fun adjacentTileColor(button: Button) {
 
-        var thisSquare = allSquares[button.id - 10000]
+
+        var buttonIDnorm = button.id - 10000
+        var thisSquare = allSquares[buttonIDnorm]
+        var leftID : Square? = null
+        var rightID : Square? = null
+        var aboveID : Square? = null
+        var belowID : Square? = null
+
+        /** get adj square ids -- null if square is beyond bed bounds */
+
+        if(buttonIDnorm % buttonsPerRow == 0){ } else{ leftID = allSquares[buttonIDnorm-1]}         //Left
+        if((buttonIDnorm+1) % buttonsPerRow == 0) { } else{ rightID = allSquares[buttonIDnorm+1]}    //Right
+        if(buttonIDnorm < buttonsPerRow){} else {aboveID = allSquares[buttonIDnorm - buttonsPerRow]} //Above
+        if(buttonIDnorm > ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){} else {belowID = allSquares[buttonIDnorm + buttonsPerRow]} //Below
 
         if(!editMode){
-            if(firstSquare){
-                if(thisSquare.bedID == 0){
-                    //check if any adjacent squares are empty and set color
+            if(thisSquare.bedID == 0){
 
-                }
+
             }
-        }
-
-        fun checkAdjacentSquare(){
 
         }
+
+//        fun checkAdjacentSquares(){
+//
+//            val thisSquareCoord: String = thisSquare.button.tag.toString()
+//            val squareAbove
+//        }
     }
     fun initializeButtons(context: Context, doneButton: Button, editButton: Button, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
         doneButton.setOnClickListener()
