@@ -69,31 +69,31 @@ import android.util.Log
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
-import com.example.android.zoomlayouttest.MainActivity.Companion.editMode
-import com.otaliastudios.zoom.ZoomLayout
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.NumberFormatException
 import kotlin.math.*
 
 
 class MainActivity : AppCompatActivity() {
     companion object {
+
+        private var bedCount = intArrayOf(1)
+        private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
         private var editMode = false
+
         private var firstSquare = false
+        private var turretSquare: Square? = null
+        private var allSquares = mutableListOf<Square>()       //full list of all Tile objects
+
+        private var tempBed = mutableListOf<Int>()
+        private var bedList = mutableListOf<Bed>()
+
+        private var buttonsPerRow = 9 //<--- must be odd number
+
+        private val constraintSet = ConstraintSet()    //Creates a new constraint set variable
+
     }
 
-    val squareList = mutableListOf<String>()
-    var allTiles = mutableListOf<Square>()       //full list of all Tile objects
 
-    var tempBed = mutableListOf<Int>()
-    var bedList = mutableListOf<Bed>()
-
-    var turretSquare: Square? = null
-
-
-    var buttonsPerRow = 9
-    var bedCount = intArrayOf(1)
-    var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,11 +101,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-        val constraintSet = ConstraintSet()    //Creates a new constraint set variable
-        constraintSet.clone(buttonContainer)  //Clones the buttonContainer constraint layout settings
-        val constraintLayout = findViewById(R.id.buttonContainer) as ConstraintLayout
 
-        val doneButton = findViewById(R.id.doneButton) as Button
+        constraintSet.clone(buttonContainer)  //Clones the buttonContainer constraint layout settings
+        val constraintLayout = findViewById<ConstraintLayout>(R.id.buttonContainer)
+        val doneButton = findViewById<Button>(R.id.doneButton)
 
         //recyclerview for bedlist
         //https://youtu.be/67hthq6Y2J8
@@ -117,20 +116,20 @@ class MainActivity : AppCompatActivity() {
         bedList.add(bedZero)
 
         //buttons per row parameter in gridCreate must be odd
-        gridCreate(50, 2, buttonsPerRow, constraintSet, constraintLayout, this@MainActivity, allTiles, tempBed, bedEdit, bedList)
+        gridCreate(50, 2, buttonsPerRow, constraintSet, constraintLayout, this@MainActivity, allSquares, tempBed, bedEdit, bedList)
 
-        turretSquare = allTiles[((buttonsPerRow * buttonsPerRow) - 1) / 2]
+        turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]
 
-        getAngleDistanceAll(allTiles, turretSquare!!)
+        getAngleDistanceAll(allSquares, turretSquare!!)
 
         // Test code for getAngleDistanceAll function
-        for (square in allTiles.indices) {
-            Log.i("AngleDis", "SquareId: " + allTiles[square].squareId.toString() + " Angle: " + allTiles[square].angle.toString() + " Distance: " + allTiles[square].distance.toString())
+        for (square in allSquares.indices) {
+            Log.i("AngleDis", "SquareId: " + allSquares[square].squareId.toString() + " Angle: " + allSquares[square].angle.toString() + " Distance: " + allSquares[square].distance.toString())
         }
 
         println("coolcool")
 
-        initializeButtons(this@MainActivity, doneButton, editButton, bedList, tempBed, bedCount, allTiles, rvBeds, rvBedList, bedEdit)
+        initializeButtons(this@MainActivity, doneButton, editButton, bedList, tempBed, bedCount, allSquares, rvBeds, rvBedList, bedEdit)
     }
 
 
@@ -143,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
 
     fun gridCreate(buttonSize: Int, buttonMargin: Int, buttonsPerRow: Int, constraintSet: ConstraintSet, constraintLayout: ConstraintLayout,
-                   context: Context, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>) {
+                   context: Context, allSquares: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>) {
 
         var previousButton = Button(context)            //Tracks the previous button created
         var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
@@ -160,14 +159,14 @@ class MainActivity : AppCompatActivity() {
                     button.id = idNumber             //Set id based on idNumber incrementor
 
 
-                    var tempTile = Square(idNumber)      //create new tile object with tileID
+                    var tempSquare = Square(idNumber)      //create new tile object with tileID
 
-                    tempTile.column = i                 //set rows and columns
-                    tempTile.row = row
-                    tempTile.button = button
+                    tempSquare.column = i                 //set rows and columns
+                    tempSquare.row = row
+                    tempSquare.button = button
                     button.tag =
 
-                    allTiles.add(tempTile)              //add to master list of tiles
+                    allSquares.add(tempSquare)              //add to master list of tiles
 
                     idNumber = idNumber + 1            //increment id number
 
@@ -204,10 +203,10 @@ class MainActivity : AppCompatActivity() {
                     var tempNum = (buttonsPerRow - 1) / 2
 
                     if (i == tempNum && row == tempNum) {
-                        tempTile.changeColor(ColorData.turret)
-                        allTiles[((buttonsPerRow * buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
+                        tempSquare.changeColor(ColorData.turret)
+                        allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
                     } else {
-                        tempTile.changeColor(ColorData.deselected)                            //Sets color (To be replaced with final button styling)
+                        tempSquare.changeColor(ColorData.deselected)                            //Sets color (To be replaced with final button styling)
                     }
 
                     constraintLayout.addView(button)                                    //Add button into Constraint Layout view
@@ -216,7 +215,7 @@ class MainActivity : AppCompatActivity() {
                     button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                     {
 
-                        buildBed(context, button, allTiles, tempBed, bedEdit, bedList)                         //add/remove tiles from bed when clicked
+                        buildBed(context, button, allSquares, tempBed, bedEdit, bedList)                         //add/remove tiles from bed when clicked
                     }
 
                     previousButton = button
@@ -236,7 +235,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun adjacentTileColor(button: Button, allSquares: MutableList<Square>) {
+    fun adjacentTileColor(button: Button) {
 
         var thisSquare = allSquares[button.id - 10000]
 
@@ -254,10 +253,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
     fun initializeButtons(context: Context, doneButton: Button, editButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray,
-                          allTiles: MutableList<Square>, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray) {
+                          allSquares: MutableList<Square>, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray) {
         doneButton.setOnClickListener()
         {
-            doneBed(context, bedList, tempBed, bedCount, allTiles, rvBeds, rvBedList, bedEdit)
+            doneBed(context, bedList, tempBed, bedCount, allSquares, rvBeds, rvBedList, bedEdit)
         }
 
         editButton.setOnClickListener()
@@ -268,9 +267,9 @@ class MainActivity : AppCompatActivity() {
         //space for further buttons (setting, bluetooth, etc)
     }
 
-    fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>) {
+    fun buildBed(context: Context, button: Button, allSquares: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>) {
 
-        val thisSquare = allTiles[button.id - 10000]
+        val thisSquare = allSquares[button.id - 10000]
         if(tempBed.isEmpty()){
             firstSquare = true
         }
@@ -290,7 +289,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
                 } else                                     //select tile for the new bed
                 {
-                    if (isTileAdjacent(button, tempBed, allTiles)) {
+                    if (isSquareAdjacent(button, tempBed, allSquares)) {
                         tempBed.add(button.id)
                         thisSquare.hasBed = true
                         thisSquare.changeColor(ColorData.selected)
@@ -302,15 +301,15 @@ class MainActivity : AppCompatActivity() {
         {
             if (thisSquare.bedID == bedEdit[1])     //remove if tile is in bed
             {
-                bedList[bedEdit[1]].tilesInBed.remove(button.id)
+                bedList[bedEdit[1]].squaresInBed.remove(button.id)
                 thisSquare.bedID = 0
                 thisSquare.hasBed = false
                 thisSquare.changeColor(ColorData.deselected)
                 Toast.makeText(context, "Removed " + button.id + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
             } else if (thisSquare.bedID == 0)                                    //add new tiles to bed
             {
-                if (isTileAdjacent(button, bedList[bedEdit[1]].tilesInBed, allTiles)) {
-                    bedList[bedEdit[1]].tilesInBed.add(button.id)
+                if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed, allSquares)) {
+                    bedList[bedEdit[1]].squaresInBed.add(button.id)
                     thisSquare.bedID = bedEdit[1]
                     thisSquare.hasBed = true
                     thisSquare.changeColor(ColorData.selected)
@@ -329,31 +328,31 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun isTileAdjacent(button: Button, bedTiles: MutableList<Int>, allTiles: MutableList<Square>): Boolean {
-        var tileIsAdjacent = false
+    fun isSquareAdjacent(button: Button, bedSquares: MutableList<Int>, allSquares: MutableList<Square>): Boolean {
+        var squareIsAdjacent = false
 
-        var xBed = IntArray(bedTiles.size)      //x & y for each tile in bed
-        var yBed = IntArray(bedTiles.size)
+        var xBed = IntArray(bedSquares.size)      //x & y for each tile in bed
+        var yBed = IntArray(bedSquares.size)
 
-        val xButton = allTiles[button.id - 10000].column       //x & y for tile selected
-        val yButton = allTiles[button.id - 10000].row
+        val xButton = allSquares[button.id - 10000].column       //x & y for tile selected
+        val yButton = allSquares[button.id - 10000].row
 
-        var xPermitted = IntArray(bedTiles.size * 4)      //array of permitted tile positions
-        var yPermitted = IntArray(bedTiles.size * 4)
+        var xPermitted = IntArray(bedSquares.size * 4)      //array of permitted tile positions
+        var yPermitted = IntArray(bedSquares.size * 4)
 
-        if (bedTiles.isEmpty()) //allow any tile for first selection of new bed
+        if (bedSquares.isEmpty()) //allow any tile for first selection of new bed
         {
-            tileIsAdjacent = true
+            squareIsAdjacent = true
         }
 
-        if (tileIsAdjacent == false) {
-            for (i in 0..bedTiles.size - 1)     //parse the x&y coordinates from the bed
+        if (squareIsAdjacent == false) {
+            for (i in 0..bedSquares.size - 1)     //parse the x&y coordinates from the bed
             {
-                xBed[i] = allTiles[bedTiles[i] - 10000].column
-                yBed[i] = allTiles[bedTiles[i] - 10000].row
+                xBed[i] = allSquares[bedSquares[i] - 10000].column
+                yBed[i] = allSquares[bedSquares[i] - 10000].row
             }
 
-            for (i in 0..bedTiles.size * 4 - 1 step 4)        //create list of permitted positions
+            for (i in 0..bedSquares.size * 4 - 1 step 4)        //create list of permitted positions
             {
                 xPermitted[i] = xBed[i / 4] - 1
                 xPermitted[i + 1] = xBed[i / 4]
@@ -366,19 +365,19 @@ class MainActivity : AppCompatActivity() {
                 yPermitted[i + 3] = yBed[i / 4]
             }
 
-            for (i in 0..bedTiles.size * 4 - 1)        //check button x&y against permitted x&y
+            for (i in 0..bedSquares.size * 4 - 1)        //check button x&y against permitted x&y
             {
                 if (xButton == xPermitted[i] && yButton == yPermitted[i]) {
-                    tileIsAdjacent = true
+                    squareIsAdjacent = true
 
                 }
-                if (tileIsAdjacent) {
+                if (squareIsAdjacent) {
                     break
                 }
             }
         }
 
-        return tileIsAdjacent
+        return squareIsAdjacent
     }
 
     //adds numbered cards to recyclerview for each bed
@@ -393,7 +392,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //creates bed object, adds completed bed to list, sets stage for next bed
-    fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allTiles: MutableList<Square>,
+    fun doneBed(context: Context, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray, allSquares: MutableList<Square>,
                 rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray) {
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {
             ColorData.newRandomBedColor()
@@ -403,10 +402,10 @@ class MainActivity : AppCompatActivity() {
 
             for (i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
             {
-                allTiles[tempBed[i] - 10000].bedID = bedCount[0]
+                allSquares[tempBed[i] - 10000].bedID = bedCount[0]
 
-                allTiles[tempBed[i] - 10000].changeColor(ColorData.nextBedColor!!)
-                finalBed.tilesInBed.add(tempBed[i])
+                allSquares[tempBed[i] - 10000].changeColor(ColorData.nextBedColor!!)
+                finalBed.squaresInBed.add(tempBed[i])
             }
 
             bedList.add(finalBed)               //add completed Bed to master list and set up for the next
@@ -435,7 +434,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     data class Bed(val bedID: Int) {
-        var tilesInBed = mutableListOf<Int>()
+        var squaresInBed = mutableListOf<Int>()
         //other variables
     }
 
@@ -444,9 +443,9 @@ class MainActivity : AppCompatActivity() {
     Takes a target square and a central turret square
  */
 
-    private fun getAngleDistanceAll(allTiles: MutableList<Square>, turretSquare: Square) {
-        for (square in allTiles.indices) {
-            getAngleDistance(allTiles[square], turretSquare)
+    private fun getAngleDistanceAll(allSquares: MutableList<Square>, turretSquare: Square) {
+        for (square in allSquares.indices) {
+            getAngleDistance(allSquares[square], turretSquare)
         }
     }
 
