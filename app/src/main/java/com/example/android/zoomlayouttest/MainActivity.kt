@@ -76,6 +76,8 @@ import kotlin.math.*
 class MainActivity : AppCompatActivity() {
     companion object {
 
+        private val adjacentSquares = mutableListOf<Square>()
+
         private var bedCount = 1
         private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
         private var editMode = false
@@ -236,31 +238,28 @@ class MainActivity : AppCompatActivity() {
 
         var buttonIDnorm = button.id - 10000
         var thisSquare = allSquares[buttonIDnorm]
-        var leftID : Square? = null
-        var rightID : Square? = null
-        var aboveID : Square? = null
-        var belowID : Square? = null
+        var leftSquare : Square? = null
+        var rightSquare : Square? = null
+        var aboveSquare : Square? = null
+        var belowSquare : Square? = null
 
         /** get adj square ids -- null if square is beyond bed bounds */
 
-        if(buttonIDnorm % buttonsPerRow == 0){ } else{ leftID = allSquares[buttonIDnorm-1]}         //Left
-        if((buttonIDnorm+1) % buttonsPerRow == 0) { } else{ rightID = allSquares[buttonIDnorm+1]}    //Right
-        if(buttonIDnorm < buttonsPerRow){} else {aboveID = allSquares[buttonIDnorm - buttonsPerRow]} //Above
-        if(buttonIDnorm > ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){} else {belowID = allSquares[buttonIDnorm + buttonsPerRow]} //Below
-
-        if(!editMode){
-            if(thisSquare.bedID == 0){
+        if(buttonIDnorm % buttonsPerRow == 0){ } else{ leftSquare = allSquares[buttonIDnorm-1]}         //Left
+        if((buttonIDnorm+1) % buttonsPerRow == 0) { } else{ rightSquare = allSquares[buttonIDnorm+1]}    //Right
+        if(buttonIDnorm < buttonsPerRow){} else {aboveSquare = allSquares[buttonIDnorm - buttonsPerRow]} //Above
+        if(buttonIDnorm > ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){} else {belowSquare = allSquares[buttonIDnorm + buttonsPerRow]} //Below
 
 
-            }
+        //Create mode
+        if(bedEdit[0]==0){
+
+                if(leftSquare == null || leftSquare == turretSquare ) {}else if(!leftSquare.hasBed){leftSquare.changeColor(ColorData.adjacent)}
+                if(rightSquare == null || rightSquare == turretSquare ) {}else if(!rightSquare.hasBed){rightSquare.changeColor(ColorData.adjacent)}
+                if(belowSquare == null || belowSquare == turretSquare ) {}else if(!belowSquare.hasBed){belowSquare.changeColor(ColorData.adjacent)}
+                if(aboveSquare == null || aboveSquare == turretSquare ) {}else if(!aboveSquare.hasBed){aboveSquare.changeColor(ColorData.adjacent)}
 
         }
-
-//        fun checkAdjacentSquares(){
-//
-//            val thisSquareCoord: String = thisSquare.button.tag.toString()
-//            val squareAbove
-//        }
     }
     fun initializeButtons(context: Context, doneButton: Button, editButton: Button, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
         doneButton.setOnClickListener()
@@ -299,6 +298,7 @@ class MainActivity : AppCompatActivity() {
                 } else                                     //select tile for the new bed
                 {
                     if (isSquareAdjacent(button, tempBed)) {
+                        adjacentTileColor(thisSquare.button!!)
                         thisSquare.hasBed = true
                         thisSquare.changeColor(ColorData.selected)
                         tempBed.add(thisSquare)

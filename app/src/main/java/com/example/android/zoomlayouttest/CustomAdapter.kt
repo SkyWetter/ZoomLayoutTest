@@ -33,7 +33,7 @@ class CustomAdapter(val rvBedList: ArrayList<rvBed>) : RecyclerView.Adapter<Cust
 
         val rvbed: rvBed = rvBedList[position]
         holder?.textViewBed?.text = rvbed.name
-     //   holder?.textViewBed?.setBackgroundColor(ColorData.nextBedColor!!)
+       holder?.textViewBed?.setBackgroundColor(ColorData.nextBedColor!!)
 
 //        try{holder?.textViewBed?.setBackgroundColor(ColorData.nextBedColor!!)
 //        }catch(e: NullPointerException){
