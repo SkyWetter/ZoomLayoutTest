@@ -76,7 +76,7 @@ import kotlin.math.*
 class MainActivity : AppCompatActivity() {
     companion object {
 
-        private var bedCount = intArrayOf(1)
+        private var bedCount = 1
         private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
         private var editMode = false
 
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         private var turretSquare: Square? = null
         private var allSquares = mutableListOf<Square>()       //full list of all Tile objects
 
-        private var tempBed = mutableListOf<Int>()
+        private var tempBed = mutableListOf<Square>()
         private var bedList = mutableListOf<Bed>()
 
         private var buttonsPerRow = 9 //<--- must be odd number
@@ -127,8 +127,6 @@ class MainActivity : AppCompatActivity() {
 
         initializeButtons(this@MainActivity, doneButton, editButton,  rvBeds, rvBedList)
     }
-
-
 
 
 //GRID CREATE
@@ -277,17 +275,17 @@ class MainActivity : AppCompatActivity() {
             {
                 if (thisSquare.hasBed == true)    //'unselect' a selected tile from the new bed
                 {
-                    tempBed.remove(button.id)
                     thisSquare.hasBed = false
                     thisSquare.changeColor(ColorData.deselected)
-                    Toast.makeText(context, "Removed " + button.id + " from bed", Toast.LENGTH_SHORT).show()
+                    tempBed.remove(thisSquare)
+                    Toast.makeText(context, "Removed " + thisSquare.squareId + " from bed", Toast.LENGTH_SHORT).show()
                 } else                                     //select tile for the new bed
                 {
                     if (isSquareAdjacent(button, tempBed)) {
-                        tempBed.add(button.id)
                         thisSquare.hasBed = true
                         thisSquare.changeColor(ColorData.selected)
-                        Toast.makeText(context, "Added " + button.id + " to bed", Toast.LENGTH_SHORT).show()
+                        tempBed.add(thisSquare)
+                        Toast.makeText(context, "Added " + thisSquare.squareId + " to bed", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -295,19 +293,19 @@ class MainActivity : AppCompatActivity() {
         {
             if (thisSquare.bedID == bedEdit[1])     //remove if tile is in bed
             {
-                bedList[bedEdit[1]].squaresInBed.remove(button.id)
                 thisSquare.bedID = 0
                 thisSquare.hasBed = false
                 thisSquare.changeColor(ColorData.deselected)
-                Toast.makeText(context, "Removed " + button.id + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+                bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
+                Toast.makeText(context, "Removed " + thisSquare.squareId + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
             } else if (thisSquare.bedID == 0)                                    //add new tiles to bed
             {
                 if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed)) {
-                    bedList[bedEdit[1]].squaresInBed.add(button.id)
                     thisSquare.bedID = bedEdit[1]
                     thisSquare.hasBed = true
                     thisSquare.changeColor(ColorData.selected)
-                    Toast.makeText(context, "Added " + button.id + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+                    bedList[bedEdit[1]].squaresInBed.add(thisSquare)
+                    Toast.makeText(context, "Added " + thisSquare.squareId + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -322,7 +320,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun isSquareAdjacent(button: Button, bedSquares: MutableList<Int>): Boolean {
+    fun isSquareAdjacent(button: Button, bedSquares: MutableList<Square>): Boolean {
         var squareIsAdjacent = false
 
         var xBed = IntArray(bedSquares.size)      //x & y for each tile in bed
@@ -342,8 +340,8 @@ class MainActivity : AppCompatActivity() {
         if (squareIsAdjacent == false) {
             for (i in 0..bedSquares.size - 1)     //parse the x&y coordinates from the bed
             {
-                xBed[i] = allSquares[bedSquares[i] - 10000].column
-                yBed[i] = allSquares[bedSquares[i] - 10000].row
+                xBed[i] = allSquares[bedSquares[i].squareId - 10000].column
+                yBed[i] = allSquares[bedSquares[i].squareId - 10000].row
             }
 
             for (i in 0..bedSquares.size * 4 - 1 step 4)        //create list of permitted positions
@@ -387,24 +385,24 @@ class MainActivity : AppCompatActivity() {
 
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
-        if (tempBed.isNotEmpty() && bedEdit[0] == 0) {
+        if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
             ColorData.newRandomBedColor()
-            addBedToRV(rvBeds, rvBedList, bedCount[0])
+            addBedToRV(rvBeds, rvBedList, bedCount)
 
-            var finalBed = Bed(bedCount[0])     //contains final tile IDs
+            var finalBed = Bed(bedCount)     //contains final tile IDs
 
             for (i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
             {
-                allSquares[tempBed[i] - 10000].bedID = bedCount[0]
+                allSquares[tempBed[i].squareId - 10000].bedID = bedCount
 
-                allSquares[tempBed[i] - 10000].changeColor(ColorData.nextBedColor!!)
+                allSquares[tempBed[i].squareId - 10000].changeColor(ColorData.nextBedColor!!)
                 finalBed.squaresInBed.add(tempBed[i])
             }
 
             bedList.add(finalBed)               //add completed Bed to master list and set up for the next
             tempBed.clear()
-            Toast.makeText(context, "Bed #" + bedCount[0] + " created", Toast.LENGTH_SHORT).show()
-            bedCount[0]++
+            Toast.makeText(context, "Bed #" + bedCount + " created", Toast.LENGTH_SHORT).show()
+            bedCount++
         } else {
             bedEdit[0] = 0      //reset editing bool
         }
@@ -427,7 +425,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     data class Bed(val bedID: Int) {
-        var squaresInBed = mutableListOf<Int>()
+        var squaresInBed = mutableListOf<Square>()
         //other variables
     }
 
