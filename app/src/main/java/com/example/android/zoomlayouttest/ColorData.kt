@@ -7,6 +7,8 @@ class ColorData {
 
     /**
      * If adding a new hardcoded color in color list, make sure to also add the color to the listOfColors list
+     *
+     *
      */
 
 
@@ -21,6 +23,9 @@ class ColorData {
         val listOfColors = mutableListOf(deselected, selected, adjacent,turret)
         var nextBedColor : Int? = null
 
+
+        /** Color ranges --> Used in random color generation, keeping colors within the bounds described
+         * Color range must be added to listColorRange to be used in generation*/
         private var color1 = ColorRange(63,189,0,67,145,255)
         private var color2 = ColorRange(206,255,100,150,0,33)
         private var color3 = ColorRange(189,215,35,87,240,255)

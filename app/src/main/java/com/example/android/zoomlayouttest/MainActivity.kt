@@ -78,7 +78,8 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        var editMode = 0
+        private var editMode = false
+        private var firstSquare = false
     }
 
     val squareList = mutableListOf<String>()
@@ -132,7 +133,9 @@ class MainActivity : AppCompatActivity() {
         initializeButtons(this@MainActivity, doneButton, editButton, bedList, tempBed, bedCount, allTiles, rvBeds, rvBedList, bedEdit)
     }
 
-}
+
+
+
 //GRID CREATE
 /* Function for populating a list of all squares in garden grid */
 
@@ -154,14 +157,15 @@ class MainActivity : AppCompatActivity() {
                 {
 
                     val button = Button(context)       //Create a new button
-                    button.setId(idNumber)             //Set id based on idNumber incrementor
+                    button.id = idNumber             //Set id based on idNumber incrementor
+
 
                     var tempTile = Square(idNumber)      //create new tile object with tileID
 
                     tempTile.column = i                 //set rows and columns
                     tempTile.row = row
                     tempTile.button = button
-
+                    button.tag =
 
                     allTiles.add(tempTile)              //add to master list of tiles
 
@@ -222,8 +226,33 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.i("ERROR!", "You can't have gridCreate buttonsPerRow == an even number")
         }
+
+        fun getXY(column: Int, row: Int):String{
+           var xy = ""
+            if(column < 10) {
+
+           }
+            return xy
+        }
     }
 
+    fun adjacentTileColor(button: Button, allSquares: MutableList<Square>) {
+
+        var thisSquare = allSquares[button.id - 10000]
+
+        if(!editMode){
+            if(firstSquare){
+                if(thisSquare.bedID == 0){
+                    //check if any adjacent squares are empty and set color
+
+                }
+            }
+        }
+
+        fun checkAdjacentSquare(){
+
+        }
+    }
     fun initializeButtons(context: Context, doneButton: Button, editButton: Button, bedList: MutableList<Bed>, tempBed: MutableList<Int>, bedCount: IntArray,
                           allTiles: MutableList<Square>, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedEdit: IntArray) {
         doneButton.setOnClickListener()
@@ -242,6 +271,12 @@ class MainActivity : AppCompatActivity() {
     fun buildBed(context: Context, button: Button, allTiles: MutableList<Square>, tempBed: MutableList<Int>, bedEdit: IntArray, bedList: MutableList<Bed>) {
 
         val thisSquare = allTiles[button.id - 10000]
+        if(tempBed.isEmpty()){
+            firstSquare = true
+        }
+        else{
+            firstSquare = false
+        }
 
         if (bedEdit[0] == 0)     //if not in editing
         {
@@ -290,7 +325,7 @@ class MainActivity : AppCompatActivity() {
 
         bedEdit[0] = 1      //bool to toggle editing mode
         bedEdit[1] = bedToEdit      //bedID that is being edited
-        editMode = 1
+        editMode = true
 
     }
 
@@ -353,7 +388,8 @@ class MainActivity : AppCompatActivity() {
         val adapter = CustomAdapter(rvBeds)
 
         rvBedList.adapter = adapter
-        rvBedList.setBackgroundColor(ColorData.nextBedColor!!)
+
+
     }
 
     //creates bed object, adds completed bed to list, sets stage for next bed
@@ -369,7 +405,7 @@ class MainActivity : AppCompatActivity() {
             {
                 allTiles[tempBed[i] - 10000].bedID = bedCount[0]
 
-                allTiles[tempBed[i]-10000].changeColor(ColorData.nextBedColor!!)
+                allTiles[tempBed[i] - 10000].changeColor(ColorData.nextBedColor!!)
                 finalBed.tilesInBed.add(tempBed[i])
             }
 
@@ -483,3 +519,4 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+}
