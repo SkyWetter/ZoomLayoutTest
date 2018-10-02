@@ -70,6 +70,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 import kotlin.math.*
 
 
@@ -233,7 +234,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun adjacentTileColor(button: Button) {
+    fun adjacentSquareColorCheck(button: Button) {
 
 
         var buttonIDnorm = button.id - 10000
@@ -248,16 +249,32 @@ class MainActivity : AppCompatActivity() {
         if(buttonIDnorm % buttonsPerRow == 0){ } else{ leftSquare = allSquares[buttonIDnorm-1]}         //Left
         if((buttonIDnorm+1) % buttonsPerRow == 0) { } else{ rightSquare = allSquares[buttonIDnorm+1]}    //Right
         if(buttonIDnorm < buttonsPerRow){} else {aboveSquare = allSquares[buttonIDnorm - buttonsPerRow]} //Above
-        if(buttonIDnorm > ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){} else {belowSquare = allSquares[buttonIDnorm + buttonsPerRow]} //Below
+        if(buttonIDnorm >= ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){} else {belowSquare = allSquares[buttonIDnorm + buttonsPerRow]} //Below
 
 
         //Create mode
-        if(bedEdit[0]==0){
+        if(bedEdit[0]==0) {
 
-                if(leftSquare == null || leftSquare == turretSquare ) {}else if(!leftSquare.hasBed){leftSquare.changeColor(ColorData.adjacent)}
-                if(rightSquare == null || rightSquare == turretSquare ) {}else if(!rightSquare.hasBed){rightSquare.changeColor(ColorData.adjacent)}
-                if(belowSquare == null || belowSquare == turretSquare ) {}else if(!belowSquare.hasBed){belowSquare.changeColor(ColorData.adjacent)}
-                if(aboveSquare == null || aboveSquare == turretSquare ) {}else if(!aboveSquare.hasBed){aboveSquare.changeColor(ColorData.adjacent)}
+            if (leftSquare == null || leftSquare == turretSquare) {
+            } else if (!leftSquare.hasBed) {
+                leftSquare.changeColor(ColorData.adjacent)
+                adjacentSquares.add(leftSquare)
+            }
+            if (rightSquare == null || rightSquare == turretSquare) {
+            } else if (!rightSquare.hasBed) {
+                rightSquare.changeColor(ColorData.adjacent)
+                adjacentSquares.add(rightSquare)
+            }
+            if (belowSquare == null || belowSquare == turretSquare) {
+            } else if (!belowSquare.hasBed) {
+                belowSquare.changeColor(ColorData.adjacent)
+                adjacentSquares.add(belowSquare)
+            }
+            if (aboveSquare == null || aboveSquare == turretSquare) {
+            } else if (!aboveSquare.hasBed) {
+                aboveSquare.changeColor(ColorData.adjacent)
+                adjacentSquares.add(aboveSquare)
+            }
 
         }
     }
@@ -297,11 +314,14 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(context, "Removed " + thisSquare.squareId + " from bed", Toast.LENGTH_SHORT).show()
                 } else                                     //select tile for the new bed
                 {
-                    if (isSquareAdjacent(button, tempBed)) {
-                        adjacentTileColor(thisSquare.button!!)
+                        if (isSquareAdjacent(button, tempBed)) {
+                        adjacentSquareColorCheck(thisSquare.button!!)
                         thisSquare.hasBed = true
                         thisSquare.changeColor(ColorData.selected)
+                        adjacentSquares.removeAll(Collections.singleton(thisSquare))
                         tempBed.add(thisSquare)
+                        Log.d("tempBed","tempBed has: " + tempBed)
+                        Log.d("tempBed","adjSq has " + adjacentSquares)
                         Toast.makeText(context, "Added " + thisSquare.squareId + " to bed", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -400,8 +420,23 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     *
+     */
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
+        fun removeAdjacentSquares(){
+
+
+            for(i in adjacentSquares){
+                i.changeColor(ColorData.deselected)
+            }
+
+            adjacentSquares.clear()
+        }
+
+
+
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
             ColorData.newRandomBedColor()
             addBedToRV(rvBeds, rvBedList, bedCount)
@@ -416,13 +451,19 @@ class MainActivity : AppCompatActivity() {
                 finalBed.squaresInBed.add(tempBed[i])
             }
 
+
+
             bedList.add(finalBed)               //add completed Bed to master list and set up for the next
             tempBed.clear()
             Toast.makeText(context, "Bed #" + bedCount + " created", Toast.LENGTH_SHORT).show()
             bedCount++
+            removeAdjacentSquares()
+
         } else {
             bedEdit[0] = 0      //reset editing bool
         }
+
+
     }
 
     data class Square(val squareId: Int)        //object containing tile information
