@@ -76,6 +76,10 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
+        private const val debugMode = false  //Set debug mode (precompile)
+        private val debugMessageList = mutableListOf<String>()
+        var debugListIndex = -1
+        var debugListMaxIndex = 0
 
         private val adjacentSquares = mutableListOf<Square>()
 
@@ -91,8 +95,8 @@ class MainActivity : AppCompatActivity() {
         private var bedList = mutableListOf<Bed>()
 
         private var buttonsPerRow = 9 //<--- must be odd number
-
         private val constraintSet = ConstraintSet()    //Creates a new constraint set variable
+
 
     }
 
@@ -100,6 +104,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+/*
+        if (!debugMode) {
+            debugWindow.height = 0
+            debugWindowNext.height = 0
+            debugWindowPrev.height = 0
+        }*/
 
         constraintSet.clone(buttonContainer)  //Clones the buttonContainer constraint layout settings
         val constraintLayout = findViewById<ConstraintLayout>(R.id.buttonContainer)
@@ -114,21 +124,20 @@ class MainActivity : AppCompatActivity() {
         val bedZero = Bed(0)        //load bedList[0] so bed1 can be in bedList[1] lol
         bedList.add(bedZero)
 
-        //buttons per row parameter in gridCreate must be odd
+        debugWindowPrev.setOnClickListener { debugPrevOnClick()  }
+        debugWindowNext.setOnClickListener { debugNextOnClick() }
+
+
+
+
+
         gridCreate(50, 2, constraintLayout, this@MainActivity)
 
         turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]
 
         getAngleDistanceAll(allSquares, turretSquare!!)
 
-        // Test code for getAngleDistanceAll function
-        for (square in allSquares.indices) {
-            Log.i("AngleDis", "SquareId: " + allSquares[square].squareId.toString() + " Angle: " + allSquares[square].angle.toString() + " Distance: " + allSquares[square].distance.toString())
-        }
-
-        println("coolcool")
-
-        initializeButtons(this@MainActivity, doneButton, editButton,  rvBeds, rvBedList)
+        initializeButtons(this@MainActivity, doneButton, editButton, rvBeds, rvBedList)
     }
 
 
@@ -144,10 +153,18 @@ class MainActivity : AppCompatActivity() {
         var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
         var idNumber = 10000                           //id#, increments with each created button
 
-        fun getXY(column: Int, row: Int):String{
+        fun getXY(column: Int, row: Int): String {
             var xy = ""
-            if(column < 10) { xy = "0$column"} else{xy = "$column"}
-            if(row < 10) { xy += "0$row"} else{xy += "$row"}
+            if (column < 10) {
+                xy = "0$column"
+            } else {
+                xy = "$column"
+            }
+            if (row < 10) {
+                xy += "0$row"
+            } else {
+                xy += "$row"
+            }
 
             return xy
         }
@@ -168,8 +185,8 @@ class MainActivity : AppCompatActivity() {
                     tempSquare.column = i                 //set rows and columns
                     tempSquare.row = row
                     tempSquare.button = button
-                    button.tag = getXY(i,row)
-                    Log.d("Coords","Button id = " + button.id.toString() + " and coord = " + button.tag )
+                    button.tag = getXY(i, row)
+                    Log.d("Coords", "Button id = " + button.id.toString() + " and coord = " + button.tag)
 
                     allSquares.add(tempSquare)              //add to master list of tiles
 
@@ -239,21 +256,33 @@ class MainActivity : AppCompatActivity() {
 
         var buttonIDnorm = button.id - 10000
         var thisSquare = allSquares[buttonIDnorm]
-        var leftSquare : Square? = null
-        var rightSquare : Square? = null
-        var aboveSquare : Square? = null
-        var belowSquare : Square? = null
+        var leftSquare: Square? = null
+        var rightSquare: Square? = null
+        var aboveSquare: Square? = null
+        var belowSquare: Square? = null
 
         /** get adj square ids -- null if square is beyond bed bounds */
 
-        if(buttonIDnorm % buttonsPerRow == 0){ } else{ leftSquare = allSquares[buttonIDnorm-1]}         //Left
-        if((buttonIDnorm+1) % buttonsPerRow == 0) { } else{ rightSquare = allSquares[buttonIDnorm+1]}    //Right
-        if(buttonIDnorm < buttonsPerRow){} else {aboveSquare = allSquares[buttonIDnorm - buttonsPerRow]} //Above
-        if(buttonIDnorm >= ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){} else {belowSquare = allSquares[buttonIDnorm + buttonsPerRow]} //Below
+        if (buttonIDnorm % buttonsPerRow == 0) {
+        } else {
+            leftSquare = allSquares[buttonIDnorm - 1]
+        }         //Left
+        if ((buttonIDnorm + 1) % buttonsPerRow == 0) {
+        } else {
+            rightSquare = allSquares[buttonIDnorm + 1]
+        }    //Right
+        if (buttonIDnorm < buttonsPerRow) {
+        } else {
+            aboveSquare = allSquares[buttonIDnorm - buttonsPerRow]
+        } //Above
+        if (buttonIDnorm >= ((buttonsPerRow * buttonsPerRow) - buttonsPerRow)) {
+        } else {
+            belowSquare = allSquares[buttonIDnorm + buttonsPerRow]
+        } //Below
 
 
         //Create mode
-        if(bedEdit[0]==0) {
+        if (bedEdit[0] == 0) {
 
             if (leftSquare == null || leftSquare == turretSquare) {
             } else if (!leftSquare.hasBed) {
@@ -278,6 +307,7 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
     fun initializeButtons(context: Context, doneButton: Button, editButton: Button, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
         doneButton.setOnClickListener()
         {
@@ -295,10 +325,9 @@ class MainActivity : AppCompatActivity() {
     fun buildBed(context: Context, button: Button) {
 
         val thisSquare = allSquares[button.id - 10000]
-        if(tempBed.isEmpty()){
+        if (tempBed.isEmpty()) {
             firstSquare = true
-        }
-        else{
+        } else {
             firstSquare = false
         }
 
@@ -311,18 +340,18 @@ class MainActivity : AppCompatActivity() {
                     thisSquare.hasBed = false
                     thisSquare.changeColor(ColorData.deselected)
                     tempBed.remove(thisSquare)
-                    Toast.makeText(context, "Removed " + thisSquare.squareId + " from bed", Toast.LENGTH_SHORT).show()
+                    debugMessage("Removed " + thisSquare.squareId + " from bed")
                 } else                                     //select tile for the new bed
                 {
-                        if (isSquareAdjacent(button, tempBed)) {
+                    if (isSquareAdjacent(button, tempBed)) {
                         adjacentSquareColorCheck(thisSquare.button!!)
                         thisSquare.hasBed = true
                         thisSquare.changeColor(ColorData.selected)
                         adjacentSquares.removeAll(Collections.singleton(thisSquare))
                         tempBed.add(thisSquare)
-                        Log.d("tempBed","tempBed has: " + tempBed)
-                        Log.d("tempBed","adjSq has " + adjacentSquares)
-                        Toast.makeText(context, "Added " + thisSquare.squareId + " to bed", Toast.LENGTH_SHORT).show()
+                        Log.d("tempBed", "tempBed has: " + tempBed)
+                        Log.d("tempBed", "adjSq has " + adjacentSquares)
+                        debugMessage("Added " + thisSquare.squareId + " to bed")
                     }
                 }
             }
@@ -334,7 +363,7 @@ class MainActivity : AppCompatActivity() {
                 thisSquare.hasBed = false
                 thisSquare.changeColor(ColorData.deselected)
                 bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
-                Toast.makeText(context, "Removed " + thisSquare.squareId + " from Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+                debugMessage("Removed " + thisSquare.squareId + " from Bed #" + bedEdit[1])
             } else if (thisSquare.bedID == 0)                                    //add new tiles to bed
             {
                 if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed)) {
@@ -342,7 +371,7 @@ class MainActivity : AppCompatActivity() {
                     thisSquare.hasBed = true
                     thisSquare.changeColor(ColorData.selected)
                     bedList[bedEdit[1]].squaresInBed.add(thisSquare)
-                    Toast.makeText(context, "Added " + thisSquare.squareId + " to Bed #" + bedEdit[1], Toast.LENGTH_SHORT).show()
+                    debugMessage("Added " + thisSquare.squareId + " to Bed #" + bedEdit[1])
                 }
             }
         }
@@ -425,10 +454,10 @@ class MainActivity : AppCompatActivity() {
      */
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
-        fun removeAdjacentSquares(){
+        fun removeAdjacentSquares() {
 
 
-            for(i in adjacentSquares){
+            for (i in adjacentSquares) {
                 i.changeColor(ColorData.deselected)
             }
 
@@ -455,7 +484,7 @@ class MainActivity : AppCompatActivity() {
 
             bedList.add(finalBed)               //add completed Bed to master list and set up for the next
             tempBed.clear()
-            Toast.makeText(context, "Bed #" + bedCount + " created", Toast.LENGTH_SHORT).show()
+            debugMessage("Bed #${bedCount} created")
             bedCount++
             removeAdjacentSquares()
 
@@ -567,4 +596,38 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
+
+
+    fun debugMessage(string: String) {
+
+
+
+//        debugWindow.text = "Cmd #$debugListIndex: $string"
+//       if(debugListMaxIndex != 0) {debugListMaxIndex = debugMessageList.size -1}
+//        debugListIndex = debugListMaxIndex
+//        debugMessageList.add("Cmd #$debugListIndex : $string")
+
+
+
+    }
+
+    fun debugNextOnClick(){
+
+
+        if(debugListIndex < debugListMaxIndex){
+            debugListIndex++
+            debugWindow.text = debugMessageList[debugListIndex].toString()
+
+        }
+    }
+
+    fun debugPrevOnClick(){
+        if(debugListIndex > 0){
+            debugListIndex--
+            debugWindow.text = debugMessageList[debugListIndex].toString()
+        }
+    }
+
+
 }
