@@ -9,7 +9,7 @@ class Debug{
 
 
         const val on = false  //Set debug mode (precompile)
-        val stupid = 1
+
         val debugMessageList = mutableListOf<String>()
         var debugListIndex = 0
         var debugListMaxIndex = 0
