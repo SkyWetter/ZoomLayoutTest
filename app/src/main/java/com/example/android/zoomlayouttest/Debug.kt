@@ -8,7 +8,7 @@ class Debug{
     companion object {
 
 
-        const val on = true  //Set debug mode (precompile)
+        const val on = false  //Set debug mode (precompile)
 
         val debugMessageList = mutableListOf<String>()
         var debugListIndex = 0

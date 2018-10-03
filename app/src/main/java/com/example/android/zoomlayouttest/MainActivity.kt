@@ -58,6 +58,7 @@ package com.example.android.zoomlayouttest
 
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -69,7 +70,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
@@ -103,9 +103,14 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        initColors()
+
 
         if (!Debug.on) {
             debugWindow.visibility = View.GONE
@@ -113,8 +118,8 @@ class MainActivity : AppCompatActivity() {
             debugWindowPrev.visibility = View.GONE
         }
 
-        constraintSet.clone(buttonContainer)  //Clones the buttonContainer constraint layout settings
-        val constraintLayout = findViewById<ConstraintLayout>(R.id.buttonContainer)
+        constraintSet.clone(gridContainer)  //Clones the buttonContainer constraint layout settings
+        val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)
         val doneButton = findViewById<Button>(R.id.doneButton)
 
         //recyclerview for bedlist
@@ -326,11 +331,6 @@ class MainActivity : AppCompatActivity() {
     fun buildBed(context: Context, button: Button) {
 
         val thisSquare = allSquares[button.id - 10000]
-        if (tempBed.isEmpty()) {
-            firstSquare = true
-        } else {
-            firstSquare = false
-        }
 
         if (bedEdit[0] == 0)     //if not in editing
         {
@@ -468,7 +468,8 @@ class MainActivity : AppCompatActivity() {
 
 
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
-            ColorData.newRandomBedColor()
+         //   ColorData.newRandomBedColor()
+           ColorData.newBedColor()
             addBedToRV(rvBeds, rvBedList, bedCount)
 
             var finalBed = Bed(bedCount)     //contains final tile IDs
@@ -506,10 +507,14 @@ class MainActivity : AppCompatActivity() {
         var distance: Double? = null
         var button: Button? = null
         var color: Color? = null
+        var isInvisible = false
+
 
         fun changeColor(newColor: Int) {
             button!!.setBackgroundColor(newColor)
         }
+
+
     }
 
     data class Bed(val bedID: Int) {
@@ -519,7 +524,7 @@ class MainActivity : AppCompatActivity() {
 
 
 /* Angle and Distance Function
-    Takes a target square and a central turret square
+   b Takes a target square and a central turret square
  */
 
     private fun getAngleDistanceAll(allSquares: MutableList<Square>, turretSquare: Square) {
@@ -538,12 +543,6 @@ class MainActivity : AppCompatActivity() {
         var quadrant: Int? = null
 
         targetSquare.distance = sqrt(squaredCoords.toDouble())
-/*
-    Log.i("xy", "square" + targetSquare.squareId)
-    Log.i("xy", "tS: " + targetSquare.column + " " + targetSquare.row)
-    Log.i("xy", "trtS: " + turretSquare.column + " " + turretSquare.row)
-    Log.i("xy", "coords: " + x + " " + y)
-*/
 
         if (x != 0 && y != 0) {
 
