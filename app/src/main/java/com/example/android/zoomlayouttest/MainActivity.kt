@@ -587,4 +587,7 @@ class MainActivity : AppCompatActivity() {
         gridContainer.setBackgroundColor(ColorData.uiInvisible)
         topText.setBackgroundColor(ColorData.uiColor1_medium)
     }
+
+
+
 }
