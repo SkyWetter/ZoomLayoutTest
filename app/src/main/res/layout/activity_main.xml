@@ -5,24 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:id="@+id/mainLayout">
+    android:id="@+id/mainLayout"
+    android:background="#c2d8cc">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="#54f9ae"
         android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/zoomLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
+        <com.example.android.zoomlayouttest.CustomTextView
             android:id="@+id/topText"
+            app:font_name="titleMed"
+            android:textSize="30dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text = "topText"/>
+            android:text="Rainbow"
+            android:padding="8dp"/>
 
         <Button
             android:id="@+id/blueTooth"
@@ -74,6 +83,9 @@
         android:id="@+id/zoomLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:background="#6bc68e"
         android:scrollbars="vertical|horizontal"
         app:hasClickableChildren="true"

@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         private var tempBed = mutableListOf<Square>()
         private var bedList = mutableListOf<Bed>()
 
-        private var buttonsPerRow = 9 //<--- must be odd number
+        private var buttonsPerRow = 19 /** MUST BE ODD NUMBER*/
 
         private val constraintSet = ConstraintSet()    //Creates a new constraint set variable
 

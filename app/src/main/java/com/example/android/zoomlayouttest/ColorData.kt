@@ -18,19 +18,27 @@ class ColorData {
     companion object {
 
         // Color values for ui backgrounds
-        val uiColor1 = Color.argb(255,134,239,86)
-        val uiColor2 = Color.argb(255,126,216,159)
-        val uiColor3 = Color.argb(255,91,135,135)
-        val uiColor4 = Color.argb(255,84,78,100)
-        val uiColor5 = Color.argb(255,31,30,32)
+        val uiColor1_dark = Color.argb(255,0,178,72)
+        val uiColor1_medium = Color.argb(255,0,229,117)  //Med Green
+        val uiColor1_light = Color.argb(255,102,255,166) //Light Green
+
+        val uiColor2_dark = Color.argb(255,0,182,134)
+        val uiColor2_medium =  Color.argb(255,29,233,182)
+        val uiColor2_light = Color.argb(255,110,255,232)   //Light Blue
+
+        val uiColor_white = Color.argb(255,230,241,235) //Off White
+        val uiColor_grey = Color.argb(255,194,216,204)
+
+        val textColor1 = Color.argb(255,0,0,0)  //Black
         val uiInvisible = Color.argb(0,255,255,255)
 
 
         // Color values for squares
-        val deselected  = Color.argb(45,84,78,100)
+        val deselected = uiColor_white
 
-        val selected = Color.argb(255,9,135,109)
-        val adjacent = Color.argb(255,0,0,0)
+        val selected = uiColor2_medium
+        val adjacent = Color.argb(50,110,255,232)   //Light Blue
+
         val turret = Color.argb(255,255,0,0)
         val listOfColors = mutableListOf(deselected, selected, adjacent,turret)
         var nextBedColor : Int? = null
