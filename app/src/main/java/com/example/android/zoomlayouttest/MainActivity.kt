@@ -588,6 +588,4 @@ class MainActivity : AppCompatActivity() {
         topText.setBackgroundColor(ColorData.uiColor1_medium)
     }
 
-
-
 }

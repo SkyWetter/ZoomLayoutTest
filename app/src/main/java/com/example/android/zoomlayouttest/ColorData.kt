@@ -47,13 +47,9 @@ class ColorData {
          * Color squares using hard-coded values (no random range)
          */
 
-        val squareColor1 = Color.argb(255,234,207,118)
-        val squareColor2 = Color.argb(255,229,136,45)
-        val squareColor3 = Color.argb(255,175,215,209)
-        val squareColor4 = Color.argb(255,253,248,240)
-        val squareColor5 = Color.argb(255,57 , 51,88)
 
-        val squareColorList = mutableListOf<Int>(squareColor1, squareColor2, squareColor3, squareColor4, squareColor5)
+
+        val squareColorList = mutableListOf<Int>(uiColor1_dark, uiColor1_medium, uiColor1_dark, uiColor2_dark, uiColor2_medium, uiColor2_light)
 
         var nextColorIndex = 0
 
