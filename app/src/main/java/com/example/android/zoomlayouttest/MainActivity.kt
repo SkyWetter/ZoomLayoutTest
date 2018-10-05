@@ -77,10 +77,6 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        private const val debugMode = false  //Set debug mode (precompile)
-        private val debugMessageList = mutableListOf<String>()
-        var debugListIndex = -1
-        var debugListMaxIndex = 0
 
         private val adjacentSquares = mutableListOf<Square>()
 
@@ -98,7 +94,6 @@ class MainActivity : AppCompatActivity() {
         private var buttonsPerRow = 19 /** MUST BE ODD NUMBER*/
 
         private val constraintSet = ConstraintSet()    //Creates a new constraint set variable
-
 
     }
 
@@ -144,14 +139,15 @@ class MainActivity : AppCompatActivity() {
 
         getAngleDistanceAll(allSquares, turretSquare!!)
 
-        // Test code for getAngleDistanceAll function
-        for (square in allSquares.indices) {
-            Log.i("AngleDis", "SquareId: " + allSquares[square].squareId.toString() + " Angle: " + allSquares[square].angle.toString() + " Distance: " + allSquares[square].distance.toString())
+        initializeButtons(this@MainActivity, doneButton, editButton, rvBeds, rvBedList)
+
+
+        blueTooth.setOnClickListener {
+            val intent = Intent(this, BluetoothActivity::class.java).apply {
+
+            }
+            startActivity(intent)
         }
-
-        println("coolcool")
-
-        initializeButtons(this@MainActivity, doneButton, editButton,  rvBeds, rvBedList)
     }
 
 
@@ -191,8 +187,8 @@ class MainActivity : AppCompatActivity() {
                     tempSquare.column = i                 //set rows and columns
                     tempSquare.row = row
                     tempSquare.button = button
-                    button.tag = getXY(i, row)
-                    Log.d("Coords", "Button id = " + button.id.toString() + " and coord = " + button.tag)
+                    button.tag = getXY(i,row)
+                    Log.d("Coords","Button id = " + button.id.toString() + " and coord = " + button.tag )
 
                     allSquares.add(tempSquare)              //add to master list of tiles
 
@@ -262,33 +258,21 @@ class MainActivity : AppCompatActivity() {
 
         var buttonIDnorm = button.id - 10000
         var thisSquare = allSquares[buttonIDnorm]
-        var leftSquare: Square? = null
-        var rightSquare: Square? = null
-        var aboveSquare: Square? = null
-        var belowSquare: Square? = null
+        var leftSquare : Square? = null
+        var rightSquare : Square? = null
+        var aboveSquare : Square? = null
+        var belowSquare : Square? = null
 
         /** get adj square ids -- null if square is beyond bed bounds */
 
-        if (buttonIDnorm % buttonsPerRow == 0) {
-        } else {
-            leftSquare = allSquares[buttonIDnorm - 1]
-        }         //Left
-        if ((buttonIDnorm + 1) % buttonsPerRow == 0) {
-        } else {
-            rightSquare = allSquares[buttonIDnorm + 1]
-        }    //Right
-        if (buttonIDnorm < buttonsPerRow) {
-        } else {
-            aboveSquare = allSquares[buttonIDnorm - buttonsPerRow]
-        } //Above
-        if (buttonIDnorm >= ((buttonsPerRow * buttonsPerRow) - buttonsPerRow)) {
-        } else {
-            belowSquare = allSquares[buttonIDnorm + buttonsPerRow]
-        } //Below
+        if(buttonIDnorm % buttonsPerRow == 0){ } else{ leftSquare = allSquares[buttonIDnorm-1]}         //Left
+        if((buttonIDnorm+1) % buttonsPerRow == 0) { } else{ rightSquare = allSquares[buttonIDnorm+1]}    //Right
+        if(buttonIDnorm < buttonsPerRow){} else {aboveSquare = allSquares[buttonIDnorm - buttonsPerRow]} //Above
+        if(buttonIDnorm >= ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){} else {belowSquare = allSquares[buttonIDnorm + buttonsPerRow]} //Below
 
 
         //Create mode
-        if (bedEdit[0] == 0) {
+        if(bedEdit[0]==0) {
 
             if (leftSquare == null || leftSquare == turretSquare) {
             } else if (!leftSquare.hasBed) {
@@ -313,7 +297,6 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
     fun initializeButtons(context: Context, doneButton: Button, editButton: Button, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
         doneButton.setOnClickListener()
         {
@@ -344,7 +327,7 @@ class MainActivity : AppCompatActivity() {
                     Debug.message("Removed " + thisSquare.squareId + " from bed",debugWindow)
                 } else                                     //select tile for the new bed
                 {
-                    if (isSquareAdjacent(button, tempBed)) {
+                        if (isSquareAdjacent(button, tempBed)) {
                         adjacentSquareColorCheck(thisSquare.button!!)
                         thisSquare.hasBed = true
                         thisSquare.changeColor(ColorData.selected)
@@ -455,10 +438,10 @@ class MainActivity : AppCompatActivity() {
      */
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
-        fun removeAdjacentSquares() {
+        fun removeAdjacentSquares(){
 
 
-            for (i in adjacentSquares) {
+            for(i in adjacentSquares){
                 i.changeColor(ColorData.deselected)
             }
 
@@ -486,7 +469,7 @@ class MainActivity : AppCompatActivity() {
 
             bedList.add(finalBed)               //add completed Bed to master list and set up for the next
             tempBed.clear()
-            debugMessage("Bed #${bedCount} created")
+            Debug.message("Bed #" + bedCount + " created",debugWindow)
             bedCount++
             removeAdjacentSquares()
 
@@ -597,37 +580,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
-    fun debugMessage(string: String) {
-
-
-
-//        debugWindow.text = "Cmd #$debugListIndex: $string"
-//       if(debugListMaxIndex != 0) {debugListMaxIndex = debugMessageList.size -1}
-//        debugListIndex = debugListMaxIndex
-//        debugMessageList.add("Cmd #$debugListIndex : $string")
-
-
-
+    fun initColors(){
+        topBar.setBackgroundColor(ColorData.uiColor1_light)
+        zoomLayout.setBackgroundColor(ColorData.uiInvisible)
+        bottomText.setBackgroundColor(ColorData.uiColor2_medium)
+        gridContainer.setBackgroundColor(ColorData.uiInvisible)
+        topText.setBackgroundColor(ColorData.uiColor1_medium)
     }
-
-    fun debugNextOnClick(){
-
-
-        if(debugListIndex < debugListMaxIndex){
-            debugListIndex++
-            debugWindow.text = debugMessageList[debugListIndex].toString()
-
-        }
-    }
-
-    fun debugPrevOnClick(){
-        if(debugListIndex > 0){
-            debugListIndex--
-            debugWindow.text = debugMessageList[debugListIndex].toString()
-        }
-    }
-
-
 }
