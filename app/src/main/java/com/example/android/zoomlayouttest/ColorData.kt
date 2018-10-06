@@ -4,17 +4,24 @@ import android.content.Context
 import android.graphics.Color
 import java.lang.Math
 
+/**
+ * ColorData Class
+ *
+ * Assign color values to be used in runtime color change operations, create and store
+ *
+ */
+
+
 class ColorData {
 
-    /**
-     * If adding a new hardcoded color in color list, make sure to also add the color to the listOfColors list
+
+
+    /** Color List
      *
+     * Assign color vals to be used at runtime. color val must be in Int form
      *
-     */
+     * */
 
-
-
-    /** Color List*/
     companion object {
 
         // Color values for ui backgrounds
@@ -45,6 +52,7 @@ class ColorData {
 
         /**
          * Color squares using hard-coded values (no random range)
+         * Add any color vals above in to the below squareColorList to include it in the rotation for bed colors
          */
 
 
@@ -55,7 +63,11 @@ class ColorData {
 
 
         /** Color ranges --> Used in random color generation, keeping colors within the bounds described
-         * Color range must be added to listColorRange to be used in generation*/
+         * Color range must be added to listColorRange to be used in generation
+         *
+         *
+         * CURRENTLY NOT USED
+         * */
         private var color1 = ColorRange(63,189,0,67,145,255)
         private var color2 = ColorRange(206,255,100,150,0,33)
         private var color3 = ColorRange(189,215,35,87,240,255)
@@ -65,6 +77,7 @@ class ColorData {
 
         /**
          * random bed color generator -- simplified version, could be replaced with hardcoded colors
+         * CURRENTLY NOT USED
          */
 
 
@@ -105,6 +118,8 @@ class ColorData {
 
 
         }
+
+        /** Use to toggle a square completely transparent or completely opaque*/
 
         fun toggleInvisible(square: MainActivity.Square ){
             if(!square.isInvisible){
