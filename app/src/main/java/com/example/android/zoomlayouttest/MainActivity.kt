@@ -245,8 +245,13 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+    /** Checks for adjacent squares to current bed being created/edited */
+
     fun adjacentSquareColorCheck(squareID: Int) {
 
+
+        //Holds the square id for squares surrounding the current square
         var leftSquare : Square? = null
         var rightSquare : Square? = null
         var aboveSquare : Square? = null
@@ -266,6 +271,8 @@ class MainActivity : AppCompatActivity() {
         if(squareID >= ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){}
         else {belowSquare = allSquares[squareID + buttonsPerRow]}   //Below
 
+
+        //Checks if square in direction is either null or the turret, in which
 
         if (leftSquare == null || leftSquare == turretSquare) { }
         else if (!leftSquare.hasBed)
