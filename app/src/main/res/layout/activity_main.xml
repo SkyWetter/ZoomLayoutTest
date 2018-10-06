@@ -193,13 +193,13 @@
         app:layout_constraintTop_toTopOf="@+id/bottomText" />
 
     <Button
-        android:id="@+id/editButton"
+        android:id="@+id/deleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Edit Bed"
+        android:text="Delete Bed"
         app:layout_constraintBottom_toBottomOf="@+id/bottomText"
         app:layout_constraintEnd_toStartOf="@+id/RVBedXML"
         app:layout_constraintStart_toStartOf="@+id/bottomText" />
