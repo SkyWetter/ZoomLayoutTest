@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity() {
 
         getAngleDistanceAll(allSquares, turretSquare!!)
 
-        initializeButtons(this@MainActivity, doneButton, editButton)
+        initializeButtons(this@MainActivity, doneButton, deleteButton)
 
 
         blueTooth.setOnClickListener {
@@ -289,16 +289,16 @@ class MainActivity : AppCompatActivity() {
             adjacentSquares.add(aboveSquare)
         }
     }
-    fun initializeButtons(context: Context, doneButton: Button, editButton: Button)
+    fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button)
     {
         doneButton.setOnClickListener()
         {
             doneBed(context)
         }
 
-        editButton.setOnClickListener()
+        deleteButton.setOnClickListener()
         {
-            //editBed()
+            deleteBed()
         }
 
         //space for further buttons (setting, bluetooth, etc)
@@ -323,7 +323,6 @@ class MainActivity : AppCompatActivity() {
                     {
                         adjacentSquareColorCheck(tempBed[i].squareId - 10000)
                     }
-                    adjacentSquares.removeAll(Collections.singleton(thisSquare))
 
                     Debug.message("Removed " + thisSquare.squareId + " from bed",debugWindow)
                 }
@@ -336,6 +335,7 @@ class MainActivity : AppCompatActivity() {
                         thisSquare.changeColor(ColorData.selected)
                         adjacentSquares.removeAll(Collections.singleton(thisSquare))
                         tempBed.add(thisSquare)
+
                         Log.d("tempBed", "tempBed has: " + tempBed)
                         Log.d("tempBed", "adjSq has " + adjacentSquares)
                         Debug.message("Added " + thisSquare.squareId + " to bed",debugWindow)
@@ -388,6 +388,14 @@ class MainActivity : AppCompatActivity() {
             adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
         }
 
+    }
+
+    fun deleteBed()
+    {
+        for(i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
+        {
+            bedList[bedEdit[1]].squaresInBed[i]
+        }
     }
 
     //check if the selected square is adjacent to the current tiles in your bed
