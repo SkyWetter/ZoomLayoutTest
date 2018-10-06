@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
         private var bedCount = 1
         private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
-        private var editMode = false        //bool for when we are in an editing mode
+
 
         private var firstSquare = false
         private var turretSquare: Square? = null
@@ -387,7 +387,7 @@ class MainActivity : AppCompatActivity() {
 
         bedEdit[0] = 1      //bool to toggle editing mode
         bedEdit[1] = bedToEdit      //bedID that is being edited
-        editMode = true
+
 
         removeAdjacentSquares()
         for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
