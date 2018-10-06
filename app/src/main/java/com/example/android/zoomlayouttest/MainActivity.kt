@@ -59,17 +59,14 @@ package com.example.android.zoomlayouttest
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -83,16 +80,16 @@ class MainActivity : AppCompatActivity() {
 
         private var bedCount = 1
         private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
-        private var editMode = false
+        private var editMode = false        //bool for when we are in an editing mode
 
         private var firstSquare = false
         private var turretSquare: Square? = null
-        private var allSquares = mutableListOf<Square>()       //full list of all Tile objects
+        private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
 
-        private var tempBed = mutableListOf<Square>()
-        private var bedList = mutableListOf<Bed>()
+        private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
+        private var bedList = mutableListOf<Bed>()      //list of all saved beds
 
-        private val rvBedList = ArrayList<RVBedData>()
+        private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
         private var buttonsPerRow = 19 /** MUST BE ODD NUMBER*/
 
@@ -114,13 +111,15 @@ class MainActivity : AppCompatActivity() {
 
         constraintSet.clone(gridContainer)  //Clones the buttonContainer constraint layout settings
         val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)
-        val doneButton = findViewById<Button>(R.id.doneButton)
+        val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
 
+
+        //this sets up the recyclerview
         RVBedXML.layoutManager = LinearLayoutManager(this)
         RVBedXML.adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
 
-
-        val bedZero = Bed(0)        //load bedList[0] so bed1 can be in bedList[1] lol
+        //load bedList[0] so bed1 can be in bedList[1] lol
+        val bedZero = Bed(0)
         bedList.add(bedZero)
 
         debugWindowPrev.setOnClickListener {  Debug.prevMessage(debugWindow) }
@@ -246,11 +245,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun adjacentSquareColorCheck(button: Button) {
+    fun adjacentSquareColorCheck(squareID: Int) {
 
-
-        var buttonIDnorm = button.id - 10000
-        var thisSquare = allSquares[buttonIDnorm]
         var leftSquare : Square? = null
         var rightSquare : Square? = null
         var aboveSquare : Square? = null
@@ -258,36 +254,39 @@ class MainActivity : AppCompatActivity() {
 
         /** get adj square ids -- null if square is beyond bed bounds */
 
-        if(buttonIDnorm % buttonsPerRow == 0){ } else{ leftSquare = allSquares[buttonIDnorm-1]}         //Left
-        if((buttonIDnorm+1) % buttonsPerRow == 0) { } else{ rightSquare = allSquares[buttonIDnorm+1]}    //Right
-        if(buttonIDnorm < buttonsPerRow){} else {aboveSquare = allSquares[buttonIDnorm - buttonsPerRow]} //Above
-        if(buttonIDnorm >= ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){} else {belowSquare = allSquares[buttonIDnorm + buttonsPerRow]} //Below
+        if(squareID % buttonsPerRow == 0){ }
+        else{ leftSquare = allSquares[squareID - 1]}         //Left
+
+        if((squareID + 1) % buttonsPerRow == 0) { }
+        else{ rightSquare = allSquares[squareID + 1]}    //Right
+
+        if(squareID < buttonsPerRow){}
+        else {aboveSquare = allSquares[squareID - buttonsPerRow]}   //Above
+
+        if(squareID >= ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){}
+        else {belowSquare = allSquares[squareID + buttonsPerRow]}   //Below
 
 
-        //Create mode
-        if(bedEdit[0]==0) {
-
-            if (leftSquare == null || leftSquare == turretSquare) {
-            } else if (!leftSquare.hasBed) {
-                leftSquare.changeColor(ColorData.adjacent)
-                adjacentSquares.add(leftSquare)
-            }
-            if (rightSquare == null || rightSquare == turretSquare) {
-            } else if (!rightSquare.hasBed) {
-                rightSquare.changeColor(ColorData.adjacent)
-                adjacentSquares.add(rightSquare)
-            }
-            if (belowSquare == null || belowSquare == turretSquare) {
-            } else if (!belowSquare.hasBed) {
-                belowSquare.changeColor(ColorData.adjacent)
-                adjacentSquares.add(belowSquare)
-            }
-            if (aboveSquare == null || aboveSquare == turretSquare) {
-            } else if (!aboveSquare.hasBed) {
-                aboveSquare.changeColor(ColorData.adjacent)
-                adjacentSquares.add(aboveSquare)
-            }
-
+        if (leftSquare == null || leftSquare == turretSquare) { }
+        else if (!leftSquare.hasBed)
+        {
+            leftSquare.changeColor(ColorData.adjacent)
+            adjacentSquares.add(leftSquare)
+        }
+        if (rightSquare == null || rightSquare == turretSquare) { }
+        else if (!rightSquare.hasBed) {
+            rightSquare.changeColor(ColorData.adjacent)
+            adjacentSquares.add(rightSquare)
+        }
+        if (belowSquare == null || belowSquare == turretSquare) { }
+        else if (!belowSquare.hasBed) {
+            belowSquare.changeColor(ColorData.adjacent)
+            adjacentSquares.add(belowSquare)
+        }
+        if (aboveSquare == null || aboveSquare == turretSquare) { }
+        else if (!aboveSquare.hasBed) {
+            aboveSquare.changeColor(ColorData.adjacent)
+            adjacentSquares.add(aboveSquare)
         }
     }
     fun initializeButtons(context: Context, doneButton: Button, editButton: Button)
@@ -299,7 +298,7 @@ class MainActivity : AppCompatActivity() {
 
         editButton.setOnClickListener()
         {
-            editBed()
+            //editBed()
         }
 
         //space for further buttons (setting, bluetooth, etc)
@@ -307,22 +306,32 @@ class MainActivity : AppCompatActivity() {
 
     fun buildBed(context: Context, button: Button) {
 
-        val thisSquare = allSquares[button.id - 10000]
+        val thisSquare = allSquares[button.id - 10000]      //square you have just clicke don
 
-        if (bedEdit[0] == 0)     //if not in editing
+        if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
         {
-            if (thisSquare.bedID == 0)          //check if tile is currently in a bed
+            if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
             {
-                if (thisSquare.hasBed == true)    //'unselect' a selected tile from the new bed
+                if (thisSquare.hasBed == true)    //remove selected square from tempbed
                 {
                     thisSquare.hasBed = false
                     thisSquare.changeColor(ColorData.deselected)
                     tempBed.remove(thisSquare)
+
+                    removeAdjacentSquares()
+                    for (i in 0..tempBed.size - 1)
+                    {
+                        adjacentSquareColorCheck(tempBed[i].squareId - 10000)
+                    }
+                    adjacentSquares.removeAll(Collections.singleton(thisSquare))
+
                     Debug.message("Removed " + thisSquare.squareId + " from bed",debugWindow)
-                } else                                     //select tile for the new bed
+                }
+                else         //add selected square to tempbed
                 {
-                        if (isSquareAdjacent(button, tempBed)) {
-                        adjacentSquareColorCheck(thisSquare.button!!)
+                    if (isSquareAdjacent(button, tempBed))         //check is square is adjacent
+                    {
+                        adjacentSquareColorCheck(thisSquare.squareId - 10000)
                         thisSquare.hasBed = true
                         thisSquare.changeColor(ColorData.selected)
                         adjacentSquares.removeAll(Collections.singleton(thisSquare))
@@ -333,37 +342,66 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-        } else  //if in editing
+        }
+        else  //if in editing mode
         {
-            if (thisSquare.bedID == bedEdit[1])     //remove if tile is in bed
+            adjacentSquares.removeAll(Collections.singleton(thisSquare))
+
+            if (thisSquare.bedID == bedEdit[1])     //remove square from selected bed
             {
                 thisSquare.bedID = 0
                 thisSquare.hasBed = false
                 thisSquare.changeColor(ColorData.deselected)
                 bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
+
+                removeAdjacentSquares()
+                for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
+                {
+                    adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
+                }
+
                 Debug.message("Removed " + thisSquare.squareId + " from Bed #" + bedEdit[1],debugWindow)
-            } else if (thisSquare.bedID == 0)                                    //add new tiles to bed
+            }
+            else if (thisSquare.bedID == 0)     //add new adjacent squares to selected bed
             {
-                if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed)) {
+                if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed))
+                {
                     thisSquare.bedID = bedEdit[1]
                     thisSquare.hasBed = true
-                    thisSquare.changeColor(ColorData.selected)
+                    thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
                     bedList[bedEdit[1]].squaresInBed.add(thisSquare)
+
+                    removeAdjacentSquares()
+                    for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
+                    {
+                        adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
+                    }
+
                     Debug.message("Added " + thisSquare.squareId + " to Bed #" + bedEdit[1],debugWindow)
                 }
             }
+
+
+            //
         }
     }
 
-    fun editBed() {
-        val bedToEdit = 1   //figure out for to set this via clicking card in RV
+    fun editBed(bedToEdit: Int) {
+        //val bedToEdit = 1   //figure out for to set this via clicking card in RV
 
         bedEdit[0] = 1      //bool to toggle editing mode
         bedEdit[1] = bedToEdit      //bedID that is being edited
         editMode = true
 
+        removeAdjacentSquares()
+        for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
+        {
+            adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
+        }
+
     }
 
+    //check if the selected square is adjacent to the current tiles in your bed
     fun isSquareAdjacent(button: Button, bedSquares: MutableList<Square>): Boolean {
         var squareIsAdjacent = false
 
@@ -419,46 +457,39 @@ class MainActivity : AppCompatActivity() {
     //adds numbered cards to recyclerview for each bed
     fun addBedToRV()
     {
-        rvBedList.add(RVBedData("Bed #" + bedCount))
+        rvBedList.add(RVBedData("Bed #" + bedCount, bedCount))
 
         val adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
 
         RVBedXML.adapter = adapter
-
-
     }
 
     private fun bedClicked(bed : RVBedData)
     {
-        Toast.makeText(this, "Clicked: ${bed.name}", Toast.LENGTH_LONG).show()
+        editBed(bed.rvBedID)
+        Toast.makeText(this, "Editing: ${bed.name}", Toast.LENGTH_LONG).show()
     }
 
     //creates bed object, adds completed bed to list, sets stage for next bed
-    fun doneBed(context: Context) {
-        fun removeAdjacentSquares(){
-
-            for(i in adjacentSquares){
-                i.changeColor(ColorData.deselected)
-            }
-            adjacentSquares.clear()
-        }
+    fun doneBed(context: Context)
+    {
+       removeAdjacentSquares()
 
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
          //   ColorData.newRandomBedColor()
-           ColorData.newBedColor()
+            ColorData.newBedColor()
             addBedToRV()
 
             var finalBed = Bed(bedCount)     //contains final tile IDs
+            finalBed.bedColor = ColorData.nextBedColor
 
             for (i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
             {
                 allSquares[tempBed[i].squareId - 10000].bedID = bedCount
-
                 allSquares[tempBed[i].squareId - 10000].changeColor(ColorData.nextBedColor!!)
+                allSquares[tempBed[i].squareId - 10000].color = ColorData.nextBedColor!!
                 finalBed.squaresInBed.add(tempBed[i])
             }
-
-
 
             bedList.add(finalBed)               //add completed Bed to master list and set up for the next
             tempBed.clear()
@@ -471,6 +502,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //clear all adjacent square colouring
+    fun removeAdjacentSquares()
+    {
+        for(i in adjacentSquares){
+            i.changeColor(ColorData.deselected)
+        }
+        adjacentSquares.clear()
+    }
+
     data class Square(val squareId: Int)        //object containing tile information
     {
         var row: Int = 0
@@ -480,7 +520,7 @@ class MainActivity : AppCompatActivity() {
         var angle: Double? = null
         var distance: Double? = null
         var button: Button? = null
-        var color: Color? = null
+        var color: Int = ColorData.deselected
         var isInvisible = false
 
         fun changeColor(newColor: Int) {
@@ -490,6 +530,7 @@ class MainActivity : AppCompatActivity() {
 
     data class Bed(val bedID: Int) {
         var squaresInBed = mutableListOf<Square>()
+        var bedColor: Int? = null
         //other variables
     }
 
