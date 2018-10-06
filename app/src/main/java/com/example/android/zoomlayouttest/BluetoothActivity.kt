@@ -223,21 +223,26 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         btnStep.setOnClickListener {
             var tempString = "a"
             var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+
+            mBluetoothConnection!!.write(tempByte)
         }
 
         btnDir1.setOnClickListener {
             var tempString = "b"
             var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
         }
 
         btnDir2.setOnClickListener {
             var tempString = "c"
             var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
         }
 
         btnFreq.setOnClickListener {
             var tempString = "d"
             var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
         }
         /**
          * Start connection onClick -- app will fail and crash if it hasn't paired first
