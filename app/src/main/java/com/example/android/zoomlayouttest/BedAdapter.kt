@@ -31,6 +31,10 @@ class BedAdapter (val bedList: List<RVBedData>, val clickListener: (RVBedData) -
         fun bind(bed: RVBedData, clickListener: (RVBedData) -> Unit) {
             itemView.textViewBed.text = bed.name
             itemView.setOnClickListener {clickListener(bed)}
+            itemView.bedListColor.setBackgroundColor(bed.bedColor)
+
+
+
         }
     }
 }

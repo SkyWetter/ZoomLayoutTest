@@ -24,6 +24,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <Button
+            android:id="@+id/doneButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Done Bed"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Delete Bed"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/doneButton" />
+
         <com.example.android.zoomlayouttest.CustomTextView
             android:id="@+id/topText"
             android:layout_width="match_parent"
@@ -155,53 +175,37 @@
     </com.otaliastudios.zoom.ZoomLayout>
 
 
-    <TextView
+    <android.support.constraint.ConstraintLayout
+
+
+        android:paddingHorizontal="24dp"
         android:id="@+id/bottomText"
         android:layout_width="0dp"
         android:layout_height="120dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:background="#1de9b6"
+        android:background="#000000"
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/zoomLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/zoomLayout" >
 
-    <Button
-        android:id="@+id/doneButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Done Bed"
-        app:layout_constraintStart_toStartOf="@+id/bottomText"
-        app:layout_constraintTop_toTopOf="@+id/bottomText" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/RVBedXML"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="0dp"
+            android:background="@color/offWhite"
+            app:layout_constraintBottom_toBottomOf="@+id/bottomText"
+            app:layout_constraintEnd_toEndOf="@+id/bottomText"
+            app:layout_constraintStart_toStartOf="@+id/bottomText"
+            app:layout_constraintTop_toTopOf="@+id/bottomText" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/RVBedXML"
-        android:layout_width="295dp"
-        android:layout_height="95dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/bottomText"
-        app:layout_constraintEnd_toEndOf="@+id/bottomText"
-        app:layout_constraintStart_toEndOf="@+id/doneButton"
-        app:layout_constraintTop_toTopOf="@+id/bottomText" />
+    </android.support.constraint.ConstraintLayout>
 
-    <Button
-        android:id="@+id/deleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="Delete Bed"
-        app:layout_constraintBottom_toBottomOf="@+id/bottomText"
-        app:layout_constraintEnd_toStartOf="@+id/RVBedXML"
-        app:layout_constraintStart_toStartOf="@+id/bottomText" />
+
 
 </android.support.constraint.ConstraintLayout>

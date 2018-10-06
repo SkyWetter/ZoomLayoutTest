@@ -59,6 +59,7 @@ package com.example.android.zoomlayouttest
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
@@ -99,6 +100,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getSupportActionBar()!!.hide();
         setContentView(R.layout.activity_main)
 
         initColors()
@@ -296,6 +298,8 @@ class MainActivity : AppCompatActivity() {
             adjacentSquares.add(aboveSquare)
         }
     }
+    //Sta
+
     fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button)
     {
         doneButton.setOnClickListener()
@@ -466,9 +470,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     //adds numbered cards to recyclerview for each bed
-    fun addBedToRV()
+    fun addBedToRV(bedColor : Int)
     {
-        rvBedList.add(RVBedData("Bed #" + bedCount, bedCount))
+        rvBedList.add(RVBedData("Bed #" + bedCount, bedCount,bedColor))
 
         val adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
 
@@ -478,6 +482,7 @@ class MainActivity : AppCompatActivity() {
     private fun bedClicked(bed : RVBedData)
     {
         editBed(bed.rvBedID)
+
         Toast.makeText(this, "Editing: ${bed.name}", Toast.LENGTH_LONG).show()
     }
 
@@ -489,7 +494,7 @@ class MainActivity : AppCompatActivity() {
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
          //   ColorData.newRandomBedColor()
             ColorData.newBedColor()
-            addBedToRV()
+            addBedToRV(ColorData.nextBedColor!!)
 
             var finalBed = Bed(bedCount)     //contains final tile IDs
             finalBed.bedColor = ColorData.nextBedColor
@@ -623,7 +628,7 @@ class MainActivity : AppCompatActivity() {
     fun initColors(){
         topBar.setBackgroundColor(ColorData.uiColor1_light)
         zoomLayout.setBackgroundColor(ColorData.uiInvisible)
-        bottomText.setBackgroundColor(ColorData.uiColor2_medium)
+        bottomText.setBackgroundColor(ColorData.uiColor_white)
         gridContainer.setBackgroundColor(ColorData.uiInvisible)
         topText.setBackgroundColor(ColorData.uiColor1_medium)
     }
