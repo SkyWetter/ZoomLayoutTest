@@ -354,12 +354,6 @@ class MainActivity : AppCompatActivity() {
                 thisSquare.changeColor(ColorData.deselected)
                 bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
 
-                removeAdjacentSquares()
-                for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
-                {
-                    adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
-                }
-
                 Debug.message("Removed " + thisSquare.squareId + " from Bed #" + bedEdit[1],debugWindow)
             }
             else if (thisSquare.bedID == 0)     //add new adjacent squares to selected bed
@@ -370,19 +364,14 @@ class MainActivity : AppCompatActivity() {
                     thisSquare.hasBed = true
                     thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
                     bedList[bedEdit[1]].squaresInBed.add(thisSquare)
-
-                    removeAdjacentSquares()
-                    for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
-                    {
-                        adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
-                    }
-
-                    Debug.message("Added " + thisSquare.squareId + " to Bed #" + bedEdit[1],debugWindow)
                 }
             }
 
-
-            //
+            removeAdjacentSquares()
+            for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
+            {
+                adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
+            }
         }
     }
 
