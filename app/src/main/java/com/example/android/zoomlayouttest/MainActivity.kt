@@ -401,8 +401,15 @@ class MainActivity : AppCompatActivity() {
     {
         for(i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
         {
-            bedList[bedEdit[1]].squaresInBed[i]
+            bedList[bedEdit[1]].squaresInBed[i].bedID = 0
+            bedList[bedEdit[1]].squaresInBed[i].hasBed = false
+            bedList[bedEdit[1]].squaresInBed[i].color = ColorData.deselected
+            bedList[bedEdit[1]].bedColor = null
         }
+        bedList[bedEdit[1]].bedColor = null
+
+        //add remove recyclerview functionality here
+
     }
 
     //check if the selected square is adjacent to the current tiles in your bed
