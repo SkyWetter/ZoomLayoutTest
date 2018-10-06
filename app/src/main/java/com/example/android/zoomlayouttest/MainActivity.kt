@@ -70,6 +70,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
@@ -91,21 +92,19 @@ class MainActivity : AppCompatActivity() {
         private var tempBed = mutableListOf<Square>()
         private var bedList = mutableListOf<Bed>()
 
+        private val rvBedList = ArrayList<RVBedData>()
+
         private var buttonsPerRow = 19 /** MUST BE ODD NUMBER*/
 
         private val constraintSet = ConstraintSet()    //Creates a new constraint set variable
 
     }
 
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initColors()
-
 
         if (!Debug.on) {
             debugWindow.visibility = View.GONE
@@ -117,11 +116,9 @@ class MainActivity : AppCompatActivity() {
         val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)
         val doneButton = findViewById<Button>(R.id.doneButton)
 
-        //recyclerview for bedlist
-        //https://youtu.be/67hthq6Y2J8
-        val rvBedList = rvBedList as RecyclerView
-        rvBedList.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-        val rvBeds = ArrayList<rvBed>()
+        RVBedXML.layoutManager = LinearLayoutManager(this)
+        RVBedXML.adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
+
 
         val bedZero = Bed(0)        //load bedList[0] so bed1 can be in bedList[1] lol
         bedList.add(bedZero)
@@ -129,17 +126,13 @@ class MainActivity : AppCompatActivity() {
         debugWindowPrev.setOnClickListener {  Debug.prevMessage(debugWindow) }
         debugWindowNext.setOnClickListener { Debug.nextMessage(debugWindow)}
 
-
-
-
-
         gridCreate(50, 2, constraintLayout, this@MainActivity)
 
         turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]
 
         getAngleDistanceAll(allSquares, turretSquare!!)
 
-        initializeButtons(this@MainActivity, doneButton, editButton, rvBeds, rvBedList)
+        initializeButtons(this@MainActivity, doneButton, editButton)
 
 
         blueTooth.setOnClickListener {
@@ -297,10 +290,11 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-    fun initializeButtons(context: Context, doneButton: Button, editButton: Button, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
+    fun initializeButtons(context: Context, doneButton: Button, editButton: Button)
+    {
         doneButton.setOnClickListener()
         {
-            doneBed(context, rvBeds, rvBedList)
+            doneBed(context)
         }
 
         editButton.setOnClickListener()
@@ -423,37 +417,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     //adds numbered cards to recyclerview for each bed
-    fun addBedToRV(rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView, bedNum: Int) {
-        rvBeds.add(rvBed("Bed #" + bedNum))
+    fun addBedToRV()
+    {
+        rvBedList.add(RVBedData("Bed #" + bedCount))
 
-        val adapter = CustomAdapter(rvBeds)
+        val adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
 
-        rvBedList.adapter = adapter
+        RVBedXML.adapter = adapter
 
 
     }
 
-    /**
-     *
-     */
-    //creates bed object, adds completed bed to list, sets stage for next bed
-    fun doneBed(context: Context, rvBeds: ArrayList<rvBed>, rvBedList: RecyclerView) {
-        fun removeAdjacentSquares(){
+    private fun bedClicked(bed : RVBedData)
+    {
+        Toast.makeText(this, "Clicked: ${bed.name}", Toast.LENGTH_LONG).show()
+    }
 
+    //creates bed object, adds completed bed to list, sets stage for next bed
+    fun doneBed(context: Context) {
+        fun removeAdjacentSquares(){
 
             for(i in adjacentSquares){
                 i.changeColor(ColorData.deselected)
             }
-
             adjacentSquares.clear()
         }
-
-
 
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
          //   ColorData.newRandomBedColor()
            ColorData.newBedColor()
-            addBedToRV(rvBeds, rvBedList, bedCount)
+            addBedToRV()
 
             var finalBed = Bed(bedCount)     //contains final tile IDs
 
@@ -476,8 +469,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             bedEdit[0] = 0      //reset editing bool
         }
-
-
     }
 
     data class Square(val squareId: Int)        //object containing tile information
@@ -492,12 +483,9 @@ class MainActivity : AppCompatActivity() {
         var color: Color? = null
         var isInvisible = false
 
-
         fun changeColor(newColor: Int) {
             button!!.setBackgroundColor(newColor)
         }
-
-
     }
 
     data class Bed(val bedID: Int) {

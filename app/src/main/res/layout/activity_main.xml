@@ -181,7 +181,7 @@
         app:layout_constraintTop_toTopOf="@+id/bottomText" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvBedList"
+        android:id="@+id/RVBedXML"
         android:layout_width="295dp"
         android:layout_height="95dp"
         android:layout_marginStart="8dp"
@@ -201,7 +201,7 @@
         android:layout_marginBottom="8dp"
         android:text="Edit Bed"
         app:layout_constraintBottom_toBottomOf="@+id/bottomText"
-        app:layout_constraintEnd_toStartOf="@+id/rvBedList"
+        app:layout_constraintEnd_toStartOf="@+id/RVBedXML"
         app:layout_constraintStart_toStartOf="@+id/bottomText" />
 
 </android.support.constraint.ConstraintLayout>
