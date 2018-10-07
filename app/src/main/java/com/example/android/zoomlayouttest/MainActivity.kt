@@ -68,6 +68,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.SeekBar
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -76,6 +77,8 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
+
+        var RVBedID_inc= 0
 
         private val adjacentSquares = mutableListOf<Square>()
 
@@ -118,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
         //this sets up the recyclerview
         RVBedXML.layoutManager = LinearLayoutManager(this)
-        RVBedXML.adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
+        RVBedXML.adapter = BedAdapter(rvBedList,{bed : RVBedData -> bedClicked(bed)})
 
         //load bedList[0] so bed1 can be in bedList[1] lol
         val bedZero = Bed(0)
@@ -304,7 +307,9 @@ class MainActivity : AppCompatActivity() {
     {
         doneButton.setOnClickListener()
         {
+
             doneBed(context)
+
         }
 
         deleteButton.setOnClickListener()
@@ -484,6 +489,11 @@ class MainActivity : AppCompatActivity() {
         editBed(bed.rvBedID)
 
         Toast.makeText(this, "Editing: ${bed.name}", Toast.LENGTH_LONG).show()
+    }
+
+
+     fun seekChange(){
+        Toast.makeText(this,"Seek changed",Toast.LENGTH_LONG).show()
     }
 
     //creates bed object, adds completed bed to list, sets stage for next bed

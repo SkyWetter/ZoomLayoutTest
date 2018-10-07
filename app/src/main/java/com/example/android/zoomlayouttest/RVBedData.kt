@@ -1,5 +1,8 @@
 package com.example.android.zoomlayouttest
 
+import android.view.View
+import android.widget.SeekBar
+
 //https://www.andreasjakl.com/kotlin-recyclerview-for-high-performance-lists-in-android/
 //https://www.andreasjakl.com/recyclerview-kotlin-style-click-listener-android/
 
@@ -12,4 +15,7 @@ to pass information about the bed to the specific textview associated with that 
 
  */
 
-data class RVBedData(val name: String, val rvBedID: Int,val bedColor: Int)
+data class RVBedData(val name: String, val rvBedID: Int,val bedColor: Int){
+
+ var itemViewTag : String? = null
+}
