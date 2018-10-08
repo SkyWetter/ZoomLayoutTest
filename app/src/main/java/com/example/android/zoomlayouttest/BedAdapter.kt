@@ -29,6 +29,7 @@ class BedAdapter (val bedList: List<RVBedData>, val clickListener: (RVBedData) -
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as BedViewHolder).bind(bedList[position], clickListener)
 
+
     }
 
     override fun getItemCount()= bedList.size
@@ -37,10 +38,11 @@ class BedAdapter (val bedList: List<RVBedData>, val clickListener: (RVBedData) -
         fun bind(bed: RVBedData, clickListener: (RVBedData) -> Unit) {
 
 
-            itemView.textViewBed.text = bed.name + " :: " + itemView.tag
+            itemView.textViewBed.text = bed.name
+
             itemView.setOnClickListener {clickListener(bed)}
             itemView.bedListColor.setBackgroundColor(bed.bedColor)
-            Log.d("BedViewHold.bind",itemId.toString())
+            Log.d("BedNameCheck",bed.name)
 
         }
     }

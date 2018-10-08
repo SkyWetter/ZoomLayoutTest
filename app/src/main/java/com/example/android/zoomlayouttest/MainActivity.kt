@@ -59,7 +59,6 @@ package com.example.android.zoomlayouttest
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
@@ -70,6 +69,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Toast
+import com.pawegio.kandroid.onProgressChanged
+import com.pawegio.kandroid.w
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
@@ -145,6 +146,8 @@ class MainActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
+
+
     }
 
 
@@ -326,6 +329,7 @@ class MainActivity : AppCompatActivity() {
 
         if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
         {
+            bedEditMenu.visibility = View.VISIBLE
             if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
             {
                 if (thisSquare.hasBed == true)    //remove selected square from tempbed
@@ -486,20 +490,33 @@ class MainActivity : AppCompatActivity() {
 
     private fun bedClicked(bed : RVBedData)
     {
+
         editBed(bed.rvBedID)
 
-        Toast.makeText(this, "Editing: ${bed.name}", Toast.LENGTH_LONG).show()
+
+        waterLevel.setProgress(bed.waterLevel,false)
+        bedEditMenu.visibility = View.VISIBLE
+        deleteButton.visibility = View.VISIBLE
+        waterLevel.visibility = View.VISIBLE
+
+        waterLevel.onProgressChanged{progress,fromUser->
+            if(fromUser) bed.waterLevel = progress
+
+        }
+
+        Toast.makeText(this, "Editing: ${bed.name}, water level is set to ${bed.waterLevel}", Toast.LENGTH_LONG).show()
     }
 
 
-     fun seekChange(){
-        Toast.makeText(this,"Seek changed",Toast.LENGTH_LONG).show()
-    }
+
 
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context)
     {
        removeAdjacentSquares()
+        bedEditMenu.visibility = View.GONE
+        deleteButton.visibility = View.GONE
+        waterLevel.visibility = View.GONE
 
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
          //   ColorData.newRandomBedColor()
@@ -526,6 +543,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             bedEdit[0] = 0      //reset editing bool
         }
+
     }
 
     //clear all adjacent square colouring
@@ -641,6 +659,7 @@ class MainActivity : AppCompatActivity() {
         bottomText.setBackgroundColor(ColorData.uiColor_white)
         gridContainer.setBackgroundColor(ColorData.uiInvisible)
         topText.setBackgroundColor(ColorData.uiColor1_medium)
+        bedEditMenu.setBackgroundColor(ColorData.uiColor1_light)
     }
 
 }
