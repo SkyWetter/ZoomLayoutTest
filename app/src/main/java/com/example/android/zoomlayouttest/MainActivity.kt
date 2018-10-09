@@ -77,11 +77,9 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.example.android.zoomlayouttest.R.id.*
+import com.pawegio.kandroid.w
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
@@ -113,9 +111,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         getSupportActionBar()!!.hide();         //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
+        paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
 
-
-        constraintSet.clone(gridContainer)                  //Clones the buttonContainer constraint layout settings
+        constraintSet.clone(gridContainer)                  //Clones the bguttonContainer constraint layout settings
         val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
         val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
 
@@ -222,10 +220,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         bedSettings.setOnClickListener {
+
+            var thisBed = rvBedList[bedBeingEdited.position]
+
             if(paramMenuOpen){
 
-                //Loads edited bed values into days of week
-                rvBedList[bedBeingEdited.position].daysOfWeek = bedBeingEdited.daysOfWeek
+                //Loads edited bed values into rvBedData data class
+                thisBed.daysOfWeek = bedBeingEdited.daysOfWeek
+                thisBed.waterLevel = bedBeingEdited.waterLevel
 
                 //If parameter menu is open, remove it, show the done and delete button, and flip value of paramMenuOpen
                 paramMenuContainer.visibility = View.GONE
@@ -237,6 +239,13 @@ class MainActivity : AppCompatActivity() {
             else{
                 //If parameter menu is closed, open it, remove the done and delete button, and flip value of paramMenuOpen
 
+                waterLevelBar.progress = bedBeingEdited.waterLevel
+
+                when(bedBeingEdited.waterLevel){
+                    0 -> currentWaterLevel.text = "Low"
+                    1 -> currentWaterLevel.text = "Medium"
+                    2 -> currentWaterLevel.text = "High"
+                }
                 bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
 
                for(i in bedBeingEdited.daysOfWeek.indices){
@@ -267,6 +276,8 @@ class MainActivity : AppCompatActivity() {
 
        }
 
+
+        //Edit text listener for Bed Name (all functions are required, even empty ones)
         bedNameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
 
@@ -284,9 +295,31 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        //Seekbar listener for waterLevel bar, all functions (even empty ones) are required
+        waterLevelBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
 
+            override
+            fun onStopTrackingTouch(seekBar: SeekBar) {
 
+            }
 
+            override
+            fun onStartTrackingTouch(seekbar: SeekBar) {
+
+            }
+
+            override
+            fun onProgressChanged(seekBar: SeekBar, progress : Int,fromUser : Boolean) {
+                bedBeingEdited.waterLevel = waterLevelBar.progress
+                rvBedList[bedBeingEdited.position].waterLevel = bedBeingEdited.waterLevel
+
+                when(bedBeingEdited.waterLevel){
+                    0 -> currentWaterLevel.text = "Low"
+                    1 -> currentWaterLevel.text = "Medium"
+                    2 -> currentWaterLevel.text = "High"
+                }
+            }
+        })
 
         //space for further buttons (setting, bluetooth, etc)
     }
