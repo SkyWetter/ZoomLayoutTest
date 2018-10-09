@@ -16,7 +16,7 @@
         android:layout_height="0dp"
         android:background="#54f9ae"
         android:elevation="1dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/zoomLayout"
         app:layout_constraintEnd_toEndOf="@+id/zoomLayout"
         app:layout_constraintHorizontal_bias="0.0"
@@ -25,6 +25,11 @@
         app:layout_constraintVertical_bias="0.0">
 
 
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.constraint.ConstraintLayout>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
