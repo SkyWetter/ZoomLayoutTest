@@ -7,13 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.TextView
+import com.example.android.zoomlayouttest.MainActivity.Companion.bedEdit
 import kotlinx.android.synthetic.main.bedlist_layout.view.*
 
 //I have no idea what is going on
 // see https://youtu.be/67hthq6Y2J8
 
 
-class BedAdapter (val bedList: List<RVBedData>, val clickListener: (RVBedData) -> Unit):
+class BedAdapter (val bedList: MutableList<RVBedData>, val clickListener: (RVBedData) -> Unit):
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -31,6 +32,13 @@ class BedAdapter (val bedList: List<RVBedData>, val clickListener: (RVBedData) -
     }
 
     override fun getItemCount()= bedList.size
+
+    fun removeAt(position: Int) {
+        bedList.removeAt(position)
+        notifyItemRemoved(position)
+        bedEdit[1] = position + 1 + bedEdit[2]
+        bedEdit[2]++
+    }
 
     class BedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(bed: RVBedData, clickListener: (RVBedData) -> Unit) {
