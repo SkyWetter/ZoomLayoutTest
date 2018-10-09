@@ -57,9 +57,11 @@ Added edit button + functionality
 package com.example.android.zoomlayouttest
 
 
+import android.animation.LayoutTransition
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
@@ -67,12 +69,12 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.text.Layout
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
-import android.widget.SeekBar
 import android.widget.Toast
-import com.pawegio.kandroid.v
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
@@ -87,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
         private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
         private var paramMenuOpen = false
+        private var bedBeingEdited  = RVBedData("",999999,Color.argb(255,0,0,0))  //Blank bedData class to hold currently edited bed
 
         var bedCount = 1
         var bedEdit = intArrayOf(0, 0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited, [2] is number of beds deleted
@@ -102,6 +105,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         getSupportActionBar()!!.hide();         //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
+
+
 
 
         constraintSet.clone(gridContainer)                  //Clones the buttonContainer constraint layout settings
@@ -166,6 +171,8 @@ class MainActivity : AppCompatActivity() {
         //other variables
     }
 
+
+
     /***
      *  INIT FUNCTIONS
      */
@@ -216,7 +223,7 @@ class MainActivity : AppCompatActivity() {
                 doneButton.visibility = View.INVISIBLE
                 deleteButton.visibility = View.INVISIBLE
                 bottomText.visibility = View.INVISIBLE
-                bedName.text = "${rvBedList[bedEdit[1]-1].name}"  //Gets name of bed
+                bedName.text = bedBeingEdited.name //Gets name of bed
                 paramMenuOpen = !paramMenuOpen
             }
         }
@@ -393,7 +400,8 @@ class MainActivity : AppCompatActivity() {
         if (!paramMenuOpen) {
             if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
             {
-                doneButton.visibility = View.VISIBLE
+                doneButton.visibility = View.VISIBLE   //If creating a bed, make doneButton appear
+
                 if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
                 {
                     if (thisSquare.hasBed == true)    //remove selected square from tempbed
@@ -554,6 +562,7 @@ class MainActivity : AppCompatActivity() {
     private fun bedClicked(bed : RVBedData)
     {
         editBed(bed.rvBedID)
+        bedBeingEdited = bed
 
         Toast.makeText(this, "Editing: ${bed.name}", Toast.LENGTH_LONG).show()
     }
@@ -680,6 +689,8 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+
+
 
 
 }

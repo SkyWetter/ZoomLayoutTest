@@ -17,5 +17,4 @@ to pass information about the bed to the specific textview associated with that 
 
 data class RVBedData(val name: String, val rvBedID: Int,val bedColor: Int){
 
- var itemViewTag : String? = null
 }
