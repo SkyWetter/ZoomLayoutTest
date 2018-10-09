@@ -120,6 +120,9 @@ class MainActivity : AppCompatActivity() {
         {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
             {
+                bedEdit[0] = 0
+                removeAdjacentSquares()
+
                 val adapter = recyclerView.adapter as BedAdapter
                 adapter.removeAt(viewHolder.adapterPosition)
                 deleteBed()
