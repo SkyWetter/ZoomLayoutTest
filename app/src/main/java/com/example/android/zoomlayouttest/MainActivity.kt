@@ -204,15 +204,20 @@ class MainActivity : AppCompatActivity() {
 
         bedSettings.setOnClickListener {
             if(paramMenuOpen){
+                //If parameter menu is open, remove it, show the done and delete button, and flip value of paramMenuOpen
                 paramMenuContainer.visibility = View.GONE
                 doneButton.visibility = View.VISIBLE
                 deleteButton.visibility = View.VISIBLE
+                bottomText.visibility = View.VISIBLE
                 paramMenuOpen = !paramMenuOpen
             }
             else{
+                //If parameter menu is closed, open it, remove the done and delete button, and flip value of paramMenuOpen
                 paramMenuContainer.visibility = View.VISIBLE
                 doneButton.visibility = View.INVISIBLE
                 deleteButton.visibility = View.INVISIBLE
+                bottomText.visibility = View.INVISIBLE
+                bedName.text = "${rvBedList[bedEdit[1]-1].name}"  //Gets name of bed
                 paramMenuOpen = !paramMenuOpen
             }
         }
