@@ -135,7 +135,4 @@ class ColorData {
 
     data class ColorRange(val rMin:Int, val rMax :Int, val gMin : Int, val gMax : Int, val bMin : Int, val bMax : Int)
 
-
-
-
 }

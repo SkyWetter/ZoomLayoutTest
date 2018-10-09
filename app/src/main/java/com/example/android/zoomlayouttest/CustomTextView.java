@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
-import android.widget.TextView;
+
+/**
+ * Custom textview class, used to implement the FontData Class
+ * */
 
 public class CustomTextView extends AppCompatTextView {
 
@@ -23,7 +26,7 @@ public class CustomTextView extends AppCompatTextView {
             array.recycle();
         }
         if(!isInEditMode()){
-            setTypeface(CustomApp.getApp().getTypeFace(typefaceType));
+            setTypeface(FontData.getApp().getTypeFace(typefaceType));
         }
     }
 }

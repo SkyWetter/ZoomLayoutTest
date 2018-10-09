@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         private var bedList = mutableListOf<Bed>()              //list of all saved beds
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
         private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
+        private var paramMenuOpen = false
 
         private var bedCount = 1
         private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
@@ -183,6 +184,21 @@ class MainActivity : AppCompatActivity() {
 
             }
             startActivity(intent)
+        }
+
+        bedSettings.setOnClickListener {
+            if(paramMenuOpen){
+                paramMenuContainer.visibility = View.GONE
+                doneButton.visibility = View.VISIBLE
+                deleteButton.visibility = View.VISIBLE
+                paramMenuOpen = !paramMenuOpen
+            }
+            else{
+                paramMenuContainer.visibility = View.VISIBLE
+                doneButton.visibility = View.INVISIBLE
+                deleteButton.visibility = View.INVISIBLE
+                paramMenuOpen = !paramMenuOpen
+            }
         }
 
         //space for further buttons (setting, bluetooth, etc)
@@ -351,76 +367,69 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     fun buildBed(context: Context, button: Button) {
 
         val thisSquare = allSquares[button.id - 10000]      //square you have just clicke don
-
-        if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
-        {
-            doneButton.visibility = View.VISIBLE
-            if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
+        if (!paramMenuOpen) {
+            if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
             {
-                if (thisSquare.hasBed == true)    //remove selected square from tempbed
+                doneButton.visibility = View.VISIBLE
+                if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
                 {
+                    if (thisSquare.hasBed == true)    //remove selected square from tempbed
+                    {
+                        thisSquare.hasBed = false
+                        thisSquare.changeColor(ColorData.deselected)
+                        tempBed.remove(thisSquare)
+
+                        removeAdjacentSquares()
+                        for (i in 0..tempBed.size - 1) {
+                            adjacentSquareColorCheck(tempBed[i].squareId - 10000)
+                        }
+
+
+                    } else         //add selected square to tempbed
+                    {
+                        if (isSquareAdjacent(button, tempBed))         //check is square is adjacent
+                        {
+                            adjacentSquareColorCheck(thisSquare.squareId - 10000)
+                            thisSquare.hasBed = true
+                            thisSquare.changeColor(ColorData.selected)
+                            adjacentSquares.removeAll(Collections.singleton(thisSquare))
+                            tempBed.add(thisSquare)
+
+                            Log.d("tempBed", "tempBed has: " + tempBed)
+                            Log.d("tempBed", "adjSq has " + adjacentSquares)
+
+                        }
+                    }
+                }
+            } else  //if in editing mode
+            {
+                adjacentSquares.removeAll(Collections.singleton(thisSquare))
+
+                if (thisSquare.bedID == bedEdit[1])     //remove square from selected bed
+                {
+                    thisSquare.bedID = 0
                     thisSquare.hasBed = false
                     thisSquare.changeColor(ColorData.deselected)
-                    tempBed.remove(thisSquare)
-
-                    removeAdjacentSquares()
-                    for (i in 0..tempBed.size - 1)
-                    {
-                        adjacentSquareColorCheck(tempBed[i].squareId - 10000)
-                    }
+                    bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
 
 
-                }
-                else         //add selected square to tempbed
+                } else if (thisSquare.bedID == 0)     //add new adjacent squares to selected bed
                 {
-                    if (isSquareAdjacent(button, tempBed))         //check is square is adjacent
-                    {
-                        adjacentSquareColorCheck(thisSquare.squareId - 10000)
+                    if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed)) {
+                        thisSquare.bedID = bedEdit[1]
                         thisSquare.hasBed = true
-                        thisSquare.changeColor(ColorData.selected)
-                        adjacentSquares.removeAll(Collections.singleton(thisSquare))
-                        tempBed.add(thisSquare)
-
-                        Log.d("tempBed", "tempBed has: " + tempBed)
-                        Log.d("tempBed", "adjSq has " + adjacentSquares)
-
+                        thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
+                        bedList[bedEdit[1]].squaresInBed.add(thisSquare)
                     }
                 }
-            }
-        }
-        else  //if in editing mode
-        {
-            adjacentSquares.removeAll(Collections.singleton(thisSquare))
 
-            if (thisSquare.bedID == bedEdit[1])     //remove square from selected bed
-            {
-                thisSquare.bedID = 0
-                thisSquare.hasBed = false
-                thisSquare.changeColor(ColorData.deselected)
-                bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
-
-
-            }
-            else if (thisSquare.bedID == 0)     //add new adjacent squares to selected bed
-            {
-                if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed))
-                {
-                    thisSquare.bedID = bedEdit[1]
-                    thisSquare.hasBed = true
-                    thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
-                    bedList[bedEdit[1]].squaresInBed.add(thisSquare)
+                removeAdjacentSquares()
+                for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1) {
+                    adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
                 }
-            }
-
-            removeAdjacentSquares()
-            for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
-            {
-                adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
             }
         }
     }
