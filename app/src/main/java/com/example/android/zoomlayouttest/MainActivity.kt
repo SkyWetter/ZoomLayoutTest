@@ -85,15 +85,16 @@ class MainActivity : AppCompatActivity() {
     companion object {
 
         private val adjacentSquares = mutableListOf<Square>()//List of squares adjacent to a given bed
-        private var bedList = mutableListOf<Bed>()              //list of all saved beds
+        var bedList = mutableListOf<Bed>()              //list of all saved beds
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
         private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
         private var paramMenuOpen = false
         private var bedBeingEdited  = RVBedData("",999999,Color.argb(255,0,0,0))  //Blank bedData class to hold currently edited bed
 
         var bedCount = 1
-        var bedEdit = intArrayOf(0, 0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited, [2] is number of beds deleted
+        var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
         private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
+
 
         private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
         private var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
@@ -485,8 +486,9 @@ class MainActivity : AppCompatActivity() {
             bedList[bedEdit[1]].squaresInBed[i].hasBed = false
             bedList[bedEdit[1]].squaresInBed[i].color = ColorData.deselected
             bedList[bedEdit[1]].squaresInBed[i].changeColor(ColorData.deselected)
-        }
 
+        }
+        bedList[bedEdit[1]].squaresInBed.clear()
         bedList[bedEdit[1]].bedColor = ColorData.deselected
 
         //add remove recyclerview functionality here
