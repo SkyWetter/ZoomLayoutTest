@@ -13,10 +13,10 @@
 
         android:id="@+id/paramMenuContainer"
         android:layout_width="0dp"
-        android:layout_height="355dp"
+        android:layout_height="0dp"
         android:background="#54f9ae"
         android:elevation="1dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/zoomLayout"
         app:layout_constraintEnd_toEndOf="@+id/zoomLayout"
         app:layout_constraintHorizontal_bias="0.0"
