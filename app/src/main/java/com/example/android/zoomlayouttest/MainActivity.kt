@@ -70,6 +70,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.Toast
+import com.pawegio.kandroid.v
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
@@ -358,6 +359,7 @@ class MainActivity : AppCompatActivity() {
 
         if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
         {
+            doneButton.visibility = View.VISIBLE
             if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
             {
                 if (thisSquare.hasBed == true)    //remove selected square from tempbed
@@ -425,6 +427,9 @@ class MainActivity : AppCompatActivity() {
 
     fun editBed(bedToEdit: Int) {
         //val bedToEdit = 1   //figure out for to set this via clicking card in RV
+        deleteButton.visibility = View.VISIBLE
+        bedSettings.visibility = View.VISIBLE
+        doneButton.visibility = View.VISIBLE
 
         bedEdit[0] = 1      //bool to toggle editing mode
         bedEdit[1] = bedToEdit      //bedID that is being edited
@@ -527,8 +532,10 @@ class MainActivity : AppCompatActivity() {
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context)
     {
-       removeAdjacentSquares()
-
+        removeAdjacentSquares()   //Resets adjacent square visibility
+        doneButton.visibility = View.GONE   //Hides done button
+        deleteButton.visibility = View.GONE    //Hides
+        bedSettings.visibility = View.GONE
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
          //   ColorData.newRandomBedColor()
             ColorData.newBedColor()
@@ -555,6 +562,8 @@ class MainActivity : AppCompatActivity() {
             bedEdit[0] = 0      //reset editing bool
         }
     }
+
+
 
     //clear all adjacent square colouring
     fun removeAdjacentSquares()
