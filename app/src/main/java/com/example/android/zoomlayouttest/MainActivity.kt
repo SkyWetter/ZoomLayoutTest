@@ -198,28 +198,6 @@ class MainActivity : AppCompatActivity() {
         bedNameText.typeface = titleFont
     }
 
-    fun dayOfWeekClick(v: View){
-
-        var thisDay = rvBedList[bedBeingEdited.position].daysOfWeek
-
-        var tag = v.tag.toString().toInt()
-
-
-
-        if(thisDay[tag] == false) {
-            thisDay[tag] = true
-            v.setBackgroundColor(Color.GREEN)
-
-        }
-
-        else if(thisDay[tag] == true){
-            thisDay[tag] = false
-            v.setBackgroundColor(Color.GRAY)
-        }
-
-    }
-
-
     fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
     {
 
@@ -267,10 +245,10 @@ class MainActivity : AppCompatActivity() {
                    var thisDay = bedBeingEdited.daysOfWeek
 
                    if(thisDay[i]){
-                        dayButtons[i].setBackgroundColor(Color.GREEN)
+                        dayButtons[i].setBackgroundColor(ColorData.dayButtonOn)
                    }
                    else{
-                       dayButtons[i].setBackgroundColor(Color.GRAY)
+                       dayButtons[i].setBackgroundColor(ColorData.dayButtonOff)
                    }
                }
 
@@ -775,7 +753,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun bedNameOnClick(){
+    //Handles pressing of any day of week button in bed settings menu
+    //Attached to specific button in xml via android:onClick = "dayOfWeekClick"
+
+    fun dayOfWeekClick(v: View){
+
+        var thisDay = rvBedList[bedBeingEdited.position].daysOfWeek //Shortens code
+
+        var tag = v.tag.toString().toInt()  //Converts tag type Any to Int
+
+
+
+        if(thisDay[tag] == false) {
+            thisDay[tag] = true
+            v.setBackgroundColor(ColorData.dayButtonOn)
+
+        }
+
+        else if(thisDay[tag] == true){
+            thisDay[tag] = false
+            v.setBackgroundColor(ColorData.dayButtonOff)
+        }
+
     }
 
 }
