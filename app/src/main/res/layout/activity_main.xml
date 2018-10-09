@@ -2,11 +2,30 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/mainLayout"
-    android:background="#c2d8cc">
+    android:animateLayoutChanges="true"
+    android:background="#c2d8cc"
+    tools:context=".MainActivity">
+
+    <android.support.constraint.ConstraintLayout
+
+        android:id="@+id/paramMenuContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#54f9ae"
+        android:elevation="1dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/zoomLayout"
+        app:layout_constraintEnd_toEndOf="@+id/zoomLayout"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/zoomLayout"
+        app:layout_constraintTop_toBottomOf="@+id/topBar"
+        app:layout_constraintVertical_bias="0.0">
+
+
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/topBar"
@@ -18,31 +37,72 @@
         android:layout_marginBottom="8dp"
         android:background="#54f9ae"
         android:gravity="center"
+        android:elevation="1dp"
         app:layout_constraintBottom_toTopOf="@+id/zoomLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/doneButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="Done Bed"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/topBarButtonPanel"
+            android:layout_width="396dp"
+            android:layout_height="69dp"
+            android:layout_marginTop="8dp"
+            android:background="#54f9ae"
+            android:elevation="0dp"
+            android:paddingVertical="0dp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/topText">
 
-        <Button
-            android:id="@+id/deleteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="Delete Bed"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/doneButton" />
+            <Button
+
+                android:id="@+id/doneButton"
+                android:layout_width="98dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Done Bed"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.058" />
+
+            <Button
+                android:id="@+id/deleteButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Delete Bed"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/doneButton"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.058" />
+
+            <Button
+                android:id="@+id/bedSettings"
+                android:layout_width="96dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="32dp"
+                android:max="2"
+                android:text="Bed Settings"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/deleteButton"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
 
         <com.example.android.zoomlayouttest.CustomTextView
             android:id="@+id/topText"
@@ -60,7 +120,7 @@
 
 
         <Button
-            android:id="@+id/blueTooth"
+            android:id="@+id/bluetoothButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="252dp"
@@ -68,6 +128,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/btn_rnd"
+            android:elevation="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.95"
@@ -76,50 +137,18 @@
 
         <ImageView
             android:layout_width="35dp"
-            android:layout_height="0dp"
+            android:layout_height="92dp"
+            android:layout_marginTop="4dp"
             android:elevation="2dp"
             android:scaleX="0.8"
             android:scaleY="0.8"
-
             android:src="@drawable/bluetoothicon"
-            app:layout_constraintBottom_toBottomOf="@+id/blueTooth"
-            app:layout_constraintEnd_toEndOf="@+id/blueTooth"
-            app:layout_constraintStart_toStartOf="@+id/blueTooth"
-            app:layout_constraintTop_toTopOf="@+id/blueTooth" />
-
-
-        <TextView
-            android:id="@+id/debugWindow"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Debug messages"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <Button
-            android:id="@+id/debugWindowNext"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_margin="0dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:padding="0dp"
-            android:text="n"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-        </Button>
-
-        <Button
-            android:id="@+id/debugWindowPrev"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:text="p"
-
-
-            app:layout_constraintBaseline_toBaselineOf="@+id/debugWindowNext"
-            app:layout_constraintEnd_toStartOf="@+id/debugWindowNext" />
+            app:layout_constraintBottom_toBottomOf="@+id/bluetoothButton"
+            app:layout_constraintEnd_toEndOf="@+id/bluetoothButton"
+            app:layout_constraintHorizontal_bias="0.692"
+            app:layout_constraintStart_toStartOf="@+id/bluetoothButton"
+            app:layout_constraintTop_toTopOf="@+id/bluetoothButton"
+            app:layout_constraintVertical_bias="0.541" />
 
 
     </android.support.constraint.ConstraintLayout>
@@ -133,6 +162,7 @@
         android:layout_marginBottom="8dp"
         android:background="#e6f1eb"
         android:scrollbars="vertical|horizontal"
+        android:visibility="visible"
         app:hasClickableChildren="true"
         app:horizontalPanEnabled="true"
         app:layout_constraintBottom_toTopOf="@+id/bottomText"
@@ -156,15 +186,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-
             android:layout_margin="0dp"
             android:background="#000000"
             android:gravity="fill"
             android:padding="0dp">
-
-
-            /* Button widgets*/
-
 
         </android.support.constraint.ConstraintLayout>
 
@@ -174,7 +199,6 @@
     <android.support.constraint.ConstraintLayout
 
 
-        android:paddingHorizontal="24dp"
         android:id="@+id/bottomText"
         android:layout_width="0dp"
         android:layout_height="120dp"
@@ -183,11 +207,12 @@
         android:layout_marginBottom="8dp"
         android:background="#000000"
         android:gravity="center"
+        android:paddingHorizontal="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/zoomLayout" >
+        app:layout_constraintTop_toBottomOf="@+id/zoomLayout">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -201,7 +226,6 @@
             app:layout_constraintTop_toTopOf="@+id/bottomText" />
 
     </android.support.constraint.ConstraintLayout>
-
 
 
 </android.support.constraint.ConstraintLayout>

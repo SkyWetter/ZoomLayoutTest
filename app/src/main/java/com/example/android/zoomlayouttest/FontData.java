@@ -2,11 +2,15 @@ package com.example.android.zoomlayouttest;
 
 import android.app.Application;
 import android.graphics.Typeface;
-import android.provider.SyncStateContract;
 
-public class CustomApp extends Application {
 
-    private static CustomApp mInstance;
+/***
+ * Custom class for custom fact implementation
+ */
+
+public class FontData extends Application {
+
+    private static FontData mInstance;
     private TypeFactory mFontFactory;
 
     @Override
@@ -15,7 +19,7 @@ public class CustomApp extends Application {
         mInstance = this;
     }
 
-    public static synchronized  CustomApp getApp() {return mInstance;}
+    public static synchronized FontData getApp() {return mInstance;}
 
     public Typeface getTypeFace(int type){
         if(mFontFactory == null)

@@ -59,106 +59,149 @@ package com.example.android.zoomlayouttest
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.SimpleAdapter
+import android.widget.SeekBar
 import android.widget.Toast
+import com.pawegio.kandroid.v
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
 
 
 class MainActivity : AppCompatActivity() {
+
     companion object {
 
-        var RVBedID_inc= 0
-
-        private val adjacentSquares = mutableListOf<Square>()
+        private val adjacentSquares = mutableListOf<Square>()//List of squares adjacent to a given bed
+        private var bedList = mutableListOf<Bed>()              //list of all saved beds
+        private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
+        private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
+        private var paramMenuOpen = false
 
         private var bedCount = 1
-        var bedEdit = intArrayOf(0, 0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
-                                            //[2] is number of beds deleted
-        private var firstSquare = false
-        private var turretSquare: Square? = null
-        private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
-
-        private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
-        private var bedList = mutableListOf<Bed>()      //list of all saved beds
-
+        private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
         private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
-        private var buttonsPerRow = 11 /** MUST BE ODD NUMBER*/
-
-        private val constraintSet = ConstraintSet()    //Creates a new constraint set variable
+        private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
+        private var buttonsPerRow = 19              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
+        private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
 
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getSupportActionBar()!!.hide();
+        getSupportActionBar()!!.hide();         //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
 
-        initColors()
 
-        if (!Debug.on) {
-            debugWindow.visibility = View.GONE
-            debugWindowNext.visibility= View.GONE
-            debugWindowPrev.visibility = View.GONE
-        }
-
-        constraintSet.clone(gridContainer)  //Clones the buttonContainer constraint layout settings
-        val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)
+        constraintSet.clone(gridContainer)                  //Clones the buttonContainer constraint layout settings
+        val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
         val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
 
 
         //this sets up the recyclerview
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = BedAdapter(rvBedList,{ bed : RVBedData -> bedClicked(bed)})
-
-        val swipeHandler = object : SwipeToDeleteCallback(this)
-        {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
-            {
-                val adapter = recyclerView.adapter as BedAdapter
-                adapter.removeAt(viewHolder.adapterPosition)
-                deleteBed()
-            }
-        }
-
-        val itemTouchHelper = ItemTouchHelper(swipeHandler)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+        RVBedXML.layoutManager = LinearLayoutManager(this)
+        RVBedXML.adapter = BedAdapter(rvBedList,{bed : RVBedData -> bedClicked(bed)})
 
         //load bedList[0] so bed1 can be in bedList[1] lol
         val bedZero = Bed(0)
-        bedZero.bedColor = ColorData.deselected
         bedList.add(bedZero)
 
-        debugWindowPrev.setOnClickListener {  Debug.prevMessage(debugWindow) }
-        debugWindowNext.setOnClickListener { Debug.nextMessage(debugWindow)}
 
-        gridCreate(50, 2, constraintLayout, this@MainActivity)
+        /** Init code*/
+        initColors()   //Sets colors of various UI elements
+        gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
+        turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]  //Gets the location of the central square of the garden bed
+        initializeButtons(this@MainActivity, doneButton, deleteButton,bluetoothButton)  //Initializes button listeners
 
-        turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]
+    }
 
-        getAngleDistanceAll(allSquares, turretSquare!!)
+    /***
+     * DATA CLASSES
+     */
 
-        initializeButtons(this@MainActivity, doneButton, deleteButton)
+    data class Square(val squareId: Int)        //object containing tile information
+    {
+        var row: Int = 0
+        var column: Int = 0
+        var bedID: Int = 0
+        var hasBed: Boolean = false
+        var angle: Double? = null
+        var distance: Double? = null
+        var button: Button? = null
+        var color: Int = ColorData.deselected
+        var isInvisible = false
+
+        fun changeColor(newColor: Int) {
+            button!!.setBackgroundColor(newColor)
+        }
+    }
+
+    data class Bed(val bedID: Int) {
+        var squaresInBed = mutableListOf<Square>()
+        var bedColor: Int? = null
+        //other variables
+    }
+
+    /***
+     *  INIT FUNCTIONS
+     */
+
+    private fun initColors(){
+        topBar.setBackgroundColor(ColorData.uiColor1_light)
+        zoomLayout.setBackgroundColor(ColorData.uiInvisible)
+        bottomText.setBackgroundColor(ColorData.uiColor_white)
+        gridContainer.setBackgroundColor(ColorData.uiInvisible)
+        topText.setBackgroundColor(ColorData.uiColor1_medium)
+    }
 
 
-        blueTooth.setOnClickListener {
+
+    fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
+    {
+        doneButton.setOnClickListener()
+        {
+
+            doneBed(context)
+
+        }
+
+        deleteButton.setOnClickListener()
+        {
+            deleteBed()
+        }
+
+        bluetoothButton.setOnClickListener {
             val intent = Intent(this, BluetoothActivity::class.java).apply {
 
             }
             startActivity(intent)
         }
+
+        bedSettings.setOnClickListener {
+            if(paramMenuOpen){
+                paramMenuContainer.visibility = View.GONE
+                doneButton.visibility = View.VISIBLE
+                deleteButton.visibility = View.VISIBLE
+                paramMenuOpen = !paramMenuOpen
+            }
+            else{
+                paramMenuContainer.visibility = View.VISIBLE
+                doneButton.visibility = View.INVISIBLE
+                deleteButton.visibility = View.INVISIBLE
+                paramMenuOpen = !paramMenuOpen
+            }
+        }
+
+        //space for further buttons (setting, bluetooth, etc)
     }
 
 //GRID CREATE
@@ -166,6 +209,8 @@ class MainActivity : AppCompatActivity() {
 
 //Takes a button size (how large each individual button is), margins between each button, buttons per row (grid is always square)
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
+
+
 
     fun gridCreate(buttonSize: Int, buttonMargin: Int, constraintLayout: ConstraintLayout, context: Context) {
 
@@ -263,9 +308,16 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+    /**
+     * POST-INIT FUCTIONS
+     * */
+
+
     /** Checks for adjacent squares to current bed being created/edited */
 
     fun adjacentSquareColorCheck(squareID: Int) {
+
 
         //Holds the square id for squares surrounding the current square
         var leftSquare : Square? = null
@@ -288,7 +340,8 @@ class MainActivity : AppCompatActivity() {
         else {belowSquare = allSquares[squareID + buttonsPerRow]}   //Below
 
 
-        //Checks if square in direction is either null or the turret, in which
+        /** Checks adjacent areas for either the turret or null (no square), in which case do nothing
+         * Otherwise, if the square in question doesn't belong to a bed, color it with the adjacent square color*/
 
         if (leftSquare == null || leftSquare == turretSquare) { }
         else if (!leftSquare.hasBed)
@@ -312,103 +365,85 @@ class MainActivity : AppCompatActivity() {
             adjacentSquares.add(aboveSquare)
         }
     }
-    //Sta
 
-    fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button)
-    {
-        doneButton.setOnClickListener()
-        {
-
-            doneBed(context)
-
-        }
-
-        deleteButton.setOnClickListener()
-        {
-            deleteBed()
-        }
-
-        //space for further buttons (setting, bluetooth, etc)
-    }
 
     fun buildBed(context: Context, button: Button) {
 
         val thisSquare = allSquares[button.id - 10000]      //square you have just clicke don
-
-        if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
-        {
-            if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
+        if (!paramMenuOpen) {
+            if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
             {
-                if (thisSquare.hasBed == true)    //remove selected square from tempbed
+                doneButton.visibility = View.VISIBLE
+                if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
                 {
+                    if (thisSquare.hasBed == true)    //remove selected square from tempbed
+                    {
+                        thisSquare.hasBed = false
+                        thisSquare.changeColor(ColorData.deselected)
+                        tempBed.remove(thisSquare)
+
+                        removeAdjacentSquares()
+                        for (i in 0..tempBed.size - 1) {
+                            adjacentSquareColorCheck(tempBed[i].squareId - 10000)
+                        }
+
+
+                    } else         //add selected square to tempbed
+                    {
+                        if (isSquareAdjacent(button, tempBed))         //check is square is adjacent
+                        {
+                            adjacentSquareColorCheck(thisSquare.squareId - 10000)
+                            thisSquare.hasBed = true
+                            thisSquare.changeColor(ColorData.selected)
+                            adjacentSquares.removeAll(Collections.singleton(thisSquare))
+                            tempBed.add(thisSquare)
+
+                            Log.d("tempBed", "tempBed has: " + tempBed)
+                            Log.d("tempBed", "adjSq has " + adjacentSquares)
+
+                        }
+                    }
+                }
+            } else  //if in editing mode
+            {
+                adjacentSquares.removeAll(Collections.singleton(thisSquare))
+
+                if (thisSquare.bedID == bedEdit[1])     //remove square from selected bed
+                {
+                    thisSquare.bedID = 0
                     thisSquare.hasBed = false
                     thisSquare.changeColor(ColorData.deselected)
-                    tempBed.remove(thisSquare)
+                    bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
 
-                    removeAdjacentSquares()
-                    for (i in 0..tempBed.size - 1)
-                    {
-                        adjacentSquareColorCheck(tempBed[i].squareId - 10000)
-                    }
 
-                    Debug.message("Removed " + thisSquare.squareId + " from bed",debugWindow)
-                }
-                else         //add selected square to tempbed
+                } else if (thisSquare.bedID == 0)     //add new adjacent squares to selected bed
                 {
-                    if (isSquareAdjacent(button, tempBed))         //check is square is adjacent
-                    {
-                        adjacentSquareColorCheck(thisSquare.squareId - 10000)
+                    if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed)) {
+                        thisSquare.bedID = bedEdit[1]
                         thisSquare.hasBed = true
-                        thisSquare.changeColor(ColorData.selected)
-                        adjacentSquares.removeAll(Collections.singleton(thisSquare))
-                        tempBed.add(thisSquare)
-
-                        Log.d("tempBed", "tempBed has: " + tempBed)
-                        Log.d("tempBed", "adjSq has " + adjacentSquares)
-                        Debug.message("Added " + thisSquare.squareId + " to bed",debugWindow)
+                        thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
+                        bedList[bedEdit[1]].squaresInBed.add(thisSquare)
                     }
                 }
-            }
-        }
-        else  //if in editing mode
-        {
-            adjacentSquares.removeAll(Collections.singleton(thisSquare))
 
-            if (thisSquare.bedID == bedEdit[1])     //remove square from selected bed
-            {
-                thisSquare.bedID = 0
-                thisSquare.hasBed = false
-                thisSquare.changeColor(ColorData.deselected)
-                bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
-
-                Debug.message("Removed " + thisSquare.squareId + " from Bed #" + bedEdit[1],debugWindow)
-            }
-            else if (thisSquare.bedID == 0)     //add new adjacent squares to selected bed
-            {
-                if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed))
-                {
-                    thisSquare.bedID = bedEdit[1]
-                    thisSquare.hasBed = true
-                    thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
-                    bedList[bedEdit[1]].squaresInBed.add(thisSquare)
+                removeAdjacentSquares()
+                for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1) {
+                    adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
                 }
-            }
-
-            removeAdjacentSquares()
-            for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
-            {
-                adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
             }
         }
     }
 
     fun editBed(bedToEdit: Int) {
         //val bedToEdit = 1   //figure out for to set this via clicking card in RV
+        deleteButton.visibility = View.VISIBLE
+        bedSettings.visibility = View.VISIBLE
+        doneButton.visibility = View.VISIBLE
 
         bedEdit[0] = 1      //bool to toggle editing mode
         bedEdit[1] = bedToEdit      //bedID that is being edited
 
-        //designate selectable squares when editing
+
         removeAdjacentSquares()
         for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
         {
@@ -419,18 +454,14 @@ class MainActivity : AppCompatActivity() {
 
     fun deleteBed()
     {
-        for(i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)      //remove each tile from bed
+        for(i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
         {
             bedList[bedEdit[1]].squaresInBed[i].bedID = 0
             bedList[bedEdit[1]].squaresInBed[i].hasBed = false
             bedList[bedEdit[1]].squaresInBed[i].color = ColorData.deselected
-            bedList[bedEdit[1]].squaresInBed[i].changeColor(ColorData.deselected)
+            bedList[bedEdit[1]].bedColor = null
         }
-
-        bedList[bedEdit[1]].bedColor = ColorData.deselected
-
-        removeAdjacentSquares()     //remove selectable tiles
-        bedEdit[0] = 0      //exit edit mode
+        bedList[bedEdit[1]].bedColor = null
 
         //add remove recyclerview functionality here
 
@@ -492,11 +523,11 @@ class MainActivity : AppCompatActivity() {
     //adds numbered cards to recyclerview for each bed
     fun addBedToRV(bedColor : Int)
     {
-        rvBedList.add(RVBedData("Bed #" + bedCount, bedCount, bedColor))
+        rvBedList.add(RVBedData("Bed #" + bedCount, bedCount,bedColor))
 
         val adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
 
-        recyclerView.adapter = adapter
+        RVBedXML.adapter = adapter
     }
 
     private fun bedClicked(bed : RVBedData)
@@ -507,15 +538,13 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun seekChange(){
-        Toast.makeText(this,"Seek changed",Toast.LENGTH_LONG).show()
-    }
-
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context)
     {
-       removeAdjacentSquares()
-
+        removeAdjacentSquares()   //Resets adjacent square visibility
+        doneButton.visibility = View.GONE   //Hides done button
+        deleteButton.visibility = View.GONE    //Hides
+        bedSettings.visibility = View.GONE
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
          //   ColorData.newRandomBedColor()
             ColorData.newBedColor()
@@ -534,7 +563,7 @@ class MainActivity : AppCompatActivity() {
 
             bedList.add(finalBed)               //add completed Bed to master list and set up for the next
             tempBed.clear()
-            Debug.message("Bed #" + bedCount + " created",debugWindow)
+
             bedCount++
             removeAdjacentSquares()
 
@@ -542,6 +571,8 @@ class MainActivity : AppCompatActivity() {
             bedEdit[0] = 0      //reset editing bool
         }
     }
+
+
 
     //clear all adjacent square colouring
     fun removeAdjacentSquares()
@@ -553,29 +584,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-    data class Square(val squareId: Int)        //object containing tile information
-    {
-        var row: Int = 0
-        var column: Int = 0
-        var bedID: Int = 0
-        var hasBed: Boolean = false
-        var angle: Double? = null
-        var distance: Double? = null
-        var button: Button? = null
-        var color: Int = ColorData.deselected
-        var isInvisible = false
-
-        fun changeColor(newColor: Int) {
-            button!!.setBackgroundColor(newColor)
-        }
-    }
-
-    data class Bed(val bedID: Int) {
-        var squaresInBed = mutableListOf<Square>()
-        var bedColor: Int? = null
-        //other variables
-    }
 
 
 /* Angle and Distance Function
@@ -652,12 +660,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun initColors(){
-        topBar.setBackgroundColor(ColorData.uiColor1_light)
-        zoomLayout.setBackgroundColor(ColorData.uiInvisible)
-        bottomText.setBackgroundColor(ColorData.uiColor_white)
-        gridContainer.setBackgroundColor(ColorData.uiInvisible)
-        topText.setBackgroundColor(ColorData.uiColor1_medium)
-    }
 
 }
