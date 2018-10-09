@@ -12,7 +12,7 @@ class RVBedData(var name: String, val rvBedID: Int, val bedColor: Int){
 
 
 
-    val daysOfWeek = arrayListOf<Int>(0,0,0,0,0,0,0)
+    var daysOfWeek = arrayListOf<Boolean>(true,true,true,true,true,true,true)
     var waterLevel = 1
     var position = 0
 

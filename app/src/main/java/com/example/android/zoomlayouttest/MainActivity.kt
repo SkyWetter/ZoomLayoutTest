@@ -81,7 +81,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import com.example.android.zoomlayouttest.R.id.bedNameText
+import com.example.android.zoomlayouttest.R.id.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
@@ -91,13 +91,13 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
 
+
         private val adjacentSquares = mutableListOf<Square>()//List of squares adjacent to a given bed
         var bedList = mutableListOf<Bed>()              //list of all saved beds
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
         private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
         private var paramMenuOpen = false
-        private var bedBeingEdited  = RVBedData("",999999,Color.argb(255,0,0,0))  //Blank bedData class to hold currently edited bed
-
+        var bedBeingEdited  = RVBedData("",999999,Color.argb(255,0,0,0))  //Blank bedData class to hold currently edited bed
         var bedCount = 1
         var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
         private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
@@ -114,10 +114,12 @@ class MainActivity : AppCompatActivity() {
         getSupportActionBar()!!.hide();         //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
 
+
         constraintSet.clone(gridContainer)                  //Clones the buttonContainer constraint layout settings
         val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
         val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
-        val bedNameText = findViewById<EditText>(R.id.bedNameText)
+
+
 
         //this sets up the recyclerview
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -180,6 +182,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
     /***
      *  INIT FUNCTIONS
      */
@@ -195,6 +198,26 @@ class MainActivity : AppCompatActivity() {
         bedNameText.typeface = titleFont
     }
 
+    fun dayOfWeekClick(v: View){
+
+        var thisDay = rvBedList[bedBeingEdited.position].daysOfWeek
+
+        var tag = v.tag.toString().toInt()
+
+
+
+        if(thisDay[tag] == false) {
+            thisDay[tag] = true
+            v.setBackgroundColor(Color.GREEN)
+
+        }
+
+        else if(thisDay[tag] == true){
+            thisDay[tag] = false
+            v.setBackgroundColor(Color.GRAY)
+        }
+
+    }
 
 
     fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
@@ -222,6 +245,10 @@ class MainActivity : AppCompatActivity() {
 
         bedSettings.setOnClickListener {
             if(paramMenuOpen){
+
+                //Loads edited bed values into days of week
+                rvBedList[bedBeingEdited.position].daysOfWeek = bedBeingEdited.daysOfWeek
+
                 //If parameter menu is open, remove it, show the done and delete button, and flip value of paramMenuOpen
                 paramMenuContainer.visibility = View.GONE
                 doneButton.visibility = View.VISIBLE
@@ -231,11 +258,28 @@ class MainActivity : AppCompatActivity() {
             }
             else{
                 //If parameter menu is closed, open it, remove the done and delete button, and flip value of paramMenuOpen
+
+                bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
+
+               for(i in bedBeingEdited.daysOfWeek.indices){
+                   val dayButtons = arrayListOf<Button>(sundayButton,mondayButton,tuesdayButton,wednesdayButton,thursdayButton,fridayButton,saturdayButton)
+
+                   var thisDay = bedBeingEdited.daysOfWeek
+
+                   if(thisDay[i]){
+                        dayButtons[i].setBackgroundColor(Color.GREEN)
+                   }
+                   else{
+                       dayButtons[i].setBackgroundColor(Color.GRAY)
+                   }
+               }
+
+
                 paramMenuContainer.visibility = View.VISIBLE
                 doneButton.visibility = View.INVISIBLE
                 deleteButton.visibility = View.INVISIBLE
                 bottomText.visibility = View.INVISIBLE
-                bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
+
                 paramMenuOpen = !paramMenuOpen
             }
         }
@@ -261,6 +305,8 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+
+
 
 
 
@@ -601,6 +647,7 @@ class MainActivity : AppCompatActivity() {
     {
         editBed(bed.rvBedID)
         bedBeingEdited = bed
+
 
         Toast.makeText(this, "Editing: ${bed.name}", Toast.LENGTH_LONG).show()
     }

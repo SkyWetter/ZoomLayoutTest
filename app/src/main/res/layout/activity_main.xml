@@ -88,49 +88,71 @@
                 app:layout_constraintTop_toBottomOf="@+id/daysText">
 
                 <Button
-                    android:id="@+id/mondayButton"
+                    android:id="@+id/sundayButton"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:onClick="dayOfWeekClick"
                     android:padding="0dp"
-                    android:text="M"
+                    android:tag="0"
+                    android:text="Su"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tuesdayButton"
+                    app:layout_constraintEnd_toStartOf="@+id/mondayButton"
                     app:layout_constraintHorizontal_chainStyle="spread_inside"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="1.0" />
 
                 <Button
+                    android:id="@+id/mondayButton"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:onClick="dayOfWeekClick"
+                    android:padding="0dp"
+                    android:tag="1"
+                    android:text="M"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tuesdayButton"
+                    app:layout_constraintStart_toEndOf="@+id/sundayButton"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <Button
                     android:id="@+id/tuesdayButton"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:onClick="dayOfWeekClick"
                     android:padding="0dp"
+                    android:tag="2"
                     android:text="T"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/wednesdayButton"
                     app:layout_constraintStart_toEndOf="@+id/mondayButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/wednesdayButton"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:onClick="dayOfWeekClick"
                     android:padding="0dp"
+                    android:tag="3"
                     android:text="W"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/thursdayButton"
                     app:layout_constraintStart_toEndOf="@+id/tuesdayButton"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <Button
                     android:id="@+id/thursdayButton"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:onClick="dayOfWeekClick"
                     android:padding="0dp"
+                    android:tag="4"
                     android:text="Th"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/fridayButton"
+                    app:layout_constraintEnd_toEndOf="@id/fridayButton"
                     app:layout_constraintStart_toEndOf="@+id/wednesdayButton"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="1.0" />
@@ -139,34 +161,26 @@
                     android:id="@+id/fridayButton"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:onClick="dayOfWeekClick"
                     android:padding="0dp"
+                    android:tag="5"
                     android:text="F"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/saturdayButton"
+                    app:layout_constraintEnd_toEndOf="@+id/saturdayButton"
                     app:layout_constraintStart_toEndOf="@+id/thursdayButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/saturdayButton"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:onClick="dayOfWeekClick"
                     android:padding="0dp"
+                    android:tag="6"
                     android:text="S"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/sundayButton"
-                    app:layout_constraintStart_toEndOf="@+id/fridayButton"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
-                    android:id="@+id/sundayButton"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:padding="0dp"
-                    android:text="Su"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/saturdayButton"
+                    app:layout_constraintStart_toEndOf="@+id/fridayButton"
                     app:layout_constraintTop_toTopOf="parent" />
             </android.support.constraint.ConstraintLayout>
         </android.support.constraint.ConstraintLayout>
