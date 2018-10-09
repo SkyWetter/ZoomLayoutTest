@@ -199,6 +199,14 @@ class MainActivity : AppCompatActivity() {
     fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
     {
 
+        fun setWaterLevelText(){
+            when(bedBeingEdited.waterLevel){
+                0 -> currentWaterLevel.text = "Low"
+                1 -> currentWaterLevel.text = "Medium"
+                2 -> currentWaterLevel.text = "High"
+            }
+        }
+
 
         doneButton.setOnClickListener()
         {
@@ -241,11 +249,8 @@ class MainActivity : AppCompatActivity() {
 
                 waterLevelBar.progress = bedBeingEdited.waterLevel
 
-                when(bedBeingEdited.waterLevel){
-                    0 -> currentWaterLevel.text = "Low"
-                    1 -> currentWaterLevel.text = "Medium"
-                    2 -> currentWaterLevel.text = "High"
-                }
+                setWaterLevelText()
+
                 bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
 
                for(i in bedBeingEdited.daysOfWeek.indices){
@@ -270,7 +275,9 @@ class MainActivity : AppCompatActivity() {
                 paramMenuOpen = !paramMenuOpen
             }
         }
-
+        /**
+         * Bed name text listener -- needs to be adjusted for focus change actions
+         */
        bedNameText.setOnClickListener{
            bedNameText.inputType = InputType.TYPE_CLASS_TEXT
 
@@ -278,6 +285,7 @@ class MainActivity : AppCompatActivity() {
 
 
         //Edit text listener for Bed Name (all functions are required, even empty ones)
+
         bedNameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
 
@@ -289,6 +297,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
+                //Change name of the rvBedList value to that of the current edit Text string
                 rvBedList[bedBeingEdited.position].name = bedNameText.text.toString()
 
 
@@ -296,6 +305,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         //Seekbar listener for waterLevel bar, all functions (even empty ones) are required
+
         waterLevelBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
 
             override
@@ -310,18 +320,15 @@ class MainActivity : AppCompatActivity() {
 
             override
             fun onProgressChanged(seekBar: SeekBar, progress : Int,fromUser : Boolean) {
+
+              // Gets and sets value from progress bar to RVBedData
                 bedBeingEdited.waterLevel = waterLevelBar.progress
                 rvBedList[bedBeingEdited.position].waterLevel = bedBeingEdited.waterLevel
 
-                when(bedBeingEdited.waterLevel){
-                    0 -> currentWaterLevel.text = "Low"
-                    1 -> currentWaterLevel.text = "Medium"
-                    2 -> currentWaterLevel.text = "High"
-                }
+                setWaterLevelText()
             }
         })
 
-        //space for further buttons (setting, bluetooth, etc)
     }
 
 //GRID CREATE
@@ -709,6 +716,26 @@ class MainActivity : AppCompatActivity() {
         adjacentSquares.clear()
     }
 
+    fun dayOfWeekClick(v: View){
+
+        var thisDay = rvBedList[bedBeingEdited.position].daysOfWeek //Shortens code
+
+        var tag = v.tag.toString().toInt()  //Converts tag type Any to Int
+
+
+
+        if(thisDay[tag] == false) {
+            thisDay[tag] = true
+            v.setBackgroundColor(ColorData.dayButtonOn)
+
+        }
+
+        else if(thisDay[tag] == true){
+            thisDay[tag] = false
+            v.setBackgroundColor(ColorData.dayButtonOff)
+        }
+
+    }
 
 
 
@@ -789,25 +816,6 @@ class MainActivity : AppCompatActivity() {
     //Handles pressing of any day of week button in bed settings menu
     //Attached to specific button in xml via android:onClick = "dayOfWeekClick"
 
-    fun dayOfWeekClick(v: View){
 
-        var thisDay = rvBedList[bedBeingEdited.position].daysOfWeek //Shortens code
-
-        var tag = v.tag.toString().toInt()  //Converts tag type Any to Int
-
-
-
-        if(thisDay[tag] == false) {
-            thisDay[tag] = true
-            v.setBackgroundColor(ColorData.dayButtonOn)
-
-        }
-
-        else if(thisDay[tag] == true){
-            thisDay[tag] = false
-            v.setBackgroundColor(ColorData.dayButtonOff)
-        }
-
-    }
 
 }
