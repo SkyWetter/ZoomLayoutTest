@@ -65,6 +65,8 @@ import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -87,11 +89,11 @@ class MainActivity : AppCompatActivity() {
         private var paramMenuOpen = false
 
         private var bedCount = 1
-        private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
+        var bedEdit = intArrayOf(0, 0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited, [2] is number of beds deleted
         private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
         private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
-        private var buttonsPerRow = 19              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
+        private var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
         private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
 
     }
@@ -108,8 +110,21 @@ class MainActivity : AppCompatActivity() {
 
 
         //this sets up the recyclerview
-        RVBedXML.layoutManager = LinearLayoutManager(this)
-        RVBedXML.adapter = BedAdapter(rvBedList,{bed : RVBedData -> bedClicked(bed)})
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = BedAdapter(rvBedList,{bed : RVBedData -> bedClicked(bed)})
+
+        val swipeHandler = object : SwipeToDeleteCallback(this)
+        {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
+            {
+                val adapter = recyclerView.adapter as BedAdapter
+                adapter.removeAt(viewHolder.adapterPosition)
+                deleteBed()
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         //load bedList[0] so bed1 can be in bedList[1] lol
         val bedZero = Bed(0)
@@ -461,9 +476,10 @@ class MainActivity : AppCompatActivity() {
             bedList[bedEdit[1]].squaresInBed[i].bedID = 0
             bedList[bedEdit[1]].squaresInBed[i].hasBed = false
             bedList[bedEdit[1]].squaresInBed[i].color = ColorData.deselected
-            bedList[bedEdit[1]].bedColor = null
+            bedList[bedEdit[1]].squaresInBed[i].changeColor(ColorData.deselected)
         }
-        bedList[bedEdit[1]].bedColor = null
+
+        bedList[bedEdit[1]].bedColor = ColorData.deselected
 
         //add remove recyclerview functionality here
 
@@ -529,7 +545,7 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
 
-        RVBedXML.adapter = adapter
+        recyclerView.adapter = adapter
     }
 
     private fun bedClicked(bed : RVBedData)
