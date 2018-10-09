@@ -61,6 +61,7 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -69,12 +70,18 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.text.Editable
+import android.text.InputType
 import android.text.Layout
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import com.example.android.zoomlayouttest.R.id.bedNameText
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
@@ -110,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         constraintSet.clone(gridContainer)                  //Clones the buttonContainer constraint layout settings
         val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
         val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
-
+        val bedNameText = findViewById<EditText>(R.id.bedNameText)
 
         //this sets up the recyclerview
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -122,7 +129,6 @@ class MainActivity : AppCompatActivity() {
             {
                 bedEdit[0] = 0
                 removeAdjacentSquares()
-
                 val adapter = recyclerView.adapter as BedAdapter
                 adapter.removeAt(viewHolder.adapterPosition)
                 deleteBed()
@@ -138,7 +144,7 @@ class MainActivity : AppCompatActivity() {
 
 
         /** Init code*/
-        initColors()   //Sets colors of various UI elements
+        initColorsFonts()   //Sets colors of various UI elements
         gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
         turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]  //Gets the location of the central square of the garden bed
         initializeButtons(this@MainActivity, doneButton, deleteButton,bluetoothButton)  //Initializes button listeners
@@ -178,18 +184,23 @@ class MainActivity : AppCompatActivity() {
      *  INIT FUNCTIONS
      */
 
-    private fun initColors(){
+    private fun initColorsFonts(){
         topBar.setBackgroundColor(ColorData.uiColor1_light)
         zoomLayout.setBackgroundColor(ColorData.uiInvisible)
         bottomText.setBackgroundColor(ColorData.uiColor_white)
         gridContainer.setBackgroundColor(ColorData.uiInvisible)
         topText.setBackgroundColor(ColorData.uiColor1_medium)
+
+        var titleFont = Typeface.createFromAsset(assets,"fonts/MontserratAlternates-Medium.ttf")
+        bedNameText.typeface = titleFont
     }
 
 
 
     fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
     {
+
+
         doneButton.setOnClickListener()
         {
 
@@ -224,10 +235,34 @@ class MainActivity : AppCompatActivity() {
                 doneButton.visibility = View.INVISIBLE
                 deleteButton.visibility = View.INVISIBLE
                 bottomText.visibility = View.INVISIBLE
-                bedName.text = bedBeingEdited.name //Gets name of bed
+                bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
                 paramMenuOpen = !paramMenuOpen
             }
         }
+
+       bedNameText.setOnClickListener{
+           bedNameText.inputType = InputType.TYPE_CLASS_TEXT
+
+       }
+
+        bedNameText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+
+                recyclerView.adapter.notifyDataSetChanged()
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                rvBedList[bedBeingEdited.position].name = bedNameText.text.toString()
+
+
+            }
+        })
+
+
 
         //space for further buttons (setting, bluetooth, etc)
     }
@@ -555,6 +590,7 @@ class MainActivity : AppCompatActivity() {
     fun addBedToRV(bedColor : Int)
     {
         rvBedList.add(RVBedData("Bed #" + bedCount, bedCount,bedColor))
+        rvBedList[rvBedList.lastIndex].position = rvBedList.lastIndex    //Finds position of this bed being added, and stores it in the bed's data
 
         val adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
 
@@ -690,6 +726,9 @@ class MainActivity : AppCompatActivity() {
         } else {// Empty for squares at perp/parallel angles
 
         }
+    }
+
+    fun bedNameOnClick(){
     }
 
 }

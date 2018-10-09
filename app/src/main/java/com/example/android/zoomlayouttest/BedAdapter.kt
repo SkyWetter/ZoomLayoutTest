@@ -34,6 +34,10 @@ class BedAdapter (val bedList: MutableList<RVBedData>, val clickListener: (RVBed
 
     override fun getItemCount()= bedList.size
 
+    fun updateSingleitem(){
+
+    }
+
     fun removeAt(position: Int) {
 
         bedEdit[1] = bedList[position].rvBedID
