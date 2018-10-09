@@ -38,6 +38,7 @@ class ColorData {
 
         val textColor1 = Color.argb(255,0,0,0)  //Black
         val uiInvisible = Color.argb(0,255,255,255)
+        val swipeDelete = Color.argb(255,240,241,210)
 
 
         // Color values for squares
@@ -49,6 +50,7 @@ class ColorData {
         val turret = Color.argb(255,255,0,0)
         val listOfColors = mutableListOf(deselected, selected, adjacent,turret)
         var nextBedColor : Int? = null
+
 
         /**
          * Color squares using hard-coded values (no random range)

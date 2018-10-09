@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
         private var paramMenuOpen = false
 
-        private var bedCount = 1
+        var bedCount = 1
         var bedEdit = intArrayOf(0, 0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited, [2] is number of beds deleted
         private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
@@ -207,6 +207,7 @@ class MainActivity : AppCompatActivity() {
                 paramMenuContainer.visibility = View.GONE
                 doneButton.visibility = View.VISIBLE
                 deleteButton.visibility = View.VISIBLE
+                bottomText.visibility = View.VISIBLE
                 paramMenuOpen = !paramMenuOpen
             }
             else{
@@ -214,6 +215,8 @@ class MainActivity : AppCompatActivity() {
                 paramMenuContainer.visibility = View.VISIBLE
                 doneButton.visibility = View.INVISIBLE
                 deleteButton.visibility = View.INVISIBLE
+                bottomText.visibility = View.INVISIBLE
+                bedName.text = "${rvBedList[bedEdit[1]-1].name}"  //Gets name of bed
                 paramMenuOpen = !paramMenuOpen
             }
         }

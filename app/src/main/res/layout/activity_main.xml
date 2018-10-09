@@ -13,7 +13,7 @@
 
         android:id="@+id/paramMenuContainer"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="355dp"
         android:background="#54f9ae"
         android:elevation="1dp"
         android:visibility="gone"
@@ -21,34 +21,68 @@
         app:layout_constraintEnd_toEndOf="@+id/zoomLayout"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/zoomLayout"
-        app:layout_constraintTop_toBottomOf="@+id/topBar"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@+id/topBar">
 
+
+        <com.example.android.zoomlayouttest.CustomTextView
+            android:id="@+id/bedName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_horizontal"
+            android:text="bedName"
+            android:textSize="30dp"
+            app:font_name="titleMed"
+            app:layout_constraintBottom_toTopOf="@+id/weekDaysContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/weekDaysContainer"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#B55555">
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="#B55555"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bedName">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+            <com.example.android.zoomlayouttest.CustomTextView
+                android:id="@+id/daysText"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:layout_margin="0dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:padding="0dp"
+                android:text="Days to Water"
+                android:textSize="20dp"
+                app:font_name="textMain"
+                app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+                app:layout_constraintHorizontal_bias="0.103"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <android.support.constraint.ConstraintLayout
 
+                android:id="@+id/constraintLayout"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="8dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
                 android:background="#000000"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/daysText">
 
                 <Button
                     android:id="@+id/mondayButton"
