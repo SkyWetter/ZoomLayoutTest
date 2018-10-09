@@ -59,16 +59,17 @@ package com.example.android.zoomlayouttest
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.SeekBar
+import android.widget.SimpleAdapter
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -83,9 +84,8 @@ class MainActivity : AppCompatActivity() {
         private val adjacentSquares = mutableListOf<Square>()
 
         private var bedCount = 1
-        private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
-
-
+        var bedEdit = intArrayOf(0, 0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
+                                            //[2] is number of beds deleted
         private var firstSquare = false
         private var turretSquare: Square? = null
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
         private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
-        private var buttonsPerRow = 19 /** MUST BE ODD NUMBER*/
+        private var buttonsPerRow = 11 /** MUST BE ODD NUMBER*/
 
         private val constraintSet = ConstraintSet()    //Creates a new constraint set variable
 
@@ -120,11 +120,25 @@ class MainActivity : AppCompatActivity() {
 
 
         //this sets up the recyclerview
-        RVBedXML.layoutManager = LinearLayoutManager(this)
-        RVBedXML.adapter = BedAdapter(rvBedList,{bed : RVBedData -> bedClicked(bed)})
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = BedAdapter(rvBedList,{ bed : RVBedData -> bedClicked(bed)})
+
+        val swipeHandler = object : SwipeToDeleteCallback(this)
+        {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
+            {
+                val adapter = recyclerView.adapter as BedAdapter
+                adapter.removeAt(viewHolder.adapterPosition)
+                deleteBed()
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         //load bedList[0] so bed1 can be in bedList[1] lol
         val bedZero = Bed(0)
+        bedZero.bedColor = ColorData.deselected
         bedList.add(bedZero)
 
         debugWindowPrev.setOnClickListener {  Debug.prevMessage(debugWindow) }
@@ -146,7 +160,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
 
 //GRID CREATE
 /* Function for populating a list of all squares in garden grid */
@@ -250,11 +263,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
     /** Checks for adjacent squares to current bed being created/edited */
 
     fun adjacentSquareColorCheck(squareID: Int) {
-
 
         //Holds the square id for squares surrounding the current square
         var leftSquare : Square? = null
@@ -397,7 +408,7 @@ class MainActivity : AppCompatActivity() {
         bedEdit[0] = 1      //bool to toggle editing mode
         bedEdit[1] = bedToEdit      //bedID that is being edited
 
-
+        //designate selectable squares when editing
         removeAdjacentSquares()
         for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
         {
@@ -408,14 +419,18 @@ class MainActivity : AppCompatActivity() {
 
     fun deleteBed()
     {
-        for(i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
+        for(i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)      //remove each tile from bed
         {
             bedList[bedEdit[1]].squaresInBed[i].bedID = 0
             bedList[bedEdit[1]].squaresInBed[i].hasBed = false
             bedList[bedEdit[1]].squaresInBed[i].color = ColorData.deselected
-            bedList[bedEdit[1]].bedColor = null
+            bedList[bedEdit[1]].squaresInBed[i].changeColor(ColorData.deselected)
         }
-        bedList[bedEdit[1]].bedColor = null
+
+        bedList[bedEdit[1]].bedColor = ColorData.deselected
+
+        removeAdjacentSquares()     //remove selectable tiles
+        bedEdit[0] = 0      //exit edit mode
 
         //add remove recyclerview functionality here
 
@@ -477,11 +492,11 @@ class MainActivity : AppCompatActivity() {
     //adds numbered cards to recyclerview for each bed
     fun addBedToRV(bedColor : Int)
     {
-        rvBedList.add(RVBedData("Bed #" + bedCount, bedCount,bedColor))
+        rvBedList.add(RVBedData("Bed #" + bedCount, bedCount, bedColor))
 
         val adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
 
-        RVBedXML.adapter = adapter
+        recyclerView.adapter = adapter
     }
 
     private fun bedClicked(bed : RVBedData)
@@ -492,7 +507,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-     fun seekChange(){
+    fun seekChange(){
         Toast.makeText(this,"Seek changed",Toast.LENGTH_LONG).show()
     }
 
@@ -536,6 +551,8 @@ class MainActivity : AppCompatActivity() {
         }
         adjacentSquares.clear()
     }
+
+
 
     data class Square(val squareId: Int)        //object containing tile information
     {
