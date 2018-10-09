@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.TextView
+import com.example.android.zoomlayouttest.MainActivity.Companion.bedCount
 import com.example.android.zoomlayouttest.MainActivity.Companion.bedEdit
 import kotlinx.android.synthetic.main.bedlist_layout.view.*
 
@@ -34,15 +35,14 @@ class BedAdapter (val bedList: MutableList<RVBedData>, val clickListener: (RVBed
     override fun getItemCount()= bedList.size
 
     fun removeAt(position: Int) {
+
+        bedEdit[1] = bedList[position].rvBedID
         bedList.removeAt(position)
         notifyItemRemoved(position)
-        bedEdit[1] = position + 1 + bedEdit[2]
-        bedEdit[2]++
     }
 
     class BedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(bed: RVBedData, clickListener: (RVBedData) -> Unit) {
-
 
             itemView.textViewBed.text = bed.name
             itemView.setOnClickListener {clickListener(bed)}
