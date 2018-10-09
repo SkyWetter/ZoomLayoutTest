@@ -76,46 +76,32 @@ import kotlin.math.*
 
 
 class MainActivity : AppCompatActivity() {
+
     companion object {
 
-        var RVBedID_inc= 0
-
-        private val adjacentSquares = mutableListOf<Square>()
+        private val adjacentSquares = mutableListOf<Square>()//List of squares adjacent to a given bed
+        private var bedList = mutableListOf<Bed>()              //list of all saved beds
+        private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
+        private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
 
         private var bedCount = 1
         private var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
-
-
-        private var firstSquare = false
-        private var turretSquare: Square? = null
-        private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
-
-        private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
-        private var bedList = mutableListOf<Bed>()      //list of all saved beds
-
         private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
-        private var buttonsPerRow = 19 /** MUST BE ODD NUMBER*/
-
-        private val constraintSet = ConstraintSet()    //Creates a new constraint set variable
+        private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
+        private var buttonsPerRow = 19              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
+        private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
 
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getSupportActionBar()!!.hide();
+        getSupportActionBar()!!.hide();         //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
 
-        initColors()
 
-        if (!Debug.on) {
-            debugWindow.visibility = View.GONE
-            debugWindowNext.visibility= View.GONE
-            debugWindowPrev.visibility = View.GONE
-        }
-
-        constraintSet.clone(gridContainer)  //Clones the buttonContainer constraint layout settings
-        val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)
+        constraintSet.clone(gridContainer)                  //Clones the buttonContainer constraint layout settings
+        val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
         val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
 
 
@@ -127,32 +113,87 @@ class MainActivity : AppCompatActivity() {
         val bedZero = Bed(0)
         bedList.add(bedZero)
 
-        debugWindowPrev.setOnClickListener {  Debug.prevMessage(debugWindow) }
-        debugWindowNext.setOnClickListener { Debug.nextMessage(debugWindow)}
 
-        gridCreate(50, 2, constraintLayout, this@MainActivity)
+        /** Init code*/
+        initColors()   //Sets colors of various UI elements
+        gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
+        turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]  //Gets the location of the central square of the garden bed
+        initializeButtons(this@MainActivity, doneButton, deleteButton,bluetoothButton)  //Initializes button listeners
 
-        turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]
+    }
 
-        getAngleDistanceAll(allSquares, turretSquare!!)
+    /***
+     * DATA CLASSES
+     */
 
-        initializeButtons(this@MainActivity, doneButton, deleteButton)
+    data class Square(val squareId: Int)        //object containing tile information
+    {
+        var row: Int = 0
+        var column: Int = 0
+        var bedID: Int = 0
+        var hasBed: Boolean = false
+        var angle: Double? = null
+        var distance: Double? = null
+        var button: Button? = null
+        var color: Int = ColorData.deselected
+        var isInvisible = false
+
+        fun changeColor(newColor: Int) {
+            button!!.setBackgroundColor(newColor)
+        }
+    }
+
+    data class Bed(val bedID: Int) {
+        var squaresInBed = mutableListOf<Square>()
+        var bedColor: Int? = null
+        //other variables
+    }
+
+    /***
+     *  INIT FUNCTIONS
+     */
+
+    private fun initColors(){
+        topBar.setBackgroundColor(ColorData.uiColor1_light)
+        zoomLayout.setBackgroundColor(ColorData.uiInvisible)
+        bottomText.setBackgroundColor(ColorData.uiColor_white)
+        gridContainer.setBackgroundColor(ColorData.uiInvisible)
+        topText.setBackgroundColor(ColorData.uiColor1_medium)
+    }
 
 
-        blueTooth.setOnClickListener {
+
+    fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
+    {
+        doneButton.setOnClickListener()
+        {
+
+            doneBed(context)
+
+        }
+
+        deleteButton.setOnClickListener()
+        {
+            deleteBed()
+        }
+
+        bluetoothButton.setOnClickListener {
             val intent = Intent(this, BluetoothActivity::class.java).apply {
 
             }
             startActivity(intent)
         }
-    }
 
+        //space for further buttons (setting, bluetooth, etc)
+    }
 
 //GRID CREATE
 /* Function for populating a list of all squares in garden grid */
 
 //Takes a button size (how large each individual button is), margins between each button, buttons per row (grid is always square)
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
+
+
 
     fun gridCreate(buttonSize: Int, buttonMargin: Int, constraintLayout: ConstraintLayout, context: Context) {
 
@@ -251,6 +292,11 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * POST-INIT FUCTIONS
+     * */
+
+
     /** Checks for adjacent squares to current bed being created/edited */
 
     fun adjacentSquareColorCheck(squareID: Int) {
@@ -277,7 +323,8 @@ class MainActivity : AppCompatActivity() {
         else {belowSquare = allSquares[squareID + buttonsPerRow]}   //Below
 
 
-        //Checks if square in direction is either null or the turret, in which
+        /** Checks adjacent areas for either the turret or null (no square), in which case do nothing
+         * Otherwise, if the square in question doesn't belong to a bed, color it with the adjacent square color*/
 
         if (leftSquare == null || leftSquare == turretSquare) { }
         else if (!leftSquare.hasBed)
@@ -301,24 +348,9 @@ class MainActivity : AppCompatActivity() {
             adjacentSquares.add(aboveSquare)
         }
     }
-    //Sta
 
-    fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button)
-    {
-        doneButton.setOnClickListener()
-        {
 
-            doneBed(context)
 
-        }
-
-        deleteButton.setOnClickListener()
-        {
-            deleteBed()
-        }
-
-        //space for further buttons (setting, bluetooth, etc)
-    }
 
     fun buildBed(context: Context, button: Button) {
 
@@ -340,7 +372,7 @@ class MainActivity : AppCompatActivity() {
                         adjacentSquareColorCheck(tempBed[i].squareId - 10000)
                     }
 
-                    Debug.message("Removed " + thisSquare.squareId + " from bed",debugWindow)
+
                 }
                 else         //add selected square to tempbed
                 {
@@ -354,7 +386,7 @@ class MainActivity : AppCompatActivity() {
 
                         Log.d("tempBed", "tempBed has: " + tempBed)
                         Log.d("tempBed", "adjSq has " + adjacentSquares)
-                        Debug.message("Added " + thisSquare.squareId + " to bed",debugWindow)
+
                     }
                 }
             }
@@ -370,7 +402,7 @@ class MainActivity : AppCompatActivity() {
                 thisSquare.changeColor(ColorData.deselected)
                 bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
 
-                Debug.message("Removed " + thisSquare.squareId + " from Bed #" + bedEdit[1],debugWindow)
+
             }
             else if (thisSquare.bedID == 0)     //add new adjacent squares to selected bed
             {
@@ -492,10 +524,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-     fun seekChange(){
-        Toast.makeText(this,"Seek changed",Toast.LENGTH_LONG).show()
-    }
-
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context)
     {
@@ -519,7 +547,7 @@ class MainActivity : AppCompatActivity() {
 
             bedList.add(finalBed)               //add completed Bed to master list and set up for the next
             tempBed.clear()
-            Debug.message("Bed #" + bedCount + " created",debugWindow)
+
             bedCount++
             removeAdjacentSquares()
 
@@ -537,28 +565,7 @@ class MainActivity : AppCompatActivity() {
         adjacentSquares.clear()
     }
 
-    data class Square(val squareId: Int)        //object containing tile information
-    {
-        var row: Int = 0
-        var column: Int = 0
-        var bedID: Int = 0
-        var hasBed: Boolean = false
-        var angle: Double? = null
-        var distance: Double? = null
-        var button: Button? = null
-        var color: Int = ColorData.deselected
-        var isInvisible = false
 
-        fun changeColor(newColor: Int) {
-            button!!.setBackgroundColor(newColor)
-        }
-    }
-
-    data class Bed(val bedID: Int) {
-        var squaresInBed = mutableListOf<Square>()
-        var bedColor: Int? = null
-        //other variables
-    }
 
 
 /* Angle and Distance Function
@@ -635,12 +642,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun initColors(){
-        topBar.setBackgroundColor(ColorData.uiColor1_light)
-        zoomLayout.setBackgroundColor(ColorData.uiInvisible)
-        bottomText.setBackgroundColor(ColorData.uiColor_white)
-        gridContainer.setBackgroundColor(ColorData.uiInvisible)
-        topText.setBackgroundColor(ColorData.uiColor1_medium)
-    }
 
 }

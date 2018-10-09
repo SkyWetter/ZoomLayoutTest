@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.TextView
-import com.example.android.zoomlayouttest.MainActivity.Companion.RVBedID_inc
 import kotlinx.android.synthetic.main.bedlist_layout.view.*
 
 //I have no idea what is going on
@@ -37,7 +36,7 @@ class BedAdapter (val bedList: List<RVBedData>, val clickListener: (RVBedData) -
         fun bind(bed: RVBedData, clickListener: (RVBedData) -> Unit) {
 
 
-            itemView.textViewBed.text = bed.name + " :: " + itemView.tag
+            itemView.textViewBed.text = bed.name
             itemView.setOnClickListener {clickListener(bed)}
             itemView.bedListColor.setBackgroundColor(bed.bedColor)
             Log.d("BedViewHold.bind",itemId.toString())
