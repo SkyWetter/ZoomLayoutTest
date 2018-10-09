@@ -106,9 +106,6 @@ class MainActivity : AppCompatActivity() {
         getSupportActionBar()!!.hide();         //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
 
-
-
-
         constraintSet.clone(gridContainer)                  //Clones the buttonContainer constraint layout settings
         val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
         val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
@@ -689,8 +686,5 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
-
-
 
 }
