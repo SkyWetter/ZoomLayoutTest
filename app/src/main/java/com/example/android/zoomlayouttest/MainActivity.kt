@@ -79,6 +79,7 @@ import java.util.*
 import kotlin.math.*
 
 
+
 class MainActivity : AppCompatActivity() {
 
     //Moved turretSquare outside of companion object under IDE recommendation to avoid memory leaks
@@ -97,7 +98,6 @@ class MainActivity : AppCompatActivity() {
         var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
         private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
-
         private var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
         private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
 
@@ -112,8 +112,6 @@ class MainActivity : AppCompatActivity() {
         constraintSet.clone(gridContainer)                  //Clones the bguttonContainer constraint layout settings
         val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
         val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
-
-
 
         //this sets up the recyclerview
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -200,16 +198,6 @@ class MainActivity : AppCompatActivity() {
             2-> {thisDay[tag] = 3 ; v.setBackgroundColor(ColorData.dayButtonAMPM)}
             3-> {thisDay[tag] = 0 ; v.setBackgroundColor(ColorData.dayButtonOff)}
         }
-//        if(thisDay[tag] == false) {
-//            thisDay[tag] = true
-//            v.setBackgroundColor(ColorData.dayButtonAM)
-//
-//        }
-//
-//        else if(thisDay[tag] == true){
-//            thisDay[tag] = false
-//            v.setBackgroundColor(ColorData.dayButtonOff)
-//        }
 
     }
 
@@ -239,10 +227,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         bluetoothButton.setOnClickListener {
-            val intent = Intent(this, BluetoothActivity::class.java).apply {
+//            val intent = Intent(this, BluetoothActivity::class.java).apply {
+//
+//            }
+//            startActivity(intent)
 
-            }
-            startActivity(intent)
+
         }
 
         settingsButton.setOnClickListener {
@@ -272,7 +262,6 @@ class MainActivity : AppCompatActivity() {
             //If bed settings is current closed, prepare various bed settings values based on rvbed loaded intot bedBeingEdited var
             //Loading of rvbed data happens in bedClicked fxn in the bedClicked function located outside of initbuttons fxn
             else{
-
 
                 waterLevelBar.progress = bedBeingEdited.waterLevel
                 setWaterLevelText()
