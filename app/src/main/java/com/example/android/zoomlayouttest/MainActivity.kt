@@ -57,12 +57,10 @@ Added edit button + functionality
 package com.example.android.zoomlayouttest
 
 
-import android.animation.LayoutTransition
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
@@ -72,14 +70,10 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.text.Editable
 import android.text.InputType
-import android.text.Layout
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
-import com.example.android.zoomlayouttest.R.id.*
-import com.pawegio.kandroid.w
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.math.*
@@ -199,16 +193,22 @@ class MainActivity : AppCompatActivity() {
         var thisDay = rvBedList[bedBeingEdited.position].daysOfWeek //Shortens code
         var tag = v.tag.toString().toInt()  //Converts tag type Any to Int
 
-        if(thisDay[tag] == false) {
-            thisDay[tag] = true
-            v.setBackgroundColor(ColorData.dayButtonOn)
-
+        when(thisDay[tag]){
+            0-> {thisDay[tag] = 1 ; v.setBackgroundColor(ColorData.dayButtonAM)}
+            1-> {thisDay[tag] = 2 ; v.setBackgroundColor(ColorData.dayButtonPM)}
+            2-> {thisDay[tag] = 3 ; v.setBackgroundColor(ColorData.dayButtonAMPM)}
+            3-> {thisDay[tag] = 0 ; v.setBackgroundColor(ColorData.dayButtonOff)}
         }
-
-        else if(thisDay[tag] == true){
-            thisDay[tag] = false
-            v.setBackgroundColor(ColorData.dayButtonOff)
-        }
+//        if(thisDay[tag] == false) {
+//            thisDay[tag] = true
+//            v.setBackgroundColor(ColorData.dayButtonAM)
+//
+//        }
+//
+//        else if(thisDay[tag] == true){
+//            thisDay[tag] = false
+//            v.setBackgroundColor(ColorData.dayButtonOff)
+//        }
 
     }
 
@@ -271,20 +271,21 @@ class MainActivity : AppCompatActivity() {
 
                 waterLevelBar.progress = bedBeingEdited.waterLevel
                 setWaterLevelText()
-
                 bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
 
-               for(i in bedBeingEdited.daysOfWeek.indices){
+                //Loads in the day settings for the bed
+
+                for(i in bedBeingEdited.daysOfWeek.indices){
                    val dayButtons = arrayListOf<Button>(sundayButton,mondayButton,tuesdayButton,wednesdayButton,thursdayButton,fridayButton,saturdayButton)
 
                    var thisDay = bedBeingEdited.daysOfWeek
 
-                   if(thisDay[i]){
-                        dayButtons[i].setBackgroundColor(ColorData.dayButtonOn)
-                   }
-                   else{
-                       dayButtons[i].setBackgroundColor(ColorData.dayButtonOff)
-                   }
+                    when(thisDay[i]){
+                        0-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonOff)}
+                        1-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonAM)}
+                        2-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonPM)}
+                        3-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonAMPM)}
+                    }
                }
 
                 paramMenuContainer.visibility = View.VISIBLE

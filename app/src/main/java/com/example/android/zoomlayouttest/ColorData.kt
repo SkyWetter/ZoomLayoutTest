@@ -40,8 +40,10 @@ class ColorData {
         val uiInvisible = Color.argb(0,255,255,255)
         val swipeDelete = Color.argb(255,240,241,210)
 
-        val dayButtonOn    = Color.argb(255,66,95,244)
-        val dayButtonOff     = Color.argb(255,201,207,242)
+        val dayButtonAMPM =  Color.parseColor("#FFC107")
+        val dayButtonPM = Color.parseColor("#00796b")
+        val dayButtonAM    = Color.parseColor("#536DFE")
+        val dayButtonOff     = Color.parseColor("#D32F2F")
 
 
         // Color values for squares

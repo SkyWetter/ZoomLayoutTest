@@ -9,7 +9,8 @@ import android.widget.SeekBar
 
 class RVBedData(var name: String, val rvBedID: Int, val bedColor: Int){
 
-    var daysOfWeek = arrayListOf<Boolean>(true,true,true,true,true,true,true)
+   // var daysOfWeek = arrayListOf<Boolean>(true,true,true,true,true,true,true)
+    var daysOfWeek = arrayListOf<Int>(0,0,0,0,0,0,0)
     var waterLevel = 1
     var position = 0
 
