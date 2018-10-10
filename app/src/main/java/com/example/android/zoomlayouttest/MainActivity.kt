@@ -87,8 +87,10 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
+    //Moved turretSquare outside of companion object under IDE recommendation to avoid memory leaks
+    private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
 
+    companion object {
 
         private val adjacentSquares = mutableListOf<Square>()//List of squares adjacent to a given bed
         var bedList = mutableListOf<Bed>()              //list of all saved beds
@@ -101,7 +103,6 @@ class MainActivity : AppCompatActivity() {
         private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
 
-        private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
         private var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
         private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
 
@@ -109,7 +110,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getSupportActionBar()!!.hide();         //Removes the top action bar of the android ui
+        getSupportActionBar()!!.hide()        //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
         paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
 
@@ -178,11 +179,8 @@ class MainActivity : AppCompatActivity() {
         //other variables
     }
 
-
-
-
     /***
-     *  INIT FUNCTIONS
+     *  INIT FUNCTIONS // LISTENERS
      */
 
     private fun initColorsFonts(){
@@ -196,9 +194,27 @@ class MainActivity : AppCompatActivity() {
         bedNameText.typeface = titleFont
     }
 
+    fun dayOfWeekClick(v: View){
+
+        var thisDay = rvBedList[bedBeingEdited.position].daysOfWeek //Shortens code
+        var tag = v.tag.toString().toInt()  //Converts tag type Any to Int
+
+        if(thisDay[tag] == false) {
+            thisDay[tag] = true
+            v.setBackgroundColor(ColorData.dayButtonOn)
+
+        }
+
+        else if(thisDay[tag] == true){
+            thisDay[tag] = false
+            v.setBackgroundColor(ColorData.dayButtonOff)
+        }
+
+    }
+
     fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
     {
-
+        //Functions global to multiple listeners
         fun setWaterLevelText(){
             when(bedBeingEdited.waterLevel){
                 0 -> currentWaterLevel.text = "Low"
@@ -231,24 +247,29 @@ class MainActivity : AppCompatActivity() {
 
             var thisBed = rvBedList[bedBeingEdited.position]
 
+            //If bed settings is already open, makes sure RvBedData of edited bed is updated
+            //Changes visibility of necessary components
+            //Flips value of paramMenuOpen bool
+
             if(paramMenuOpen){
 
                 //Loads edited bed values into rvBedData data class
                 thisBed.daysOfWeek = bedBeingEdited.daysOfWeek
                 thisBed.waterLevel = bedBeingEdited.waterLevel
 
-                //If parameter menu is open, remove it, show the done and delete button, and flip value of paramMenuOpen
                 paramMenuContainer.visibility = View.GONE
                 doneButton.visibility = View.VISIBLE
                 deleteButton.visibility = View.VISIBLE
                 bottomText.visibility = View.VISIBLE
                 paramMenuOpen = !paramMenuOpen
             }
+
+            //If bed settings is current closed, prepare various bed settings values based on rvbed loaded intot bedBeingEdited var
+            //Loading of rvbed data happens in bedClicked fxn in the bedClicked function located outside of initbuttons fxn
             else{
-                //If parameter menu is closed, open it, remove the done and delete button, and flip value of paramMenuOpen
+
 
                 waterLevelBar.progress = bedBeingEdited.waterLevel
-
                 setWaterLevelText()
 
                 bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
@@ -266,23 +287,19 @@ class MainActivity : AppCompatActivity() {
                    }
                }
 
-
                 paramMenuContainer.visibility = View.VISIBLE
                 doneButton.visibility = View.INVISIBLE
                 deleteButton.visibility = View.INVISIBLE
                 bottomText.visibility = View.INVISIBLE
-
                 paramMenuOpen = !paramMenuOpen
             }
         }
         /**
          * Bed name text listener -- needs to be adjusted for focus change actions
          */
-       bedNameText.setOnClickListener{
-           bedNameText.inputType = InputType.TYPE_CLASS_TEXT
-
+        bedNameText.setOnClickListener{
+            bedNameText.inputType = InputType.TYPE_CLASS_TEXT
        }
-
 
         //Edit text listener for Bed Name (all functions are required, even empty ones)
 
@@ -716,26 +733,7 @@ class MainActivity : AppCompatActivity() {
         adjacentSquares.clear()
     }
 
-    fun dayOfWeekClick(v: View){
 
-        var thisDay = rvBedList[bedBeingEdited.position].daysOfWeek //Shortens code
-
-        var tag = v.tag.toString().toInt()  //Converts tag type Any to Int
-
-
-
-        if(thisDay[tag] == false) {
-            thisDay[tag] = true
-            v.setBackgroundColor(ColorData.dayButtonOn)
-
-        }
-
-        else if(thisDay[tag] == true){
-            thisDay[tag] = false
-            v.setBackgroundColor(ColorData.dayButtonOff)
-        }
-
-    }
 
 
 
