@@ -198,9 +198,7 @@ class MainActivity : AppCompatActivity() {
             2-> {thisDay[tag] = 3 ; v.setBackgroundColor(ColorData.dayButtonAMPM)}
             3-> {thisDay[tag] = 0 ; v.setBackgroundColor(ColorData.dayButtonOff)}
         }
-
     }
-
 
     fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
     {
@@ -227,12 +225,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         bluetoothButton.setOnClickListener {
-//            val intent = Intent(this, BluetoothActivity::class.java).apply {
-//
-//            }
-//            startActivity(intent)
+            val intent = Intent(this, BluetoothActivity::class.java).apply {
 
-
+            }
+            startActivity(intent)
         }
 
         settingsButton.setOnClickListener {
@@ -785,17 +781,13 @@ class MainActivity : AppCompatActivity() {
         //  Log.i("quadrant", "SquareId: " + targetSquare.squareId.toString() + " Quad: " + quadrant.toString())
         val temp: Double = (abs(x).toDouble() / abs(y).toDouble())
 
-        if (quadrant == 1) {
-            targetSquare.angle = (atan(temp) * 180) / PI
-        } else if (quadrant == 2) {
-            targetSquare.angle = 180 - ((atan(temp) * 180) / PI)
-        } else if (quadrant == 3) {
-            targetSquare.angle = 180 + (atan(temp) * 180) / PI
-        } else if (quadrant == 4) {
-            targetSquare.angle = 360 - (atan(temp) * 180) / PI
-        } else {// Empty for squares at perp/parallel angles
-
+        when(quadrant){
+            1 -> targetSquare.angle = (atan(temp) * 180) / PI
+            2 -> targetSquare.angle = 180 - ((atan(temp) * 180) / PI)
+            3 -> targetSquare.angle = 180 + (atan(temp) * 180) / PI
+            4 -> targetSquare.angle = 360 - (atan(temp) * 180) / PI
         }
+
     }
 
 }

@@ -22,6 +22,7 @@ import android.bluetooth.BluetoothDevice
 import android.os.Build
 import android.support.v4.content.LocalBroadcastManager
 import android.widget.*
+import com.pawegio.kandroid.v
 import kotlinx.android.synthetic.main.activity_bluetooth.*
 import java.io.IOException
 import java.lang.NullPointerException
@@ -152,11 +153,20 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 
     protected override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState)
+        getSupportActionBar()!!.hide()
         setContentView(R.layout.activity_bluetooth)
         lvNewDevices = findViewById(R.id.lvNewDevices)
         val etSend: EditText = findViewById<EditText>(R.id.editText)
 
+        btnONOFF.visibility = View.VISIBLE
+        btnDiscover.visibility =View.GONE
+        btnEnableDisable_Discoverable.visibility = View.GONE
+        btnStartConnection.visibility = View.GONE
+        btnReset.visibility = View.GONE
+        btnReturn.visibility = View.GONE
+
+        messageText.text = "Hey there! Let's get your bluetooth started. \n Just press the BIG BUTTON"
 
         //Broadcasts when bond state changes (ie: pairing)
         var filter : IntentFilter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
@@ -166,11 +176,22 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         lvNewDevices!!.onItemClickListener = this@BluetoothActivity
 
+
+
         btnONOFF.setOnClickListener{
 
-            Log.d(tag, "onClick: enabling/disabling bluetooth.")
-            enableDisableBT()
+            if(mBluetoothAdapter!!.isEnabled){
 
+                btnONOFF.visibility = View.GONE
+                btnDiscover.visibility = View.VISIBLE
+                messageText.text = "Great, it looks like your bluetooth is already enabled! \n " +
+                        "Would you push the look for bluetooth button? "
+            }
+            else {
+                messageText.text = "Alright, enabling bluetooth!"
+                Log.d(tag, "onClick: enabling/disabling bluetooth.")
+                enableDisableBT()
+            }
         }
 
         btnEnableDisable_Discoverable.setOnClickListener{
@@ -209,7 +230,37 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 var discoverDevicesIntent = IntentFilter(BluetoothDevice.ACTION_FOUND)
                 registerReceiver(mBroadcastReceiver3, discoverDevicesIntent)
             }
+
+            messageText.text = "Look for the Rainbow turret in the list below \n " +
+                    "If you can't find it, please press 'Look for Bluetooth' again!"
         }
+
+        btnStartConnection.setOnClickListener{
+
+            if(mBTDevice != null) {
+
+                /**  NEED TO ADD CHECK FOR ESP NAME HERE, TO ENSURE USER CONNECTS TO THE RAINBOW*/
+                messageText.text = "Great, you're connected to the Rainbow, pew pew! \n" +
+                        "Let's show you how to wet the bed!"
+
+                btnStartConnection.visibility = View.GONE
+                btnReset.visibility = View.GONE
+                btnReturn.visibility = View.VISIBLE
+
+                startBTConnection(mBTDevice!!, MY_UUID_INSECURE)
+
+            }
+            else{
+                Toast.makeText(this,
+                        "Must be paired to a device before opening connection", Toast.LENGTH_LONG).show()
+            }
+        }
+        /***
+         * DEBUG STEPPER CONTROL BUTTONS -- set to View.GONE at runtime
+         *
+         */
+
+
 
         btnSend.setOnClickListener{
             var tempString = etSend.text.toString()
@@ -244,18 +295,8 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
-        /**
-         * Start connection onClick -- app will fail and crash if it hasn't paired first
-         */
-        btnStartConnection.setOnClickListener{
-            if(mBTDevice != null) {
-                startBTConnection(mBTDevice!!, MY_UUID_INSECURE)
-            }
-            else{
-                Toast.makeText(this,
-                        "Must be paired to a device before opening connection", Toast.LENGTH_LONG).show()
-            }
-        }
+
+
 
     }
 
@@ -281,6 +322,9 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             /** Filter That intercepts and log changes to your bluetooth status */
             var BTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
             registerReceiver(mBroadcastReceiver1,BTIntent)
+
+            btnONOFF.visibility = View.GONE
+            btnDiscover.visibility = View.VISIBLE
         }
         if(mBluetoothAdapter!!.isEnabled){
             mBluetoothAdapter!!.disable()
@@ -321,6 +365,14 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         Log.d(tag, "onItemClick: deviceName = $deviceName")
         Log.d(tag, "onItemClick: deviceName = $deviceAddress")
+
+        messageText.text = "You are now paired to $deviceName! \n" +
+                "Press 'Connect' to finish the bluetooth set-up process\n" +
+                "Press reset to start again and look for more bluetooth devices."
+        btnDiscover.visibility = View.GONE
+        btnStartConnection.visibility = View.VISIBLE
+        btnReset.visibility = View.VISIBLE
+
 
         //create the bond
         //NOTE: Requires API 17+
