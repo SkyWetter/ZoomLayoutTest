@@ -90,6 +90,8 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
+    /** Bluetooth Variables */
+
     private val tag = "MainActivityDebug"  //Tag for debug
 
     var mBluetoothAdapter : BluetoothAdapter? = null
@@ -101,6 +103,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     var mBluetoothConnection : BluetoothConnectionService? = null
     //Moved turretSquare outside of companion object under IDE recommendation to avoid memory leaks
     private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
+
+    /** Main Menu Variables */
 
     companion object {
 
@@ -260,8 +264,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         lvNewDevices!!.onItemClickListener = this@MainActivity
 
+        btnReset.setOnClickListener {
+            btnReturn.visibility = View.GONE
+            btnReset.visibility = View.GONE
+            btnDiscover.visibility = View.VISIBLE
+        }
+
         btnReturn.setOnClickListener {
             bluetoothContainer.visibility = View.GONE
+            mainScreenContainer.visibility = View.VISIBLE
         }
 
         btnONOFF.setOnClickListener{
@@ -294,6 +305,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
 
         btnDiscover.setOnClickListener{
+            if(!mBluetoothAdapter!!.isEnabled){
+                enableDisableBT()
+            }
+
+            if(mDeviceListAdapter != null) {
+                mBTDevices.clear()
+                mDeviceListAdapter!!.notifyDataSetChanged()
+            }
+
             Log.d(tag,"btnDiscover: Looking for unpaired devices.")
 
             if(mBluetoothAdapter!!.isDiscovering){
@@ -317,8 +337,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 registerReceiver(mBroadcastReceiver3, discoverDevicesIntent)
             }
 
-            messageText.text = "Look for the Rainbow turret in the list below \n " +
-                    "If you can't find it, please press 'Look for Bluetooth' again!"
+
+            messageText.text = "Look for the Rainbow turret in the list below \n If you can't find it, please press 'Find Bluetooth Devices' again!"
         }
 
         btnStartConnection.setOnClickListener{
@@ -330,7 +350,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         "Let's show you how to wet the bed!"
 
                 btnStartConnection.visibility = View.GONE
-                btnReset.visibility = View.GONE
+                btnReset.visibility = View.VISIBLE
                 btnReturn.visibility = View.VISIBLE
 
                 startBTConnection(mBTDevice!!, MY_UUID_INSECURE)
@@ -478,7 +498,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-    fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
+    fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button, bluetoothOpenMenuButton:Button)
     {
         //Functions global to multiple listeners
         fun setWaterLevelText(){
@@ -502,13 +522,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             deleteBed()
         }
 
-        bluetoothButton.setOnClickListener {
+        bluetoothOpenMenuButton.setOnClickListener {
 
             bluetoothContainer.visibility = View.VISIBLE
-//            val intent = Intent(this, BluetoothActivity::class.java).apply {
-//
-//            }
-//            startActivity(intent)
+            mainScreenContainer.visibility = View.GONE
+
         }
 
         settingsButton.setOnClickListener {
@@ -1153,7 +1171,5 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
             mBluetoothConnection =  BluetoothConnectionService(this@MainActivity)
         }
-
     }
-
 }
