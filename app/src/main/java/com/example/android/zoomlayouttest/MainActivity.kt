@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
 
+        val wateringSteps = mutableListOf<String>()
         private val adjacentSquares = mutableListOf<Square>()//List of squares adjacent to a given bed
         var bedList = mutableListOf<Bed>()              //list of all saved beds
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
@@ -212,6 +213,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button,bluetoothButton:Button)
     {
         //Functions global to multiple listeners
@@ -241,6 +243,9 @@ class MainActivity : AppCompatActivity() {
 
             }
             startActivity(intent)
+        }
+
+        settingsButton.setOnClickListener {
         }
 
         bedSettings.setOnClickListener {
@@ -612,7 +617,6 @@ class MainActivity : AppCompatActivity() {
         bedList[bedEdit[1]].bedColor = ColorData.deselected
 
         //add remove recyclerview functionality here
-
     }
 
     //check if the selected square is adjacent to the current tiles in your bed
@@ -688,7 +692,6 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Editing: ${bed.name}", Toast.LENGTH_LONG).show()
     }
 
-
     //creates bed object, adds completed bed to list, sets stage for next bed
     fun doneBed(context: Context)
     {
@@ -723,8 +726,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
     //clear all adjacent square colouring
     fun removeAdjacentSquares()
     {
@@ -733,10 +734,6 @@ class MainActivity : AppCompatActivity() {
         }
         adjacentSquares.clear()
     }
-
-
-
-
 
 /* Angle and Distance Function
    b Takes a target square and a central turret square
@@ -811,10 +808,5 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
-    //Handles pressing of any day of week button in bed settings menu
-    //Attached to specific button in xml via android:onClick = "dayOfWeekClick"
-
-
 
 }

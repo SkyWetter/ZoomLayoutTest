@@ -248,7 +248,13 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
          * Start connection onClick -- app will fail and crash if it hasn't paired first
          */
         btnStartConnection.setOnClickListener{
-            startBTConnection(mBTDevice!!,MY_UUID_INSECURE)
+            if(mBTDevice != null) {
+                startBTConnection(mBTDevice!!, MY_UUID_INSECURE)
+            }
+            else{
+                Toast.makeText(this,
+                        "Must be paired to a device before opening connection", Toast.LENGTH_LONG).show()
+            }
         }
 
     }
