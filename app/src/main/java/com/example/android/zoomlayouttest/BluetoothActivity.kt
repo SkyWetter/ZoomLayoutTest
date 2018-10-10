@@ -23,7 +23,6 @@ import android.os.Build
 import android.support.v4.content.LocalBroadcastManager
 import android.widget.*
 import com.pawegio.kandroid.v
-import kotlinx.android.synthetic.main.activity_bluetooth.*
 import java.io.IOException
 import java.lang.NullPointerException
 import java.nio.charset.Charset
@@ -155,7 +154,7 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     protected override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getSupportActionBar()!!.hide()
-        setContentView(R.layout.activity_bluetooth)
+       // setContentView(R.layout.activity_bluetooth)
         lvNewDevices = findViewById(R.id.lvNewDevices)
         val etSend: EditText = findViewById<EditText>(R.id.editText)
 

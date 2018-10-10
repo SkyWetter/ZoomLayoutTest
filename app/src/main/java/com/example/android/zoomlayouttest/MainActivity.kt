@@ -57,13 +57,20 @@ Added edit button + functionality
 package com.example.android.zoomlayouttest
 
 
+import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -75,13 +82,23 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.nio.charset.Charset
 import java.util.*
 import kotlin.math.*
 
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
+    private val tag = "MainActivityDebug"  //Tag for debug
+
+    var mBluetoothAdapter : BluetoothAdapter? = null
+    var mBTDevices = mutableListOf<BluetoothDevice>();
+    var mDeviceListAdapter: DeviceListAdapter? = null
+    var lvNewDevices : ListView? = null
+    var mBTDevice : BluetoothDevice? = null
+    val MY_UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+    var mBluetoothConnection : BluetoothConnectionService? = null
     //Moved turretSquare outside of companion object under IDE recommendation to avoid memory leaks
     private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
 
@@ -103,10 +120,271 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     *
+     * BLUETOOTH RECEIVERS
+     *
+     * */
+
+    private val mBroadcastReceiver1 = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {         //Function onReceive is a default member function of the BroadcastReceiver class
+            val action: String = intent.action
+            //When discovery finds a device
+            if(action == BluetoothAdapter.ACTION_STATE_CHANGED){
+                val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
+
+                when(state){
+                    BluetoothAdapter.STATE_OFF->{ Log.d(tag,"onReceive: STATE OFF")}
+                    BluetoothAdapter.STATE_TURNING_OFF->{
+                        Log.d(tag,"mBroadcastReceiver1: STATE TURNING OFF")}
+                    BluetoothAdapter.STATE_ON->{
+                        Log.d(tag,"mBroadcastReceiver1: STATE ON")}
+                    BluetoothAdapter.STATE_TURNING_ON->{
+                        Log.d(tag,"mBroadcastReceiver1: STATE TURNING ON")}
+
+                }
+            }
+        }
+    }
+
+    private val mBroadcastReceiver2 = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {         //Function onReceive is a default member function of the BroadcastReceiver class
+
+            val action: String = intent.action
+            //When discovery finds a device
+            if(action == BluetoothAdapter.ACTION_SCAN_MODE_CHANGED){
+                val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
+
+                when(state){
+                    BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE->{ Log.d(tag,"mBroadcastReceiver2: Discoverability Enabled")}
+                    BluetoothAdapter.SCAN_MODE_CONNECTABLE->{
+                        Log.d(tag,"mBroadcastReceiver2: Discoverability Disabled. Able to receive connections.")}
+                    BluetoothAdapter.SCAN_MODE_NONE->{
+                        Log.d(tag,"mBroadcastReceiver2: Discoverability Disabled. Unable to receive connections.")}
+                    BluetoothAdapter.STATE_CONNECTING->{
+                        Log.d(tag,"mBroadcastReceiver2: connecting... ")}
+                    BluetoothAdapter.STATE_CONNECTED->{
+                        Log.d(tag,"mBroadcastReceiver2: Connected.")}
+
+                }
+            }
+        }
+    }
+
+    private val mBroadcastReceiver3 = object : BroadcastReceiver(){
+
+        override fun onReceive(context: Context, intent: Intent){
+            Log.d(tag,"onReceive: ACTION FOUND")
+            val action: String = intent.action
+
+            //When discovery finds a device
+            if(action == BluetoothDevice.ACTION_FOUND){
+                var device : BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                mBTDevices.add(device)
+                Log.d(tag,"onReceive: " + device.name + ": " + device.address)
+                mDeviceListAdapter = DeviceListAdapter(context,R.layout.device_adapter_view,mBTDevices)
+                lvNewDevices!!.adapter = mDeviceListAdapter
+
+            }
+        }
+    }
+
+    private val mBroadcastReceiver4 = object : BroadcastReceiver(){
+        override fun onReceive(context: Context, intent: Intent) {
+            val action: String = intent.action
+
+            if(action == BluetoothDevice.ACTION_BOND_STATE_CHANGED){
+                var mDevice : BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                //3 cases
+                //case 1: bonded already
+                if(mDevice.bondState== BluetoothDevice.BOND_BONDED){
+                    Log.d(tag,"BroadcastReceiver: BOND_BONDED")
+                    //inside BroadcastReceiver4
+                    mBTDevice = mDevice
+                }
+                //case 2: creating a bond
+                if(mDevice.bondState == BluetoothDevice.BOND_BONDING){
+                    Log.d(tag,"BroadcastReceiver: BOND_BONDING")
+
+                }
+                //case 3: breaking a bond
+                if(mDevice.bondState == BluetoothDevice.BOND_NONE){
+                    Log.d(tag,"BroadcastReceiver: BOND_NONE")
+                }
+            }
+        }
+    }
+
+
+    override fun onDestroy(){
+        Log.d(tag,"onDestroy: called.")
+        super.onDestroy()
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver1)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver2)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver3)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver4)
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getSupportActionBar()!!.hide()        //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
+
+
+        /**
+         * NEW BLUETOOTH STUFF
+         *
+         * */
+
+        lvNewDevices = findViewById(R.id.lvNewDevices)
+        val etSend: EditText = findViewById<EditText>(R.id.editText)
+
+        bluetoothContainer.visibility = View.GONE
+        btnONOFF.visibility = View.VISIBLE
+        btnDiscover.visibility =View.GONE
+        btnEnableDisable_Discoverable.visibility = View.GONE
+        btnStartConnection.visibility = View.GONE
+        btnReset.visibility = View.GONE
+        btnReturn.visibility = View.GONE
+
+        messageText.text = "Hey there! Let's get your bluetooth started. \n Just press the BIG BUTTON"
+
+        //Broadcasts when bond state changes (ie: pairing)
+        var filter : IntentFilter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+        registerReceiver(mBroadcastReceiver4,filter)
+
+        //Gets this phones default adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        lvNewDevices!!.onItemClickListener = this@MainActivity
+
+        btnReturn.setOnClickListener {
+            bluetoothContainer.visibility = View.GONE
+        }
+
+        btnONOFF.setOnClickListener{
+
+            if(mBluetoothAdapter!!.isEnabled){
+
+                btnONOFF.visibility = View.GONE
+                btnDiscover.visibility = View.VISIBLE
+                messageText.text = "Great, it looks like your bluetooth is already enabled! \n " +
+                        "Would you push the look for bluetooth button? "
+            }
+            else {
+                messageText.text = "Alright, enabling bluetooth!"
+                Log.d(tag, "onClick: enabling/disabling bluetooth.")
+                enableDisableBT()
+            }
+        }
+
+        btnEnableDisable_Discoverable.setOnClickListener{
+            Log.d(tag,"onClick: btnEnableDisable_Discoverable: Making device discoverable for 300 seconds.")
+
+            var discoverableIntent : Intent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300)
+            startActivity(discoverableIntent)
+
+            var intentFilter  = IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)
+            registerReceiver(mBroadcastReceiver2,intentFilter)
+
+
+        }
+
+        btnDiscover.setOnClickListener{
+            Log.d(tag,"btnDiscover: Looking for unpaired devices.")
+
+            if(mBluetoothAdapter!!.isDiscovering){
+                mBluetoothAdapter!!.cancelDiscovery()
+                Log.d(tag,"btnDiscover: Cancelling discovery.")
+
+                /** Required permission check for any API > Android Lollipop*/
+                checkBTPermissions()
+
+                mBluetoothAdapter!!.startDiscovery()
+                var discoverDevicesIntent = IntentFilter(BluetoothDevice.ACTION_FOUND)
+                registerReceiver(mBroadcastReceiver3, discoverDevicesIntent)
+            }
+            if(!mBluetoothAdapter!!.isDiscovering){
+
+                //Check BT permission in manifest
+                checkBTPermissions()
+
+                mBluetoothAdapter!!.startDiscovery()
+                var discoverDevicesIntent = IntentFilter(BluetoothDevice.ACTION_FOUND)
+                registerReceiver(mBroadcastReceiver3, discoverDevicesIntent)
+            }
+
+            messageText.text = "Look for the Rainbow turret in the list below \n " +
+                    "If you can't find it, please press 'Look for Bluetooth' again!"
+        }
+
+        btnStartConnection.setOnClickListener{
+
+            if(mBTDevice != null) {
+
+                /**  NEED TO ADD CHECK FOR ESP NAME HERE, TO ENSURE USER CONNECTS TO THE RAINBOW*/
+                messageText.text = "Great, you're connected to the Rainbow, pew pew! \n" +
+                        "Let's show you how to wet the bed!"
+
+                btnStartConnection.visibility = View.GONE
+                btnReset.visibility = View.GONE
+                btnReturn.visibility = View.VISIBLE
+
+                startBTConnection(mBTDevice!!, MY_UUID_INSECURE)
+
+            }
+            else{
+                Toast.makeText(this,
+                        "Must be paired to a device before opening connection", Toast.LENGTH_LONG).show()
+            }
+        }
+        /***
+         * DEBUG STEPPER CONTROL BUTTONS -- set to View.GONE at runtime
+         *
+         */
+
+
+
+        btnSend.setOnClickListener{
+            var tempString = etSend.text.toString()
+
+            // var bytes: ByteArray = etSend.text.toString().toByteArray(Charset.defaultCharset())
+            var bytes: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+
+            mBluetoothConnection!!.write(bytes)
+        }
+
+        btnStep.setOnClickListener {
+            var tempString = "a"
+            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btnDir1.setOnClickListener {
+            var tempString = "b"
+            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btnDir2.setOnClickListener {
+            var tempString = "c"
+            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btnFreq.setOnClickListener {
+            var tempString = "d"
+            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+
+
+
         paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
 
         constraintSet.clone(gridContainer)                  //Clones the bguttonContainer constraint layout settings
@@ -225,10 +503,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         bluetoothButton.setOnClickListener {
-            val intent = Intent(this, BluetoothActivity::class.java).apply {
 
-            }
-            startActivity(intent)
+            bluetoothContainer.visibility = View.VISIBLE
+//            val intent = Intent(this, BluetoothActivity::class.java).apply {
+//
+//            }
+//            startActivity(intent)
         }
 
         settingsButton.setOnClickListener {
@@ -786,6 +1066,92 @@ class MainActivity : AppCompatActivity() {
             2 -> targetSquare.angle = 180 - ((atan(temp) * 180) / PI)
             3 -> targetSquare.angle = 180 + (atan(temp) * 180) / PI
             4 -> targetSquare.angle = 360 - (atan(temp) * 180) / PI
+        }
+
+    }
+
+    /***
+     * BLUETOOTH FUNCTIONS
+     */
+    fun startBTConnection(device : BluetoothDevice, uuid : UUID){
+        Log.d(tag,"startBTConnection: Initializing RFCOM Bluetooth Connection.")
+
+        mBluetoothConnection!!.startClient(device,uuid)
+    }
+
+    fun enableDisableBT(){
+        if(mBluetoothAdapter == null){
+            Log.d(tag,"enableDisableBT: Does not have BT capabilities")
+        }
+        if(!mBluetoothAdapter!!.isEnabled){
+            Log.d(tag,"enableDisableBT: enabling BT.")
+            var enableBTIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            startActivity(enableBTIntent)
+
+            /** Filter That intercepts and log changes to your bluetooth status */
+            var BTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+            registerReceiver(mBroadcastReceiver1,BTIntent)
+
+            btnONOFF.visibility = View.GONE
+            btnDiscover.visibility = View.VISIBLE
+        }
+        if(mBluetoothAdapter!!.isEnabled){
+            mBluetoothAdapter!!.disable()
+
+            var BTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+            registerReceiver(mBroadcastReceiver1,BTIntent)
+
+        }
+    }
+
+    /**
+     * This method is required for all deices running API23+
+     * Android must programmatically check the permission for bluetooth.
+     * Putting the proper permissions in the manifest is not enough.
+     */
+
+    private fun checkBTPermissions(){
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+            var permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION")
+            permissionCheck += this.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION")
+            if(permissionCheck !=0){
+
+                this.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),1001)
+            }else{
+                Log.d(tag,"checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.")
+            }
+        }
+    }
+
+
+    override fun onItemClick(adapterView: AdapterView<*>, view : View, i: Int, l: Long){
+        //first cancel discovery because its very memory intensive
+        mBluetoothAdapter!!.cancelDiscovery()
+
+        Log.d(tag,"onItemClick: You Clicked on a device.")
+        var deviceName : String = mBTDevices[i].name
+        var deviceAddress : String = mBTDevices[i].address
+
+        Log.d(tag, "onItemClick: deviceName = $deviceName")
+        Log.d(tag, "onItemClick: deviceName = $deviceAddress")
+
+        messageText.text = "You are now paired to $deviceName! \n" +
+                "Press 'Connect' to finish the bluetooth set-up process\n" +
+                "Press reset to start again and look for more bluetooth devices."
+        btnDiscover.visibility = View.GONE
+        btnStartConnection.visibility = View.VISIBLE
+        btnReset.visibility = View.VISIBLE
+
+
+        //create the bond
+        //NOTE: Requires API 17+
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
+            Log.d(tag,"Trying to pair with $deviceName")
+            mBTDevices[i].createBond()
+
+            mBTDevice = mBTDevices[i]
+
+            mBluetoothConnection =  BluetoothConnectionService(this@MainActivity)
         }
 
     }
