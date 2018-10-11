@@ -822,7 +822,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         tempBed.remove(thisSquare)
 
                         removeAdjacentSquares()
-                        for (i in 0..tempBed.size - 1) {
+                        for (i in 0 until tempBed.size) {
                             adjacentSquareColorCheck(tempBed[i].squareId - 10000)
                         }
 
@@ -837,8 +837,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                             adjacentSquares.removeAll(Collections.singleton(thisSquare))
                             tempBed.add(thisSquare)
 
-                            Log.d("tempBed", "tempBed has: " + tempBed)
-                            Log.d("tempBed", "adjSq has " + adjacentSquares)
+                            Log.d("tempBed", "tempBed has: $tempBed")
+                            Log.d("tempBed", "adjSq has $adjacentSquares")
 
                         }
                     }
@@ -866,7 +866,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 }
 
                 removeAdjacentSquares()
-                for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1) {
+                for (i in 0 until bedList[bedEdit[1]].squaresInBed.size) {
                     adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
                 }
             }
@@ -884,7 +884,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 
         removeAdjacentSquares()
-        for (i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
+        for (i in 0 until bedList[bedEdit[1]].squaresInBed.size)
         {
             adjacentSquareColorCheck(bedList[bedEdit[1]].squaresInBed[i].squareId - 10000)
         }
@@ -893,7 +893,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     fun deleteBed()
     {
-        for(i in 0..bedList[bedEdit[1]].squaresInBed.size - 1)
+        for(i in 0 until bedList[bedEdit[1]].squaresInBed.size)
         {
             bedList[bedEdit[1]].squaresInBed[i].bedID = 0
             bedList[bedEdit[1]].squaresInBed[i].hasBed = false
@@ -908,7 +908,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
     //check if the selected square is adjacent to the current tiles in your bed
-    fun isSquareAdjacent(button: Button, bedSquares: MutableList<Square>): Boolean {
+    private fun isSquareAdjacent(button: Button, bedSquares: MutableList<Square>): Boolean {
         var squareIsAdjacent = false
 
         val xBed = IntArray(bedSquares.size)      //x & y for each tile in bed
@@ -945,7 +945,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 yPermitted[i + 3] = yBed[i / 4]
             }
 
-            for (i in 0..bedSquares.size * 4 - 1)        //check button x&y against permitted x&y
+            for (i in 0 until bedSquares.size * 4)        //check button x&y against permitted x&y
             {
                 if (xButton == xPermitted[i] && yButton == yPermitted[i]) {
                     squareIsAdjacent = true
@@ -963,10 +963,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     //adds numbered cards to recyclerview for each bed/
     private fun addBedToRV(bedColor : Int)
     {
-        rvBedList.add(RVBedData("Bed #" + bedCount, bedCount,bedColor))
+        rvBedList.add(RVBedData("Bed # $bedCount", bedCount,bedColor))
         rvBedList[rvBedList.lastIndex].position = rvBedList.lastIndex    //Finds position of this bed being added, and stores it in the bed's data
 
-        val adapter = BedAdapter(rvBedList, {bed : RVBedData -> bedClicked(bed)})
+        val adapter = BedAdapter(rvBedList){bed : RVBedData -> bedClicked(bed)}
 
         recyclerView.adapter = adapter
     }
@@ -995,7 +995,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             val finalBed = Bed(bedCount)     //contains final tile IDs
             finalBed.bedColor = ColorData.nextBedColor
 
-            for (i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
+            for (i in 0 until tempBed.size)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
             {
                 allSquares[tempBed[i].squareId - 10000].bedID = bedCount
                 allSquares[tempBed[i].squareId - 10000].changeColor(ColorData.nextBedColor!!)
@@ -1040,7 +1040,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         val x = (targetSquare.column - turretSquare.column)
         val y = (targetSquare.row - turretSquare.column)
         val squaredCoords = (x * x) + (y * y)
-        var quadrant: Int?
+        val quadrant: Int?
 
         targetSquare.distance = sqrt(squaredCoords.toDouble())
 
@@ -1112,8 +1112,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             startActivity(enableBTIntent)
 
             /** Filter That intercepts and log changes to your bluetooth status */
-            val BTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-            registerReceiver(mBroadcastReceiver1,BTIntent)
+            val bTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+            registerReceiver(mBroadcastReceiver1,bTIntent)
 
             btnONOFF.visibility = View.GONE
             btnDiscover.visibility = View.VISIBLE
@@ -1121,8 +1121,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         if(mBluetoothAdapter!!.isEnabled){
             mBluetoothAdapter!!.disable()
 
-            val BTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-            registerReceiver(mBroadcastReceiver1,BTIntent)
+            val bTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+            registerReceiver(mBroadcastReceiver1,bTIntent)
 
         }
     }
