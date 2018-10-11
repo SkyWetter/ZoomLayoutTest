@@ -58,6 +58,7 @@ package com.example.android.zoomlayouttest
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
@@ -349,36 +350,36 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 
         btnSend.setOnClickListener{
-            var tempString = etSend.text.toString()
+            val tempString = etSend.text.toString()
 
             // var bytes: ByteArray = etSend.text.toString().toByteArray(Charset.defaultCharset())
-            var bytes: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val bytes: ByteArray = tempString.toByteArray(Charset.defaultCharset())
 
             mBluetoothConnection!!.write(bytes)
         }
 
         btnStep.setOnClickListener {
-            var tempString = "a"
-            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val tempString = "a"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
 
             mBluetoothConnection!!.write(tempByte)
         }
 
         btnDir1.setOnClickListener {
-            var tempString = "b"
-            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val tempString = "b"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
         btnDir2.setOnClickListener {
-            var tempString = "c"
-            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val tempString = "c"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
         btnFreq.setOnClickListener {
-            var tempString = "d"
-            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val tempString = "d"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
@@ -493,7 +494,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         doneButton.setOnClickListener()
         {
 
-            doneBed(context)
+            doneBed()
 
         }
 
@@ -516,7 +517,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         bedSettings.setOnClickListener {
 
-            var thisBed = rvBedList[bedBeingEdited.position]
+            val thisBed = rvBedList[bedBeingEdited.position]
 
             //If bed settings is already open, makes sure RvBedData of edited bed is updated
             //Changes visibility of necessary components
@@ -548,7 +549,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 for(i in bedBeingEdited.daysOfWeek.indices){
                    val dayButtons = arrayListOf<Button>(sundayButton,mondayButton,tuesdayButton,wednesdayButton,thursdayButton,fridayButton,saturdayButton)
 
-                   var thisDay = bedBeingEdited.daysOfWeek
+                   val thisDay = bedBeingEdited.daysOfWeek
 
                     when(thisDay[i]){
                         0-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonOff)}
@@ -652,7 +653,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     button.id = idNumber             //Set id based on idNumber incrementor
 
 
-                    var tempSquare = Square(idNumber)      //create new tile object with tileID
+                    val tempSquare = Square(idNumber)      //create new tile object with tileID
 
                     tempSquare.column = i                 //set rows and columns
                     tempSquare.row = row
@@ -694,7 +695,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     constraintSet.constrainWidth(button.id, buttonSize)                 //Sets size of created button
                     constraintSet.constrainHeight(button.id, buttonSize)
 
-                    var tempNum = (buttonsPerRow - 1) / 2
+                    val tempNum = (buttonsPerRow - 1) / 2
 
                     if (i == tempNum && row == tempNum) {
                         tempSquare.changeColor(ColorData.turret)
@@ -709,7 +710,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                     {
 
-                        buildBed(context, button)                         //add/remove tiles from bed when clicked
+                        buildBed(button)                         //add/remove tiles from bed when clicked
                     }
 
                     previousButton = button
@@ -731,7 +732,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     /** Checks for adjacent squares to current bed being created/edited */
 
-    fun adjacentSquareColorCheck(squareID: Int) {
+   private fun adjacentSquareColorCheck(squareID: Int) {
 
 
         //Holds the square id for squares surrounding the current square
@@ -782,7 +783,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
 
-    fun buildBed(context: Context, button: Button) {
+    private fun buildBed(button: Button) {
 
         val thisSquare = allSquares[button.id - 10000]      //square you have just clicke don
         if (!paramMenuOpen) {
@@ -792,7 +793,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                 if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
                 {
-                    if (thisSquare.hasBed == true)    //remove selected square from tempbed
+                    if (thisSquare.hasBed)    //remove selected square from tempbed
                     {
                         thisSquare.hasBed = false
                         thisSquare.changeColor(ColorData.deselected)
@@ -850,7 +851,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-    fun editBed(bedToEdit: Int) {
+    private fun editBed(bedToEdit: Int) {
         //val bedToEdit = 1   //figure out for to set this via clicking card in RV
         deleteButton.visibility = View.VISIBLE
         bedSettings.visibility = View.VISIBLE
@@ -888,28 +889,28 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     fun isSquareAdjacent(button: Button, bedSquares: MutableList<Square>): Boolean {
         var squareIsAdjacent = false
 
-        var xBed = IntArray(bedSquares.size)      //x & y for each tile in bed
-        var yBed = IntArray(bedSquares.size)
+        val xBed = IntArray(bedSquares.size)      //x & y for each tile in bed
+        val yBed = IntArray(bedSquares.size)
 
         val xButton = allSquares[button.id - 10000].column       //x & y for tile selected
         val yButton = allSquares[button.id - 10000].row
 
-        var xPermitted = IntArray(bedSquares.size * 4)      //array of permitted tile positions
-        var yPermitted = IntArray(bedSquares.size * 4)
+        val xPermitted = IntArray(bedSquares.size * 4)      //array of permitted tile positions
+        val yPermitted = IntArray(bedSquares.size * 4)
 
         if (bedSquares.isEmpty()) //allow any tile for first selection of new bed
         {
             squareIsAdjacent = true
         }
 
-        if (squareIsAdjacent == false) {
-            for (i in 0..bedSquares.size - 1)     //parse the x&y coordinates from the bed
+        if (!squareIsAdjacent) {
+            for (i in 0 until bedSquares.size)     //parse the x&y coordinates from the bed
             {
                 xBed[i] = allSquares[bedSquares[i].squareId - 10000].column
                 yBed[i] = allSquares[bedSquares[i].squareId - 10000].row
             }
 
-            for (i in 0..bedSquares.size * 4 - 1 step 4)        //create list of permitted positions
+            for (i in 0 until bedSquares.size * 4 step 4)        //create list of permitted positions
             {
                 xPermitted[i] = xBed[i / 4] - 1
                 xPermitted[i + 1] = xBed[i / 4]
@@ -937,8 +938,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         return squareIsAdjacent
     }
 
-    //adds numbered cards to recyclerview for each bed
-    fun addBedToRV(bedColor : Int)
+    //adds numbered cards to recyclerview for each bed/
+    private fun addBedToRV(bedColor : Int)
     {
         rvBedList.add(RVBedData("Bed #" + bedCount, bedCount,bedColor))
         rvBedList[rvBedList.lastIndex].position = rvBedList.lastIndex    //Finds position of this bed being added, and stores it in the bed's data
@@ -958,7 +959,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
     //creates bed object, adds completed bed to list, sets stage for next bed
-    fun doneBed(context: Context)
+    private fun doneBed()
     {
         removeAdjacentSquares()   //Resets adjacent square visibility
         doneButton.visibility = View.GONE   //Hides done button
@@ -969,7 +970,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             ColorData.newBedColor()
             addBedToRV(ColorData.nextBedColor!!)
 
-            var finalBed = Bed(bedCount)     //contains final tile IDs
+            val finalBed = Bed(bedCount)     //contains final tile IDs
             finalBed.bedColor = ColorData.nextBedColor
 
             for (i in 0..tempBed.size - 1)       //update tiles with appropriate bed ID & adds tile IDs to list for Bed
@@ -1014,10 +1015,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     private fun getAngleDistance(targetSquare: Square, turretSquare: Square) {
 
 
-        var x = (targetSquare.column - turretSquare.column)
-        var y = (targetSquare.row - turretSquare.column)
+        val x = (targetSquare.column - turretSquare.column)
+        val y = (targetSquare.row - turretSquare.column)
         val squaredCoords = (x * x) + (y * y)
-        var quadrant: Int? = null
+        var quadrant: Int?
 
         targetSquare.distance = sqrt(squaredCoords.toDouble())
 
@@ -1073,23 +1074,23 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     /***
      * BLUETOOTH FUNCTIONS
      */
-    fun startBTConnection(device : BluetoothDevice, uuid : UUID){
+    private fun startBTConnection(device : BluetoothDevice, uuid : UUID){
         Log.d(tag,"startBTConnection: Initializing RFCOM Bluetooth Connection.")
 
         mBluetoothConnection!!.startClient(device,uuid)
     }
 
-    fun enableDisableBT(){
+    private fun enableDisableBT(){
         if(mBluetoothAdapter == null){
             Log.d(tag,"enableDisableBT: Does not have BT capabilities")
         }
         if(!mBluetoothAdapter!!.isEnabled){
             Log.d(tag,"enableDisableBT: enabling BT.")
-            var enableBTIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            val enableBTIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivity(enableBTIntent)
 
             /** Filter That intercepts and log changes to your bluetooth status */
-            var BTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+            val BTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
             registerReceiver(mBroadcastReceiver1,BTIntent)
 
             btnONOFF.visibility = View.GONE
@@ -1098,7 +1099,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         if(mBluetoothAdapter!!.isEnabled){
             mBluetoothAdapter!!.disable()
 
-            var BTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+            val BTIntent = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
             registerReceiver(mBroadcastReceiver1,BTIntent)
 
         }
@@ -1110,6 +1111,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
      * Putting the proper permissions in the manifest is not enough.
      */
 
+    @SuppressLint("NewApi")
     private fun checkBTPermissions(){
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
             var permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION")
@@ -1124,13 +1126,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onItemClick(adapterView: AdapterView<*>, view : View, i: Int, l: Long){
         //first cancel discovery because its very memory intensive
         mBluetoothAdapter!!.cancelDiscovery()
 
         Log.d(tag,"onItemClick: You Clicked on a device.")
-        var deviceName : String = mBTDevices[i].name
-        var deviceAddress : String = mBTDevices[i].address
+        val deviceName : String = mBTDevices[i].name
+        val deviceAddress : String = mBTDevices[i].address
 
         Log.d(tag, "onItemClick: deviceName = $deviceName")
         Log.d(tag, "onItemClick: deviceName = $deviceAddress")
@@ -1145,15 +1148,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         //create the bond
         //NOTE: Requires API 17+
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
-            Log.d(tag,"Trying to pair with $deviceName")
-            mBTDevices[i].createBond()
+        Log.d(tag,"Trying to pair with $deviceName")
+        mBTDevices[i].createBond()
 
-            mBTDevice = mBTDevices[i]
+        mBTDevice = mBTDevices[i]
 
-            mBluetoothConnection =  BluetoothConnectionService(this@MainActivity)
-        }
-
+        mBluetoothConnection =  BluetoothConnectionService(this@MainActivity)
     }
-
 }
