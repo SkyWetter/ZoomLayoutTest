@@ -296,9 +296,6 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
-
-
-
     }
 
     /**

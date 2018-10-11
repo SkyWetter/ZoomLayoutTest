@@ -442,7 +442,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         initColorsFonts()   //Sets colors of various UI elements
         gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
         turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]  //Gets the location of the central square of the garden bed
-        initializeButtons(this@MainActivity, doneButton, deleteButton,bluetoothButton)  //Initializes button listeners
+        initializeButtons(this@MainActivity, doneButton,bluetoothButton)  //Initializes button listeners
 
     }
 
@@ -501,7 +501,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-    private fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button, bluetoothOpenMenuButton:Button)
+    private fun initializeButtons(context: Context, doneButton: Button, bluetoothOpenMenuButton:Button)
     {
         @SuppressLint("SetTextI18n")
 //Functions global to multiple listeners
@@ -513,17 +513,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             }
         }
 
-
         doneButton.setOnClickListener()
         {
 
             doneBed()
 
-        }
-
-        deleteButton.setOnClickListener()
-        {
-            deleteBed()
         }
 
         bluetoothOpenMenuButton.setOnClickListener {
@@ -552,7 +546,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                 paramMenuContainer.visibility = View.GONE
                 doneButton.visibility = View.VISIBLE
-                deleteButton.visibility = View.VISIBLE
                 bottomText.visibility = View.VISIBLE
                 paramMenuOpen = !paramMenuOpen
             }
@@ -582,7 +575,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                 paramMenuContainer.visibility = View.VISIBLE
                 doneButton.visibility = View.INVISIBLE
-                deleteButton.visibility = View.INVISIBLE
                 bottomText.visibility = View.INVISIBLE
                 paramMenuOpen = !paramMenuOpen
             }
@@ -646,7 +638,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 //Takes a button size (how large each individual button is), margins between each button, buttons per row (grid is always square)
 //Must also pass the parent Constraint Layout view holding the grid, and pass this@MainAtivity into context
-
 
 
     private fun gridCreate(buttonSize: Int, buttonMargin: Int, constraintLayout: ConstraintLayout, context: Context) {
@@ -743,7 +734,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             Log.i("ERROR!", "You can't have gridCreate" +
                     " buttonsPerRow == an even number")
         }
-
     }
 
 
@@ -875,7 +865,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     private fun editBed(bedToEdit: Int) {
         //val bedToEdit = 1   //figure out for to set this via clicking card in RV
-        deleteButton.visibility = View.VISIBLE
+
         bedSettings.visibility = View.VISIBLE
         doneButton.visibility = View.VISIBLE
 
@@ -985,7 +975,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     {
         removeAdjacentSquares()   //Resets adjacent square visibility
         doneButton.visibility = View.GONE   //Hides done button
-        deleteButton.visibility = View.GONE    //Hides
         bedSettings.visibility = View.GONE
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
          //   ColorData.newRandomBedColor()
