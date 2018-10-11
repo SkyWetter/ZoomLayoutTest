@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     companion object {
 
 
-        private val adjacentSquares = mutableListOf<Square>()//List of squares adjacent to a given bed
+        private val adjacentSquares = mutableListOf<Square>()//List of squares adjacentSquare to a given bed
         var bedList = mutableListOf<Bed>()              //list of all saved beds
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
         private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
@@ -239,15 +239,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         getSupportActionBar()!!.hide()        //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
 
-
         /**
+         *
          * NEW BLUETOOTH STUFF
          *
          * */
 
         lvNewDevices = findViewById(R.id.lvNewDevices)
         val etSend: EditText = findViewById(R.id.editText)
-
         bluetoothContainer.visibility = View.GONE
         btnONOFF.visibility = View.VISIBLE
         btnDiscover.visibility =View.GONE
@@ -273,8 +272,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
 
         btnReturn.setOnClickListener {
+            /*
             bluetoothContainer.visibility = View.GONE
-            mainScreenContainer.visibility = View.VISIBLE
+            mainScreenContainer.visibility = View.VISIBLE*/
+
+            debugWindow.visibility = View.VISIBLE
+            btnReset.visibility = View.GONE
+            btnReturn.visibility = View.GONE
+
         }
 
         btnONOFF.setOnClickListener{
@@ -340,7 +345,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 registerReceiver(mBroadcastReceiver3, discoverDevicesIntent)
             }
 
-
             messageText.text = "Look for the Rainbow turret in the list below \n If you can't find it, please press 'Find Bluetooth Devices' again!"
         }
 
@@ -369,7 +373,43 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
          *
          */
 
+        btn_A.setOnClickListener {
+            val tempString = "a"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
 
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btn_B.setOnClickListener {
+            val tempString = "b"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btn_C.setOnClickListener {
+            val tempString = "c"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btn_D.setOnClickListener {
+            val tempString = "d"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btn_E.setOnClickListener {
+            val tempString = "e"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btn_F.setOnClickListener {
+            val tempString = "f"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
+        }
 
         btnSend.setOnClickListener{
             val tempString = etSend.text.toString()
@@ -405,11 +445,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             mBluetoothConnection!!.write(tempByte)
         }
 
-
-
-
         paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
-
         constraintSet.clone(gridContainer)                  //Clones the bguttonContainer constraint layout settings
         val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
         val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
@@ -459,7 +495,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         var angle: Double? = null
         var distance: Double? = null
         var button: Button? = null
-        var color: Int = ColorData.deselected
+        var color: Int = ColorData.deselectedSquare
         var isInvisible = false
 
         fun changeColor(newColor: Int) {
@@ -478,11 +514,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
      */
 
     private fun initColorsFonts(){
-        topBar.setBackgroundColor(ColorData.uiColor1_light)
+
+        topBar.setBackgroundColor(ColorData.uiColorLightGreen)
         zoomLayout.setBackgroundColor(ColorData.uiInvisible)
         bottomText.setBackgroundColor(ColorData.uiColor_white)
         gridContainer.setBackgroundColor(ColorData.uiInvisible)
-        topText.setBackgroundColor(ColorData.uiColor1_medium)
+        topText.setBackgroundColor(ColorData.uiColorLightGreen)
 
         val titleFont = Typeface.createFromAsset(assets,"fonts/MontserratAlternates-Medium.ttf")
         bedNameText.typeface = titleFont
@@ -714,7 +751,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         tempSquare.changeColor(ColorData.turret)
                         allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
                     } else {
-                        tempSquare.changeColor(ColorData.deselected)                            //Sets color (To be replaced with final button styling)
+                        tempSquare.changeColor(ColorData.deselectedSquare)                            //Sets color (To be replaced with final button styling)
                     }
 
                     constraintLayout.addView(button)                                    //Add button into Constraint Layout view
@@ -742,7 +779,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
      * */
 
 
-    /** Checks for adjacent squares to current bed being created/edited */
+    /** Checks for adjacentSquare squares to current bed being created/edited */
 
    private fun adjacentSquareColorCheck(squareID: Int) {
 
@@ -768,28 +805,28 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         else {belowSquare = allSquares[squareID + buttonsPerRow]}   //Below
 
 
-        /** Checks adjacent areas for either the turret or null (no square), in which case do nothing
-         * Otherwise, if the square in question doesn't belong to a bed, color it with the adjacent square color*/
+        /** Checks adjacentSquare areas for either the turret or null (no square), in which case do nothing
+         * Otherwise, if the square in question doesn't belong to a bed, color it with the adjacentSquare square color*/
 
         if (leftSquare == null || leftSquare == turretSquare) { }
         else if (!leftSquare.hasBed)
         {
-            leftSquare.changeColor(ColorData.adjacent)
+            leftSquare.changeColor(ColorData.adjacentSquare)
             adjacentSquares.add(leftSquare)
         }
         if (rightSquare == null || rightSquare == turretSquare) { }
         else if (!rightSquare.hasBed) {
-            rightSquare.changeColor(ColorData.adjacent)
+            rightSquare.changeColor(ColorData.adjacentSquare)
             adjacentSquares.add(rightSquare)
         }
         if (belowSquare == null || belowSquare == turretSquare) { }
         else if (!belowSquare.hasBed) {
-            belowSquare.changeColor(ColorData.adjacent)
+            belowSquare.changeColor(ColorData.adjacentSquare)
             adjacentSquares.add(belowSquare)
         }
         if (aboveSquare == null || aboveSquare == turretSquare) { }
         else if (!aboveSquare.hasBed) {
-            aboveSquare.changeColor(ColorData.adjacent)
+            aboveSquare.changeColor(ColorData.adjacentSquare)
             adjacentSquares.add(aboveSquare)
         }
     }
@@ -808,7 +845,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     if (thisSquare.hasBed)    //remove selected square from tempbed
                     {
                         thisSquare.hasBed = false
-                        thisSquare.changeColor(ColorData.deselected)
+                        thisSquare.changeColor(ColorData.deselectedSquare)
                         tempBed.remove(thisSquare)
 
                         removeAdjacentSquares()
@@ -819,7 +856,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                     } else         //add selected square to tempbed
                     {
-                        if (isSquareAdjacent(button, tempBed))         //check is square is adjacent
+                        if (isSquareAdjacent(button, tempBed))         //check is square is adjacentSquare
                         {
                             adjacentSquareColorCheck(thisSquare.squareId - 10000)
                             thisSquare.hasBed = true
@@ -841,11 +878,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 {
                     thisSquare.bedID = 0
                     thisSquare.hasBed = false
-                    thisSquare.changeColor(ColorData.deselected)
+                    thisSquare.changeColor(ColorData.deselectedSquare)
                     bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
 
 
-                } else if (thisSquare.bedID == 0)     //add new adjacent squares to selected bed
+                } else if (thisSquare.bedID == 0)     //add new adjacentSquare squares to selected bed
                 {
                     if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed)) {
                         thisSquare.bedID = bedEdit[1]
@@ -887,17 +924,17 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         {
             bedList[bedEdit[1]].squaresInBed[i].bedID = 0
             bedList[bedEdit[1]].squaresInBed[i].hasBed = false
-            bedList[bedEdit[1]].squaresInBed[i].color = ColorData.deselected
-            bedList[bedEdit[1]].squaresInBed[i].changeColor(ColorData.deselected)
+            bedList[bedEdit[1]].squaresInBed[i].color = ColorData.deselectedSquare
+            bedList[bedEdit[1]].squaresInBed[i].changeColor(ColorData.deselectedSquare)
 
         }
         bedList[bedEdit[1]].squaresInBed.clear()
-        bedList[bedEdit[1]].bedColor = ColorData.deselected
+        bedList[bedEdit[1]].bedColor = ColorData.deselectedSquare
 
         //add remove recyclerview functionality here
     }
 
-    //check if the selected square is adjacent to the current tiles in your bed
+    //check if the selected square is adjacentSquare to the current tiles in your bed
     private fun isSquareAdjacent(button: Button, bedSquares: MutableList<Square>): Boolean {
         var squareIsAdjacent = false
 
@@ -973,7 +1010,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     //creates bed object, adds completed bed to list, sets stage for next bed
     private fun doneBed()
     {
-        removeAdjacentSquares()   //Resets adjacent square visibility
+        removeAdjacentSquares()   //Resets adjacentSquare square visibility
         doneButton.visibility = View.GONE   //Hides done button
         bedSettings.visibility = View.GONE
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
@@ -1003,11 +1040,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-    //clear all adjacent square colouring
+    //clear all adjacentSquare square colouring
     fun removeAdjacentSquares()
     {
         for(i in adjacentSquares){
-            i.changeColor(ColorData.deselected)
+            i.changeColor(ColorData.deselectedSquare)
         }
         adjacentSquares.clear()
     }

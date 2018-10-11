@@ -1,8 +1,6 @@
 package com.example.android.zoomlayouttest
 
-import android.content.Context
 import android.graphics.Color
-import java.lang.Math
 
 /**
  * ColorData Class
@@ -24,7 +22,13 @@ class ColorData {
 
     companion object {
 
-        // Color values for ui backgrounds
+        // Color values
+        val uiColorLightGreen = Color.parseColor("#4CAF50")
+        val uiColorBrightOrange = Color.parseColor("#FF9800")
+        val uiColorAmber = Color.parseColor("#FFC107")
+        val uiColorPureWhite = Color.parseColor("#FFFFFF")
+        val uiColorDarkGreen = Color.parseColor("#388E3C")
+
         val uiColor1_dark = Color.argb(255,0,178,72)
         val uiColor1_medium = Color.argb(255,0,229,117)  //Med Green
         val uiColor1_light = Color.argb(255,102,255,166) //Light Green
@@ -46,14 +50,13 @@ class ColorData {
         val dayButtonOff     = Color.parseColor("#D32F2F")
 
 
-        // Color values for squares
-        val deselected = uiColor_white
-
+        // Objects to be colored
+        val deselectedSquare = uiColor_white
         val selected = uiColor2_medium
-        val adjacent = Color.argb(50,110,255,232)   //Light Blue
+        val adjacentSquare = Color.argb(50,110,255,232)   //Light Blue
 
         val turret = Color.argb(255,255,0,0)
-        val listOfColors = mutableListOf(deselected, selected, adjacent,turret)
+        val listOfColors = mutableListOf(deselectedSquare, selected, adjacentSquare,turret)
         var nextBedColor : Int? = null
 
 
