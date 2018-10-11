@@ -10,472 +10,484 @@
     tools:context=".MainActivity">
 
 
-
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/globalButtonContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:elevation="2dp"
-        app:layout_constraintBottom_toBottomOf="@id/topBar"
-        app:layout_constraintEnd_toEndOf="@id/topBar"
-        app:layout_constraintStart_toStartOf="@id/topBar"
-        app:layout_constraintTop_toTopOf="@id/topBar">
-
-
-        <ImageView
-            android:layout_width="35dp"
-            android:layout_height="92dp"
-            android:layout_marginTop="4dp"
-            android:elevation="3dp"
-            android:scaleX="0.8"
-            android:scaleY="0.8"
-            android:src="@drawable/ic_settings_black_48dp"
-            app:layout_constraintBottom_toBottomOf="@+id/settingsButton"
-            app:layout_constraintEnd_toEndOf="@+id/settingsButton"
-            app:layout_constraintStart_toStartOf="@+id/settingsButton"
-            app:layout_constraintTop_toTopOf="@+id/settingsButton"
-            app:layout_constraintVertical_bias="0.541" />
-
-        <Button
-            android:id="@+id/settingsButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="256dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/btn_rnd"
-            android:elevation="1dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/bluetoothButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:layout_width="35dp"
-            android:layout_height="92dp"
-            android:layout_marginTop="4dp"
-            android:elevation="3dp"
-            android:scaleX="0.8"
-            android:scaleY="0.8"
-            android:src="@drawable/bluetoothicon"
-            app:layout_constraintBottom_toBottomOf="@+id/bluetoothButton"
-            app:layout_constraintEnd_toEndOf="@+id/bluetoothButton"
-            app:layout_constraintStart_toStartOf="@+id/bluetoothButton"
-            app:layout_constraintTop_toTopOf="@+id/bluetoothButton"
-            app:layout_constraintVertical_bias="0.541" />
-
-        <Button
-            android:id="@+id/bluetoothButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/btn_rnd"
-            android:elevation="1dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/settingsButton"
-            app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/paramMenuContainer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#54f9ae"
-        android:elevation="1dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/zoomLayout"
-        app:layout_constraintEnd_toEndOf="@+id/zoomLayout"
-        app:layout_constraintStart_toStartOf="@+id/zoomLayout"
-        app:layout_constraintTop_toBottomOf="@+id/topBar">
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/waterLevelContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="16dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/weekDaysContainer">
-
-            <com.example.android.zoomlayouttest.CustomTextView
-                android:id="@+id/waterLevelText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Water Level"
-                android:textSize="20dp"
-                app:font_name="textAlt"
-                app:layout_constraintBottom_toTopOf="@id/waterLevelBar"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/currentWaterLevel"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.example.android.zoomlayouttest.CustomTextView
-                android:id="@+id/currentWaterLevel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="wl"
-                app:layout_constraintBottom_toTopOf="@id/waterLevelBar"
-                app:layout_constraintLeft_toRightOf="@id/waterLevelText"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <SeekBar
-                android:id="@+id/waterLevelBar"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                android:layout_width="204dp"
-                android:layout_height="25dp"
-                android:max="2"
-                android:progress="1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/waterLevelBar" />
-
-        </android.support.constraint.ConstraintLayout>
-
-
-        <EditText
-            android:id="@+id/bedNameText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:editable="false"
-            android:gravity="center_horizontal"
-            android:inputType="none"
-            android:maxLines="1"
-            android:text="bedName"
-            android:textSize="30dp"
-            app:layout_constraintBottom_toTopOf="@+id/weekDaysContainer"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/weekDaysContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:background="#B55555"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bedNameText">
-
-            <com.example.android.zoomlayouttest.CustomTextView
-                android:id="@+id/daysText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="0dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:editable="true"
-                android:padding="0dp"
-                android:text="Days to Water"
-                android:textSize="20dp"
-                app:font_name="textMain"
-                app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
-                app:layout_constraintHorizontal_bias="0.103"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <android.support.constraint.ConstraintLayout
-
-                android:id="@+id/constraintLayout"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="8dp"
-                android:background="#000000"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/daysText">
-
-                <Button
-                    android:id="@+id/sundayButton"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:onClick="dayOfWeekClick"
-                    android:padding="0dp"
-                    android:tag="0"
-                    android:text="Su"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/mondayButton"
-                    app:layout_constraintHorizontal_chainStyle="spread_inside"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
-
-                <Button
-                    android:id="@+id/mondayButton"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:onClick="dayOfWeekClick"
-                    android:padding="0dp"
-                    android:tag="1"
-                    android:text="M"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tuesdayButton"
-                    app:layout_constraintStart_toEndOf="@+id/sundayButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <Button
-                    android:id="@+id/tuesdayButton"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:onClick="dayOfWeekClick"
-                    android:padding="0dp"
-                    android:tag="2"
-                    android:text="T"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/wednesdayButton"
-                    app:layout_constraintStart_toEndOf="@+id/mondayButton"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
-                    android:id="@+id/wednesdayButton"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:onClick="dayOfWeekClick"
-                    android:padding="0dp"
-                    android:tag="3"
-                    android:text="W"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/thursdayButton"
-                    app:layout_constraintStart_toEndOf="@+id/tuesdayButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
-
-                <Button
-                    android:id="@+id/thursdayButton"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:onClick="dayOfWeekClick"
-                    android:padding="0dp"
-                    android:tag="4"
-                    android:text="Th"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/fridayButton"
-                    app:layout_constraintStart_toEndOf="@+id/wednesdayButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
-
-                <Button
-                    android:id="@+id/fridayButton"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:onClick="dayOfWeekClick"
-                    android:padding="0dp"
-                    android:tag="5"
-                    android:text="F"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/saturdayButton"
-                    app:layout_constraintStart_toEndOf="@+id/thursdayButton"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
-                    android:id="@+id/saturdayButton"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:onClick="dayOfWeekClick"
-                    android:padding="0dp"
-                    android:tag="6"
-                    android:text="S"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/fridayButton"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </android.support.constraint.ConstraintLayout>
-        </android.support.constraint.ConstraintLayout>
-
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/topBar"
+        android:id="@+id/mainScreenContainer"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="#54f9ae"
-        android:elevation="1dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/zoomLayout"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/topBarButtonPanel"
-            android:layout_width="396dp"
-            android:layout_height="69dp"
-            android:layout_marginTop="8dp"
-            android:background="#54f9ae"
-            android:elevation="0dp"
-            android:paddingVertical="0dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/topText">
+            android:id="@+id/globalButtonContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/topBar"
+            app:layout_constraintEnd_toEndOf="@id/topBar"
+            app:layout_constraintStart_toStartOf="@id/topBar"
+            app:layout_constraintTop_toTopOf="@id/topBar">
+
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="92dp"
+                android:layout_marginTop="4dp"
+                android:elevation="3dp"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:src="@drawable/ic_settings_black_48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/settingsButton"
+                app:layout_constraintEnd_toEndOf="@+id/settingsButton"
+                app:layout_constraintStart_toStartOf="@+id/settingsButton"
+                app:layout_constraintTop_toTopOf="@+id/settingsButton"
+                app:layout_constraintVertical_bias="0.541" />
 
             <Button
+                android:id="@+id/settingsButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="256dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/btn_rnd"
+                android:elevation="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/bluetoothButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                android:id="@+id/doneButton"
-                android:layout_width="98dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="92dp"
+                android:layout_marginTop="4dp"
+                android:elevation="3dp"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:src="@drawable/bluetoothicon"
+                app:layout_constraintBottom_toBottomOf="@+id/bluetoothButton"
+                app:layout_constraintEnd_toEndOf="@+id/bluetoothButton"
+                app:layout_constraintStart_toStartOf="@+id/bluetoothButton"
+                app:layout_constraintTop_toTopOf="@+id/bluetoothButton"
+                app:layout_constraintVertical_bias="0.541" />
+
+            <Button
+                android:id="@+id/bluetoothButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="Done Bed"
-                android:visibility="gone"
+                android:background="@drawable/btn_rnd"
+                android:elevation="1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/deleteButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.058" />
-
-            <Button
-                android:id="@+id/deleteButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Delete Bed"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/doneButton"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.058" />
-
-            <Button
-                android:id="@+id/bedSettings"
-                android:layout_width="96dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="32dp"
-                android:max="2"
-                android:text="Bed Settings"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/deleteButton"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/settingsButton"
                 app:layout_constraintTop_toTopOf="parent" />
         </android.support.constraint.ConstraintLayout>
 
-        <com.example.android.zoomlayouttest.CustomTextView
-            android:id="@+id/topText"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="#00e575"
-            android:padding="8dp"
-            android:text="Rainbow"
-            android:textSize="30dp"
-            app:font_name="titleMed"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-    </android.support.constraint.ConstraintLayout>
-
-    <com.otaliastudios.zoom.ZoomLayout
-        android:id="@+id/zoomLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="#e6f1eb"
-        android:scrollbars="vertical|horizontal"
-        android:visibility="visible"
-        app:hasClickableChildren="true"
-        app:horizontalPanEnabled="true"
-        app:layout_constraintBottom_toTopOf="@+id/bottomText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topBar"
-        app:maxZoom="3.0"
-        app:maxZoomType="zoom"
-        app:minZoom="1.0"
-        app:minZoomType="zoom"
-        app:overPinchable="true"
-        app:overScrollHorizontal="true"
-        app:overScrollVertical="true"
-        app:verticalPanEnabled="true"
-        app:zoomEnabled="true">
-
-
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/gridContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_margin="0dp"
-            android:background="#000000"
-            android:gravity="fill"
-            android:padding="0dp">
+            android:id="@+id/paramMenuContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#54f9ae"
+            android:elevation="1dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/zoomLayout"
+            app:layout_constraintEnd_toEndOf="@+id/zoomLayout"
+            app:layout_constraintStart_toStartOf="@+id/zoomLayout"
+            app:layout_constraintTop_toBottomOf="@+id/topBar">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/waterLevelContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="16dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/weekDaysContainer">
+
+                <com.example.android.zoomlayouttest.CustomTextView
+                    android:id="@+id/waterLevelText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Water Level"
+                    android:textSize="20dp"
+                    app:font_name="textAlt"
+                    app:layout_constraintBottom_toTopOf="@id/waterLevelBar"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/currentWaterLevel"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.example.android.zoomlayouttest.CustomTextView
+                    android:id="@+id/currentWaterLevel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="wl"
+                    app:layout_constraintBottom_toTopOf="@id/waterLevelBar"
+                    app:layout_constraintLeft_toRightOf="@id/waterLevelText"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <SeekBar
+                    android:id="@+id/waterLevelBar"
+                    style="@style/Widget.AppCompat.SeekBar.Discrete"
+                    android:layout_width="204dp"
+                    android:layout_height="25dp"
+                    android:max="2"
+                    android:progress="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/waterLevelBar" />
+
+            </android.support.constraint.ConstraintLayout>
+
+
+            <EditText
+                android:id="@+id/bedNameText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:editable="false"
+                android:gravity="center_horizontal"
+                android:inputType="none"
+                android:maxLines="1"
+                android:text="bedName"
+                android:textSize="30dp"
+                app:layout_constraintBottom_toTopOf="@+id/weekDaysContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/weekDaysContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="#B55555"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bedNameText">
+
+                <com.example.android.zoomlayouttest.CustomTextView
+                    android:id="@+id/daysText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:editable="true"
+                    android:padding="0dp"
+                    android:text="Days to Water"
+                    android:textSize="20dp"
+                    app:font_name="textMain"
+                    app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+                    app:layout_constraintHorizontal_bias="0.103"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <android.support.constraint.ConstraintLayout
+
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#000000"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/daysText">
+
+                    <Button
+                        android:id="@+id/sundayButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:onClick="dayOfWeekClick"
+                        android:padding="0dp"
+                        android:tag="0"
+                        android:text="Su"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/mondayButton"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <Button
+                        android:id="@+id/mondayButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:onClick="dayOfWeekClick"
+                        android:padding="0dp"
+                        android:tag="1"
+                        android:text="M"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/tuesdayButton"
+                        app:layout_constraintStart_toEndOf="@+id/sundayButton"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <Button
+                        android:id="@+id/tuesdayButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:onClick="dayOfWeekClick"
+                        android:padding="0dp"
+                        android:tag="2"
+                        android:text="T"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/wednesdayButton"
+                        app:layout_constraintStart_toEndOf="@+id/mondayButton"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/wednesdayButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:onClick="dayOfWeekClick"
+                        android:padding="0dp"
+                        android:tag="3"
+                        android:text="W"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/thursdayButton"
+                        app:layout_constraintStart_toEndOf="@+id/tuesdayButton"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <Button
+                        android:id="@+id/thursdayButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:onClick="dayOfWeekClick"
+                        android:padding="0dp"
+                        android:tag="4"
+                        android:text="Th"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@id/fridayButton"
+                        app:layout_constraintStart_toEndOf="@+id/wednesdayButton"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <Button
+                        android:id="@+id/fridayButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:onClick="dayOfWeekClick"
+                        android:padding="0dp"
+                        android:tag="5"
+                        android:text="F"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/saturdayButton"
+                        app:layout_constraintStart_toEndOf="@+id/thursdayButton"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/saturdayButton"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:onClick="dayOfWeekClick"
+                        android:padding="0dp"
+                        android:tag="6"
+                        android:text="S"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/fridayButton"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </android.support.constraint.ConstraintLayout>
+            </android.support.constraint.ConstraintLayout>
 
         </android.support.constraint.ConstraintLayout>
 
-    </com.otaliastudios.zoom.ZoomLayout>
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="#54f9ae"
+            android:elevation="1dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/zoomLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/topBarButtonPanel"
+                android:layout_width="396dp"
+                android:layout_height="69dp"
+                android:layout_marginTop="8dp"
+                android:background="#54f9ae"
+                android:elevation="0dp"
+                android:paddingVertical="0dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/topText">
+
+                <Button
+
+                    android:id="@+id/doneButton"
+                    android:layout_width="98dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Done Bed"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.058" />
+
+                <Button
+                    android:id="@+id/deleteButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Delete Bed"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/doneButton"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.058" />
+
+                <Button
+                    android:id="@+id/bedSettings"
+                    android:layout_width="96dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="32dp"
+                    android:max="2"
+                    android:text="Bed Settings"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/deleteButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+            <com.example.android.zoomlayouttest.CustomTextView
+                android:id="@+id/topText"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#00e575"
+                android:padding="8dp"
+                android:text="Rainbow"
+                android:textSize="30dp"
+                app:font_name="titleMed"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
-    <android.support.constraint.ConstraintLayout
+        </android.support.constraint.ConstraintLayout>
 
-
-        android:id="@+id/bottomText"
-        android:layout_width="0dp"
-        android:layout_height="120dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="#000000"
-        android:gravity="center"
-        android:paddingHorizontal="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/zoomLayout">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <com.otaliastudios.zoom.ZoomLayout
+            android:id="@+id/zoomLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="0dp"
-            android:background="@color/offWhite"
-            app:layout_constraintBottom_toBottomOf="@+id/bottomText"
-            app:layout_constraintEnd_toEndOf="@+id/bottomText"
-            app:layout_constraintStart_toStartOf="@+id/bottomText"
-            app:layout_constraintTop_toTopOf="@+id/bottomText" />
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="#e6f1eb"
+            android:scrollbars="vertical|horizontal"
+            android:visibility="visible"
+            app:hasClickableChildren="true"
+            app:horizontalPanEnabled="true"
+            app:layout_constraintBottom_toTopOf="@+id/bottomText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/topBar"
+            app:maxZoom="3.0"
+            app:maxZoomType="zoom"
+            app:minZoom="1.0"
+            app:minZoomType="zoom"
+            app:overPinchable="true"
+            app:overScrollHorizontal="true"
+            app:overScrollVertical="true"
+            app:verticalPanEnabled="true"
+            app:zoomEnabled="true">
 
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/gridContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_margin="0dp"
+                android:background="#000000"
+                android:gravity="fill"
+                android:padding="0dp">
+
+            </android.support.constraint.ConstraintLayout>
+
+        </com.otaliastudios.zoom.ZoomLayout>
+
+        <android.support.constraint.ConstraintLayout
+
+
+            android:id="@+id/bottomText"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="#000000"
+            android:gravity="center"
+            android:paddingHorizontal="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/zoomLayout">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="0dp"
+                android:background="@color/offWhite"
+                app:layout_constraintBottom_toBottomOf="@+id/bottomText"
+                app:layout_constraintEnd_toEndOf="@+id/bottomText"
+                app:layout_constraintStart_toStartOf="@+id/bottomText"
+                app:layout_constraintTop_toTopOf="@+id/bottomText" />
+
+        </android.support.constraint.ConstraintLayout>
     </android.support.constraint.ConstraintLayout>
+
+
     <android.support.constraint.ConstraintLayout
-        android:id = "@+id/bluetoothContainer"
+        android:id="@+id/bluetoothContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -495,14 +507,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 android:background="#FFFFFF"
                 android:text="Wet the bed"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/btnReset" />
 
             <Button
                 android:id="@+id/btnReset"
@@ -540,7 +552,7 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="8dp"
                 android:background="#FFFFFF"
-                android:text="LOOK FOR BLUETOOH"
+                android:text="Find bluetooth devices"
                 android:textColor="#000000"
                 android:visibility="visible"
                 app:layout_constraintEnd_toStartOf="@+id/btnEnableDisable_Discoverable"

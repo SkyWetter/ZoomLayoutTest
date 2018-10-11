@@ -30,6 +30,8 @@ import java.util.*
 
 
 class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
+
+
     private val tag = "MainActivityDebug"  //Tag for debug
 
     var mBluetoothAdapter : BluetoothAdapter? = null
@@ -372,7 +374,6 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         btnStartConnection.visibility = View.VISIBLE
         btnReset.visibility = View.VISIBLE
 
-
         //create the bond
         //NOTE: Requires API 17+
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
@@ -383,8 +384,5 @@ class BluetoothActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
             mBluetoothConnection =  BluetoothConnectionService(this@BluetoothActivity)
         }
-
     }
-
-
 }
