@@ -58,6 +58,7 @@ package com.example.android.zoomlayouttest
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
@@ -94,13 +95,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     private val tag = "MainActivityDebug"  //Tag for debug
 
-    var mBluetoothAdapter : BluetoothAdapter? = null
-    var mBTDevices = mutableListOf<BluetoothDevice>();
+    private var mBluetoothAdapter : BluetoothAdapter? = null
+    var mBTDevices = mutableListOf<BluetoothDevice>()
     var mDeviceListAdapter: DeviceListAdapter? = null
     var lvNewDevices : ListView? = null
     var mBTDevice : BluetoothDevice? = null
-    val MY_UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-    var mBluetoothConnection : BluetoothConnectionService? = null
+    private val myUUIDInsecure = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+    private var mBluetoothConnection : BluetoothConnectionService? = null
     //Moved turretSquare outside of companion object under IDE recommendation to avoid memory leaks
     private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
 
@@ -108,7 +109,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     companion object {
 
-        val wateringSteps = mutableListOf<String>()
+
         private val adjacentSquares = mutableListOf<Square>()//List of squares adjacent to a given bed
         var bedList = mutableListOf<Bed>()              //list of all saved beds
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
@@ -185,7 +186,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
             //When discovery finds a device
             if(action == BluetoothDevice.ACTION_FOUND){
-                var device : BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                val device : BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                 mBTDevices.add(device)
                 Log.d(tag,"onReceive: " + device.name + ": " + device.address)
                 mDeviceListAdapter = DeviceListAdapter(context,R.layout.device_adapter_view,mBTDevices)
@@ -200,7 +201,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             val action: String = intent.action
 
             if(action == BluetoothDevice.ACTION_BOND_STATE_CHANGED){
-                var mDevice : BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                val mDevice : BluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                 //3 cases
                 //case 1: bonded already
                 if(mDevice.bondState== BluetoothDevice.BOND_BONDED){
@@ -232,6 +233,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver4)
 
     }
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getSupportActionBar()!!.hide()        //Removes the top action bar of the android ui
@@ -244,7 +246,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
          * */
 
         lvNewDevices = findViewById(R.id.lvNewDevices)
-        val etSend: EditText = findViewById<EditText>(R.id.editText)
+        val etSend: EditText = findViewById(R.id.editText)
 
         bluetoothContainer.visibility = View.GONE
         btnONOFF.visibility = View.VISIBLE
@@ -257,7 +259,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         messageText.text = "Hey there! Let's get your bluetooth started. \n Just press the BIG BUTTON"
 
         //Broadcasts when bond state changes (ie: pairing)
-        var filter : IntentFilter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+        val filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
         registerReceiver(mBroadcastReceiver4,filter)
 
         //Gets this phones default adapter
@@ -281,10 +283,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                 btnONOFF.visibility = View.GONE
                 btnDiscover.visibility = View.VISIBLE
-                messageText.text = "Great, it looks like your bluetooth is already enabled! \n " +
-                        "Would you push the look for bluetooth button? "
+                messageText.text = "Great, it looks like your bluetooth is already enabled! \n Would you push the look for bluetooth button? "
+
             }
             else {
+
                 messageText.text = "Alright, enabling bluetooth!"
                 Log.d(tag, "onClick: enabling/disabling bluetooth.")
                 enableDisableBT()
@@ -294,11 +297,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         btnEnableDisable_Discoverable.setOnClickListener{
             Log.d(tag,"onClick: btnEnableDisable_Discoverable: Making device discoverable for 300 seconds.")
 
-            var discoverableIntent : Intent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
+            val discoverableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300)
             startActivity(discoverableIntent)
 
-            var intentFilter  = IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)
+            val intentFilter  = IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)
             registerReceiver(mBroadcastReceiver2,intentFilter)
 
 
@@ -324,7 +327,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 checkBTPermissions()
 
                 mBluetoothAdapter!!.startDiscovery()
-                var discoverDevicesIntent = IntentFilter(BluetoothDevice.ACTION_FOUND)
+                val discoverDevicesIntent = IntentFilter(BluetoothDevice.ACTION_FOUND)
                 registerReceiver(mBroadcastReceiver3, discoverDevicesIntent)
             }
             if(!mBluetoothAdapter!!.isDiscovering){
@@ -333,7 +336,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 checkBTPermissions()
 
                 mBluetoothAdapter!!.startDiscovery()
-                var discoverDevicesIntent = IntentFilter(BluetoothDevice.ACTION_FOUND)
+                val discoverDevicesIntent = IntentFilter(BluetoothDevice.ACTION_FOUND)
                 registerReceiver(mBroadcastReceiver3, discoverDevicesIntent)
             }
 
@@ -353,7 +356,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 btnReset.visibility = View.VISIBLE
                 btnReturn.visibility = View.VISIBLE
 
-                startBTConnection(mBTDevice!!, MY_UUID_INSECURE)
+                startBTConnection(mBTDevice!!, myUUIDInsecure)
 
             }
             else{
@@ -369,36 +372,36 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 
         btnSend.setOnClickListener{
-            var tempString = etSend.text.toString()
+            val tempString = etSend.text.toString()
 
             // var bytes: ByteArray = etSend.text.toString().toByteArray(Charset.defaultCharset())
-            var bytes: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val bytes: ByteArray = tempString.toByteArray(Charset.defaultCharset())
 
             mBluetoothConnection!!.write(bytes)
         }
 
         btnStep.setOnClickListener {
-            var tempString = "a"
-            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val tempString = "a"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
 
             mBluetoothConnection!!.write(tempByte)
         }
 
         btnDir1.setOnClickListener {
-            var tempString = "b"
-            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val tempString = "b"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
         btnDir2.setOnClickListener {
-            var tempString = "c"
-            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val tempString = "c"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
         btnFreq.setOnClickListener {
-            var tempString = "d"
-            var tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            val tempString = "d"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
@@ -413,7 +416,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         //this sets up the recyclerview
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = BedAdapter(rvBedList,{bed : RVBedData -> bedClicked(bed)})
+        recyclerView.adapter = BedAdapter(rvBedList){bed : RVBedData -> bedClicked(bed)}
 
         val swipeHandler = object : SwipeToDeleteCallback(this)
         {
@@ -481,14 +484,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         gridContainer.setBackgroundColor(ColorData.uiInvisible)
         topText.setBackgroundColor(ColorData.uiColor1_medium)
 
-        var titleFont = Typeface.createFromAsset(assets,"fonts/MontserratAlternates-Medium.ttf")
+        val titleFont = Typeface.createFromAsset(assets,"fonts/MontserratAlternates-Medium.ttf")
         bedNameText.typeface = titleFont
     }
 
     fun dayOfWeekClick(v: View){
 
-        var thisDay = rvBedList[bedBeingEdited.position].daysOfWeek //Shortens code
-        var tag = v.tag.toString().toInt()  //Converts tag type Any to Int
+        val thisDay = rvBedList[bedBeingEdited.position].daysOfWeek //Shortens code
+        val tag = v.tag.toString().toInt()  //Converts tag type Any to Int
 
         when(thisDay[tag]){
             0-> {thisDay[tag] = 1 ; v.setBackgroundColor(ColorData.dayButtonAM)}
@@ -498,9 +501,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-    fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button, bluetoothOpenMenuButton:Button)
+    private fun initializeButtons(context: Context, doneButton: Button, deleteButton: Button, bluetoothOpenMenuButton:Button)
     {
-        //Functions global to multiple listeners
+        @SuppressLint("SetTextI18n")
+//Functions global to multiple listeners
         fun setWaterLevelText(){
             when(bedBeingEdited.waterLevel){
                 0 -> currentWaterLevel.text = "Low"
@@ -534,7 +538,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         bedSettings.setOnClickListener {
 
-            var thisBed = rvBedList[bedBeingEdited.position]
+            val thisBed = rvBedList[bedBeingEdited.position]
 
             //If bed settings is already open, makes sure RvBedData of edited bed is updated
             //Changes visibility of necessary components
@@ -566,7 +570,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 for(i in bedBeingEdited.daysOfWeek.indices){
                    val dayButtons = arrayListOf<Button>(sundayButton,mondayButton,tuesdayButton,wednesdayButton,thursdayButton,fridayButton,saturdayButton)
 
-                   var thisDay = bedBeingEdited.daysOfWeek
+                   val thisDay = bedBeingEdited.daysOfWeek
 
                     when(thisDay[i]){
                         0-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonOff)}
@@ -645,14 +649,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 
 
-    fun gridCreate(buttonSize: Int, buttonMargin: Int, constraintLayout: ConstraintLayout, context: Context) {
+    private fun gridCreate(buttonSize: Int, buttonMargin: Int, constraintLayout: ConstraintLayout, context: Context) {
 
         var previousButton = Button(context)            //Tracks the previous button created
         var previousRowLeadButton = Button(context)     //Tracks the first button of the previous row
         var idNumber = 10000                           //id#, increments with each created button
 
         fun getXY(column: Int, row: Int):String{
-            var xy = ""
+            var xy : String
+
             if(column < 10) { xy = "0$column"} else{xy = "$column"}
             if(row < 10) { xy += "0$row"} else{xy += "$row"}
 
@@ -670,7 +675,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     button.id = idNumber             //Set id based on idNumber incrementor
 
 
-                    var tempSquare = Square(idNumber)      //create new tile object with tileID
+                    val tempSquare = Square(idNumber)      //create new tile object with tileID
 
                     tempSquare.column = i                 //set rows and columns
                     tempSquare.row = row
@@ -712,7 +717,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     constraintSet.constrainWidth(button.id, buttonSize)                 //Sets size of created button
                     constraintSet.constrainHeight(button.id, buttonSize)
 
-                    var tempNum = (buttonsPerRow - 1) / 2
+                    val tempNum = (buttonsPerRow - 1) / 2
 
                     if (i == tempNum && row == tempNum) {
                         tempSquare.changeColor(ColorData.turret)
