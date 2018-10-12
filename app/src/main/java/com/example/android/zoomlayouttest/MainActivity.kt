@@ -512,6 +512,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     /***
      * INIT FUNCTIONS // LISTENERS
      */
+
+    fun setWaterLevelText(){
+        when(bedBeingEdited.waterLevel){
+            0 -> currentWaterLevel.text = "Low"
+            1 -> currentWaterLevel.text = "Medium"
+            2 -> currentWaterLevel.text = "High"
+        }
+    }
+
     private fun initUiVisibility(){
 
         bluetoothContainer.visibility = View.GONE
@@ -551,15 +560,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     private fun initializeButtons(context: Context, doneButton: Button, bluetoothOpenMenuButton:Button)
     {
-        @SuppressLint("SetTextI18n")
+
 //Functions global to multiple listeners
-        fun setWaterLevelText(){
-            when(bedBeingEdited.waterLevel){
-                0 -> currentWaterLevel.text = "Low"
-                1 -> currentWaterLevel.text = "Medium"
-                2 -> currentWaterLevel.text = "High"
-            }
-        }
+
 
         doneButton.setOnClickListener()
         {
@@ -578,55 +581,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         settingsButton.setOnClickListener {
         }
 
-        bedSettings.setOnClickListener {
 
-            val thisBed = rvBedList[bedBeingEdited.position]
 
-            //If bed settings is already open, makes sure RvBedData of edited bed is updated
-            //Changes visibility of necessary components
-            //Flips value of paramMenuOpen bool
-
-            if(paramMenuOpen){
-
-                //Loads edited bed values into rvBedData data class
-                thisBed.daysOfWeek = bedBeingEdited.daysOfWeek
-                thisBed.waterLevel = bedBeingEdited.waterLevel
-
-                paramMenuContainer.visibility = View.GONE
-                doneButtonContainer.visibility = View.VISIBLE
-                bottomText.visibility = View.VISIBLE
-                paramMenuOpen = !paramMenuOpen
-            }
-
-            //If bed settings is current closed, prepare various bed settings values based on rvbed loaded intot bedBeingEdited var
-            //Loading of rvbed data happens in bedClicked fxn in the bedClicked function located outside of initbuttons fxn
-            else{
-
-                waterLevelBar.progress = bedBeingEdited.waterLevel
-                setWaterLevelText()
-                bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
-
-                //Loads in the day settings for the bed
-
-                for(i in bedBeingEdited.daysOfWeek.indices){
-                   val dayButtons = arrayListOf<Button>(sundayButton,mondayButton,tuesdayButton,wednesdayButton,thursdayButton,fridayButton,saturdayButton)
-
-                   val thisDay = bedBeingEdited.daysOfWeek
-
-                    when(thisDay[i]){
-                        0-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonOff)}
-                        1-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonAM)}
-                        2-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonPM)}
-                        3-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonAMPM)}
-                    }
-               }
-
-                paramMenuContainer.visibility = View.VISIBLE
-                doneButtonContainer.visibility = View.INVISIBLE
-                bottomText.visibility = View.INVISIBLE
-                paramMenuOpen = !paramMenuOpen
-            }
-        }
         /**
          * Bed name text listener -- needs to be adjusted for focus change actions
          */
@@ -914,7 +870,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     private fun editBed(bedToEdit: Int) {
         //val bedToEdit = 1   //figure out for to set this via clicking card in RV
 
-        bedSettings.visibility = View.VISIBLE
+
         doneButtonContainer.visibility = View.VISIBLE
 
         bedEdit[0] = 1      //bool to toggle editing mode
@@ -1013,7 +969,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     {
         editBed(bed.rvBedID)
         bedBeingEdited = bed
-
+        openBedSettings()
 
         Toast.makeText(this, "Editing: ${bed.name}", Toast.LENGTH_LONG).show()
     }
@@ -1023,7 +979,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     {
         removeAdjacentSquares()   //Resets adjacentSquare square visibility
         doneButtonContainer.visibility = View.GONE   //Hides done button
-        bedSettings.visibility = View.GONE
+
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
          //   ColorData.newRandomBedColor()
             ColorData.newBedColor()
@@ -1058,6 +1014,55 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             i.changeColor(ColorData.deselectedSquare)
         }
         adjacentSquares.clear()
+    }
+
+    fun openBedSettings(){
+        val thisBed = rvBedList[bedBeingEdited.position]
+
+        //If bed settings is already open, makes sure RvBedData of edited bed is updated
+        //Changes visibility of necessary components
+        //Flips value of paramMenuOpen bool
+
+        if(paramMenuOpen){
+
+            //Loads edited bed values into rvBedData data class
+            thisBed.daysOfWeek = bedBeingEdited.daysOfWeek
+            thisBed.waterLevel = bedBeingEdited.waterLevel
+
+            paramMenuContainer.visibility = View.GONE
+            doneButtonContainer.visibility = View.VISIBLE
+            bottomText.visibility = View.VISIBLE
+            paramMenuOpen = !paramMenuOpen
+        }
+
+        //If bed settings is current closed, prepare various bed settings values based on rvbed loaded intot bedBeingEdited var
+        //Loading of rvbed data happens in bedClicked fxn in the bedClicked function located outside of initbuttons fxn
+        else{
+
+            waterLevelBar.progress = bedBeingEdited.waterLevel
+            setWaterLevelText()
+            bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
+
+            //Loads in the day settings for the bed
+
+            for(i in bedBeingEdited.daysOfWeek.indices){
+                val dayButtons = arrayListOf<Button>(sundayButton,mondayButton,tuesdayButton,wednesdayButton,thursdayButton,fridayButton,saturdayButton)
+
+                val thisDay = bedBeingEdited.daysOfWeek
+
+                when(thisDay[i]){
+                    0-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonOff)}
+                    1-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonAM)}
+                    2-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonPM)}
+                    3-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonAMPM)}
+                }
+            }
+
+            paramMenuContainer.visibility = View.VISIBLE
+            doneButtonContainer.visibility = View.INVISIBLE
+            bottomText.visibility = View.INVISIBLE
+            paramMenuOpen = !paramMenuOpen
+        }
     }
 
 /* Angle and Distance Function

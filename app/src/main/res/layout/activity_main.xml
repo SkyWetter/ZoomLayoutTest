@@ -23,16 +23,17 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/globalButtonContainer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="94dp"
             android:elevation="2dp"
             app:layout_constraintBottom_toBottomOf="@id/topBar"
             app:layout_constraintEnd_toEndOf="@id/topBar"
+            app:layout_constraintHorizontal_bias="0.94"
             app:layout_constraintStart_toStartOf="@id/topBar"
             app:layout_constraintTop_toTopOf="@id/topBar">
 
 
             <ImageView
-                android:id="@+id/img_globlaSettings"
+                android:id="@+id/img_globalSettings"
                 android:layout_width="35dp"
                 android:layout_height="92dp"
                 android:layout_marginTop="4dp"
@@ -50,14 +51,13 @@
                 android:id="@+id/settingsButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/btn_rnd"
                 android:elevation="1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/bluetoothButton"
-                app:layout_constraintStart_toEndOf="@+id/bedSettings"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -79,47 +79,14 @@
                 android:id="@+id/bluetoothButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/btn_rnd"
                 android:elevation="1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/settingsButton"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/img_bedSettings"
-                android:layout_width="35dp"
-                android:layout_height="92dp"
-                android:layout_marginTop="4dp"
-                android:elevation="3dp"
-                android:scaleX="0.8"
-                android:scaleY="0.8"
-                android:src="@drawable/bluetoothicon"
-                app:layout_constraintBottom_toBottomOf="@+id/bluetoothButton"
-                app:layout_constraintEnd_toEndOf="@+id/bluetoothButton"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/bluetoothButton"
-                app:layout_constraintTop_toTopOf="@+id/bluetoothButton"
-                app:layout_constraintVertical_bias="0.541" />
-
-            <Button
-                android:id="@+id/bedSettings"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="190dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/btn_rnd"
-                android:elevation="2dp"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/settingsButton"
-                app:layout_constraintHorizontal_bias="0.58"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/settingsButton"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
