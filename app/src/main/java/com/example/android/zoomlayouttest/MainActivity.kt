@@ -473,9 +473,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         val bedZero = Bed(0)
         bedList.add(bedZero)
 
-
         /** Init code*/
         initColorsFonts()   //Sets colors of various UI elements
+        initUiVisibility()
         gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
         turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]  //Gets the location of the central square of the garden bed
         initializeButtons(this@MainActivity, doneButton,bluetoothButton)  //Initializes button listeners
@@ -510,8 +510,19 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
     /***
-     *  INIT FUNCTIONS // LISTENERS
+     * INIT FUNCTIONS // LISTENERS
      */
+    private fun initUiVisibility(){
+
+        bluetoothContainer.visibility = View.GONE
+        btnONOFF.visibility = View.VISIBLE
+        btnDiscover.visibility =View.GONE
+        btnEnableDisable_Discoverable.visibility = View.GONE
+        btnStartConnection.visibility = View.GONE
+        btnReset.visibility = View.GONE
+        btnReturn.visibility = View.GONE
+        doneButtonContainer.visibility = View.GONE
+    }
 
     private fun initColorsFonts(){
 
@@ -582,7 +593,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 thisBed.waterLevel = bedBeingEdited.waterLevel
 
                 paramMenuContainer.visibility = View.GONE
-                doneButton.visibility = View.VISIBLE
+                doneButtonContainer.visibility = View.VISIBLE
                 bottomText.visibility = View.VISIBLE
                 paramMenuOpen = !paramMenuOpen
             }
@@ -611,7 +622,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                }
 
                 paramMenuContainer.visibility = View.VISIBLE
-                doneButton.visibility = View.INVISIBLE
+                doneButtonContainer.visibility = View.INVISIBLE
                 bottomText.visibility = View.INVISIBLE
                 paramMenuOpen = !paramMenuOpen
             }
@@ -838,7 +849,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         if (!paramMenuOpen) {
             if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
             {
-                doneButton.visibility = View.VISIBLE   //If creating a bed, make doneButton appear
+                doneButtonContainer.visibility = View.VISIBLE   //If creating a bed, make doneButton appear
 
                 if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
                 {
@@ -904,7 +915,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         //val bedToEdit = 1   //figure out for to set this via clicking card in RV
 
         bedSettings.visibility = View.VISIBLE
-        doneButton.visibility = View.VISIBLE
+        doneButtonContainer.visibility = View.VISIBLE
 
         bedEdit[0] = 1      //bool to toggle editing mode
         bedEdit[1] = bedToEdit      //bedID that is being edited
@@ -1011,7 +1022,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     private fun doneBed()
     {
         removeAdjacentSquares()   //Resets adjacentSquare square visibility
-        doneButton.visibility = View.GONE   //Hides done button
+        doneButtonContainer.visibility = View.GONE   //Hides done button
         bedSettings.visibility = View.GONE
         if (tempBed.isNotEmpty() && bedEdit[0] == 0) {      //only executes when there is new bed, otherwise updates done on click
          //   ColorData.newRandomBedColor()
