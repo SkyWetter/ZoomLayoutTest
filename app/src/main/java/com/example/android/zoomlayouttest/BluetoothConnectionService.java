@@ -15,6 +15,10 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.TextView;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -38,11 +42,16 @@ public class BluetoothConnectionService {
     ProgressDialog mProgressDialog;
     private ConnectedThread mConnectedThread;
 
+    public String incomingMessage = new String();
+
+
 
     public BluetoothConnectionService(Context context) {
         mContext = context;
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         start();
+
+
 
 
     }
@@ -51,8 +60,11 @@ public class BluetoothConnectionService {
 
     private class AcceptThread extends Thread {
 
+
+
         //The local server socket
         private final BluetoothServerSocket mmServerSocket;
+
 
         public AcceptThread(){    //Runs on separate
             BluetoothServerSocket tmp = null;
@@ -207,10 +219,13 @@ public class BluetoothConnectionService {
         mConnectThread.start();
     }
 
-    private class ConnectedThread extends  Thread{
+    public class ConnectedThread extends  Thread{
         private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
+        public final InputStream mmInStream;
         private final OutputStream mmOutStream;
+
+
+        public String incomingMessage= "";
 
         public ConnectedThread(BluetoothSocket socket) {
             Log.d(TAG, "ConnectedThread: Starting.");
@@ -239,6 +254,8 @@ public class BluetoothConnectionService {
         }
 
         public void run(){
+
+
             byte[] buffer = new byte[1024]; //buffer store for the stream
 
             int bytes; //bytes returned from read()
@@ -247,8 +264,10 @@ public class BluetoothConnectionService {
             while(true){
                 //Read from the InputStream
                 try {
+
                     bytes = mmInStream.read(buffer);
-                    String incomingMessage = new String(buffer, 0, bytes);
+                    incomingMessage = new String(buffer, 0, bytes);
+
                     Log.d(TAG,"InputStream: " + incomingMessage);
                 } catch (IOException e){
                     Log.e(TAG,"write: Error reading inputStream. " + e.getMessage());

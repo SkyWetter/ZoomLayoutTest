@@ -97,11 +97,33 @@
             android:layout_height="0dp"
             android:background="#ffffff"
             android:elevation="1dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/zoomLayout"
-            app:layout_constraintEnd_toEndOf="@+id/zoomLayout"
-            app:layout_constraintStart_toStartOf="@+id/zoomLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/topBar">
+
+
+            <EditText
+                android:id="@+id/bedNameText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:editable="false"
+                android:gravity="center_horizontal"
+                android:hint="test"
+                android:inputType="none"
+                android:maxLines="1"
+                android:text="bedName"
+                android:textSize="30dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toTopOf="@+id/weekDaysContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/waterLevelContainer"
@@ -110,6 +132,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginRight="16dp"
+                android:visibility="visible"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/weekDaysContainer">
@@ -151,26 +174,6 @@
 
             </android.support.constraint.ConstraintLayout>
 
-
-            <EditText
-                android:id="@+id/bedNameText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:editable="false"
-                android:gravity="center_horizontal"
-                android:inputType="none"
-                android:maxLines="1"
-                android:text="bedName"
-                android:textSize="30dp"
-                app:layout_constraintBottom_toTopOf="@+id/weekDaysContainer"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/weekDaysContainer"
                 android:layout_width="0dp"
@@ -178,37 +181,50 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="#B55555"
+                android:background="#FFFFFF"
+                android:visibility="visible"
+                android:elevation="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/bedNameText">
+
+                <View
+                    android:id="@+id/daysTextTopBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp"
+                    android:background="#0288D1"
+                    app:layout_constraintBottom_toTopOf="@id/daysText"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
                 <com.example.android.zoomlayouttest.CustomTextView
                     android:id="@+id/daysText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="0dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:background="#03A9F4"
                     android:editable="true"
+                    android:gravity="center_horizontal"
                     android:padding="0dp"
                     android:text="Days to Water"
+                    android:textColor="#FFFFFF"
                     android:textSize="20dp"
                     app:font_name="textMain"
-                    app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
-                    app:layout_constraintHorizontal_bias="0.103"
+                    app:layout_constraintBottom_toTopOf="@+id/daysButtonContainer"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/daysTextTopBar" />
 
                 <android.support.constraint.ConstraintLayout
 
-                    android:id="@+id/constraintLayout"
+                    android:id="@+id/daysButtonContainer"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:background="#000000"
+                    android:layout_marginBottom="24dp"
+                    android:background="#FFFFFF"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -219,10 +235,13 @@
                         android:id="@+id/sundayButton"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/btn_day_button_0"
                         android:onClick="dayOfWeekClick"
                         android:padding="0dp"
                         android:tag="0"
                         android:text="Su"
+                        android:textColor="@color/dayButtonText"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/mondayButton"
                         app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -234,10 +253,13 @@
                         android:id="@+id/mondayButton"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/btn_day_button_0"
                         android:onClick="dayOfWeekClick"
                         android:padding="0dp"
                         android:tag="1"
                         android:text="M"
+                        android:textColor="@color/dayButtonText"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/tuesdayButton"
                         app:layout_constraintStart_toEndOf="@+id/sundayButton"
@@ -248,10 +270,13 @@
                         android:id="@+id/tuesdayButton"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/btn_day_button_0"
                         android:onClick="dayOfWeekClick"
                         android:padding="0dp"
                         android:tag="2"
                         android:text="T"
+                        android:textColor="@color/dayButtonText"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/wednesdayButton"
                         app:layout_constraintStart_toEndOf="@+id/mondayButton"
@@ -262,9 +287,12 @@
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:onClick="dayOfWeekClick"
+                        android:layout_margin="4dp"
                         android:padding="0dp"
                         android:tag="3"
                         android:text="W"
+                        android:background="@drawable/btn_day_button_0"
+                        android:textColor="@color/dayButtonText"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/thursdayButton"
                         app:layout_constraintStart_toEndOf="@+id/tuesdayButton"
@@ -276,9 +304,12 @@
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:onClick="dayOfWeekClick"
+                        android:layout_margin="4dp"
                         android:padding="0dp"
                         android:tag="4"
                         android:text="Th"
+                        android:background="@drawable/btn_day_button_0"
+                        android:textColor="@color/dayButtonText"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@id/fridayButton"
                         app:layout_constraintStart_toEndOf="@+id/wednesdayButton"
@@ -291,8 +322,11 @@
                         android:layout_height="0dp"
                         android:onClick="dayOfWeekClick"
                         android:padding="0dp"
+                        android:layout_margin="4dp"
                         android:tag="5"
                         android:text="F"
+                        android:background="@drawable/btn_day_button_0"
+                        android:textColor="@color/dayButtonText"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/saturdayButton"
                         app:layout_constraintStart_toEndOf="@+id/thursdayButton"
@@ -304,8 +338,11 @@
                         android:layout_height="0dp"
                         android:onClick="dayOfWeekClick"
                         android:padding="0dp"
+                        android:layout_margin="4dp"
                         android:tag="6"
                         android:text="S"
+                        android:background="@drawable/btn_day_button_0"
+                        android:textColor="@color/dayButtonText"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/fridayButton"
@@ -356,7 +393,6 @@
             </android.support.constraint.ConstraintLayout>
 
 
-
             <com.example.android.zoomlayouttest.CustomTextView
                 android:id="@+id/topText"
                 android:layout_width="wrap_content"
@@ -386,7 +422,7 @@
             android:layout_marginBottom="8dp"
             android:background="#e6f1eb"
             android:scrollbars="vertical|horizontal"
-            android:visibility="visible"
+            android:visibility="invisible"
             app:hasClickableChildren="true"
             app:horizontalPanEnabled="true"
             app:layout_constraintBottom_toTopOf="@+id/bottomText"
@@ -450,8 +486,8 @@
                     android:id="@+id/doneButtonBackground"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#FFFFFF"
                     android:alpha="0.85"
+                    android:background="#FFFFFF"
                     android:elevation="1dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -463,9 +499,9 @@
                     android:id="@+id/doneButton"
                     android:layout_width="90dp"
                     android:layout_height="wrap_content"
+                    android:background="#FFC107"
                     android:gravity="center"
                     android:text="Done Bed"
-                    android:background="#FFC107"
                     android:textColor="#FFFFFF"
                     android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -609,164 +645,148 @@
             android:elevation="30dp"
             android:visibility="gone">
 
-            <Button
-                android:id="@+id/btn_A"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="153dp"
-                android:layout_marginEnd="8dp"
-                android:text="A"
-                app:layout_constraintEnd_toStartOf="@+id/btn_B"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/btn_B"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="153dp"
-                android:layout_marginEnd="8dp"
-                android:text="B"
-                app:layout_constraintEnd_toStartOf="@+id/btn_C"
-                app:layout_constraintStart_toEndOf="@+id/btn_A"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/btn_C"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="153dp"
-                android:layout_marginEnd="8dp"
-                android:text="C"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btn_B"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/btn_D"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="D"
-                app:layout_constraintEnd_toStartOf="@+id/btn_E"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_A" />
-
-            <Button
-                android:id="@+id/btn_E"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="E"
-                app:layout_constraintEnd_toStartOf="@+id/btn_F"
-                app:layout_constraintStart_toEndOf="@+id/btn_D"
-                app:layout_constraintTop_toBottomOf="@+id/btn_B" />
-
-            <Button
-                android:id="@+id/btn_F"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="F"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btn_E"
-                app:layout_constraintTop_toBottomOf="@+id/btn_B" />
-
             <EditText
                 android:id="@+id/editText"
-                android:layout_width="0dp"
-                android:layout_height="45dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:autofillHints=""
-                android:hint="put text in here"
-                app:layout_constraintBottom_toTopOf="@+id/btnStep"
-                app:layout_constraintEnd_toStartOf="@+id/btnSend"
-                app:layout_constraintHorizontal_bias="0.51"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0"
-                tools:layout_constraintHorizontal_chainStyle="spread"
-                tools:layout_constraintHorizontal_weight="9" />
-
-            <Button
-                android:id="@+id/btnFreq"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="4dp"
-                android:text="Freq"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:autofillHints=""
+                android:hint="put text in here"
+                app:layout_constraintEnd_toStartOf="@+id/btnSend"
+                app:layout_constraintHorizontal_bias="0.51"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnDir1"
-                app:layout_constraintVertical_bias="1.0" />
-
-            <Button
-                android:id="@+id/btnDir1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="dir1"
-                app:layout_constraintBottom_toTopOf="@+id/btnFreq"
-                app:layout_constraintEnd_toStartOf="@+id/btnDir2"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnStep"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_constraintHorizontal_chainStyle="spread"
+                tools:layout_constraintHorizontal_weight="9" />
 
             <Button
                 android:id="@+id/btnSend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="send"
-                app:layout_constraintBottom_toTopOf="@+id/btnStep"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/editText"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:layout_constraintHorizontal_chainStyle="spread" />
 
-            <Button
-                android:id="@+id/btnStep"
+            <TextView
+                android:id="@+id/incomingText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="step"
+                android:text="Incoming Data"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintHorizontal_bias="0.1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnSend" />
+                app:layout_constraintTop_toBottomOf="@+id/editText" />
 
             <Button
-                android:id="@+id/btnDir2"
+                android:id="@+id/btn_domeHome"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="100dp"
+                android:text="ET Dome Home"
+                app:layout_constraintEnd_toStartOf="@+id/btn_domeSteps_ten"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editText" />
+
+            <Button
+                android:id="@+id/btn_domeSteps_ten"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Dome 10 Steps"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_domeHome"
+                app:layout_constraintTop_toTopOf="@+id/btn_domeHome" />
+
+            <Button
+                android:id="@+id/btn_domeCCW"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:text="Dome CCW"
+                app:layout_constraintEnd_toStartOf="@+id/btn_domeCW"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_domeHome" />
+
+            <Button
+                android:id="@+id/btn_domeCW"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="di2"
-                app:layout_constraintBottom_toTopOf="@+id/btnFreq"
+                android:text="Dome CW"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btnDir1"
-                app:layout_constraintTop_toBottomOf="@+id/btnStep"
-                app:layout_constraintVertical_bias="0.136" />
+                app:layout_constraintStart_toEndOf="@+id/btn_domeCCW"
+                app:layout_constraintTop_toTopOf="@+id/btn_domeCCW" />
+
+            <Button
+                android:id="@+id/btn_valveHome"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:text="Valve Home"
+                app:layout_constraintEnd_toStartOf="@+id/btn_valveSteps_one"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_domeCCW" />
+
+            <Button
+                android:id="@+id/btn_valveSteps_one"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Valve 1 Step"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_valveHome"
+                app:layout_constraintTop_toTopOf="@+id/btn_valveHome" />
+
+            <Button
+                android:id="@+id/btn_valveClose"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Valve Close"
+                app:layout_constraintEnd_toStartOf="@+id/btn_valveOpen"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_valveHome" />
+
+            <Button
+                android:id="@+id/btn_valveOpen"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Valve Open"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_valveClose"
+                app:layout_constraintTop_toTopOf="@+id/btn_valveClose" />
+
+            <Button
+                android:id="@+id/btn_readFreq"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
+                android:text="Read Freq"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_valveOpen" />
+
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout

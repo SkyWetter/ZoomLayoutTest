@@ -239,6 +239,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         getSupportActionBar()!!.hide()        //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
 
+
         /**
          *
          * NEW BLUETOOTH STUFF
@@ -254,6 +255,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         btnStartConnection.visibility = View.GONE
         btnReset.visibility = View.GONE
         btnReturn.visibility = View.GONE
+
 
         messageText.text = "Hey there! Let's get your bluetooth started. \n Just press the BIG BUTTON"
 
@@ -373,77 +375,84 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
          *
          */
 
-        btn_A.setOnClickListener {
+        btn_domeHome.setOnClickListener {
+            val tempString = "0"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btn_valveHome.setOnClickListener {
+            val tempString = "1"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btn_domeSteps_ten.setOnClickListener {
             val tempString = "a"
             val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-
             mBluetoothConnection!!.write(tempByte)
         }
 
-        btn_B.setOnClickListener {
+        btn_domeCCW.setOnClickListener {
             val tempString = "b"
             val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-
             mBluetoothConnection!!.write(tempByte)
         }
 
-        btn_C.setOnClickListener {
+        btn_domeCW.setOnClickListener {
             val tempString = "c"
             val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
-        btn_D.setOnClickListener {
+        btn_valveSteps_one.setOnClickListener {
             val tempString = "d"
             val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
-        btn_E.setOnClickListener {
+        btn_valveClose.setOnClickListener {
             val tempString = "e"
             val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
-        btn_F.setOnClickListener {
+
+        btn_valveOpen.setOnClickListener {
             val tempString = "f"
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            mBluetoothConnection!!.write(tempByte)
+        }
+
+        btn_readFreq.setOnClickListener {
+            val tempString = "g"
             val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(tempByte)
         }
 
         btnSend.setOnClickListener{
             val tempString = etSend.text.toString()
-
-            // var bytes: ByteArray = etSend.text.toString().toByteArray(Charset.defaultCharset())
             val bytes: ByteArray = tempString.toByteArray(Charset.defaultCharset())
 
             mBluetoothConnection!!.write(bytes)
         }
 
-        btnStep.setOnClickListener {
-            val tempString = "a"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+        incomingText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
 
-            mBluetoothConnection!!.write(tempByte)
-        }
+            }
 
-        btnDir1.setOnClickListener {
-            val tempString = "b"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
 
-        btnDir2.setOnClickListener {
-            val tempString = "c"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
-        btnFreq.setOnClickListener {
-            val tempString = "d"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
+            }
+        })
+
+
 
         paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
         constraintSet.clone(gridContainer)                  //Clones the bguttonContainer constraint layout settings
@@ -531,6 +540,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         btnReset.visibility = View.GONE
         btnReturn.visibility = View.GONE
         doneButtonContainer.visibility = View.GONE
+        paramMenuContainer.visibility = View.GONE
+        zoomLayout.visibility = View.VISIBLE
     }
 
     private fun initColorsFonts(){
@@ -551,10 +562,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         val tag = v.tag.toString().toInt()  //Converts tag type Any to Int
 
         when(thisDay[tag]){
-            0-> {thisDay[tag] = 1 ; v.setBackgroundColor(ColorData.dayButtonAM)}
-            1-> {thisDay[tag] = 2 ; v.setBackgroundColor(ColorData.dayButtonPM)}
-            2-> {thisDay[tag] = 3 ; v.setBackgroundColor(ColorData.dayButtonAMPM)}
-            3-> {thisDay[tag] = 0 ; v.setBackgroundColor(ColorData.dayButtonOff)}
+            0-> {thisDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_day_button_1)}
+            1-> {thisDay[tag] = 2 ; v.setBackgroundResource(R.drawable.btn_day_button_2)}
+            2-> {thisDay[tag] = 3 ; v.setBackgroundResource(R.drawable.btn_day_button_3)}
+            3-> {thisDay[tag] = 0 ; v.setBackgroundResource(R.drawable.btn_day_button_0)}
         }
     }
 
@@ -1051,10 +1062,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 val thisDay = bedBeingEdited.daysOfWeek
 
                 when(thisDay[i]){
-                    0-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonOff)}
-                    1-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonAM)}
-                    2-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonPM)}
-                    3-> { dayButtons[i].setBackgroundColor(ColorData.dayButtonAMPM)}
+                    0-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_0)}
+                    1-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_1)}
+                    2-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_2)}
+                    3-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_3)}
                 }
             }
 
@@ -1074,7 +1085,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             getAngleDistance(allSquares[square], turretSquare)
         }
     }
-
 
     private fun getAngleDistance(targetSquare: Square, turretSquare: Square) {
 

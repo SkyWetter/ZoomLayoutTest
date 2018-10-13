@@ -28,6 +28,10 @@ class ColorData {
         val uiColorAmber = Color.parseColor("#FFC107")
         val uiColorPureWhite = Color.parseColor("#FFFFFF")
         val uiColorDarkGreen = Color.parseColor("#388E3C")
+        val uiColorLightBlue = Color.parseColor("#03A9F4")
+        val uiColorPaleBlue = Color.parseColor("#B3E5FC")
+        val uiColorDarkBlue = Color.parseColor("#0288D1")
+        val uiColorBlackish = Color.parseColor("#212121")
 
         val uiColor1_dark = Color.argb(255,0,178,72)
         val uiColor1_medium = Color.argb(255,0,229,117)  //Med Green
@@ -49,7 +53,6 @@ class ColorData {
         val dayButtonAM    = Color.parseColor("#536DFE")
         val dayButtonOff     = Color.parseColor("#D32F2F")
 
-
         // Objects to be colored
         val deselectedSquare = uiColor_white
         val selected = uiColor2_medium
@@ -59,22 +62,16 @@ class ColorData {
         val listOfColors = mutableListOf(deselectedSquare, selected, adjacentSquare,turret)
         var nextBedColor : Int? = null
 
-
         /**
          * Color squares using hard-coded values (no random range)
          * Add any color vals above in to the below squareColorList to include it in the rotation for bed colors
          */
 
-
-
         val squareColorList = mutableListOf<Int>(uiColor1_dark, uiColor1_medium, uiColor1_dark, uiColor2_dark, uiColor2_medium, uiColor2_light)
-
         var nextColorIndex = 0
-
 
         /** Color ranges --> Used in random color generation, keeping colors within the bounds described
          * Color range must be added to listColorRange to be used in generation
-         *
          *
          * CURRENTLY NOT USED
          * */

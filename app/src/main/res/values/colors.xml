@@ -5,4 +5,17 @@
     <color name="colorAccent">#FF4081</color>
     <color name="topBar_color">#07816a</color>
     <color name="offWhite">#e6f1eb</color>
+
+    <color name="lightGreen">#4CAF50</color>
+    <color name="brightOrange">#FF9800</color>
+    <color name="amber">#FFC107</color>
+    <color name="pureWhite">#FFFFFF</color>
+    <color name="darkGreen">#388E3C</color>
+    <color name="lightBlue">#03A9F4</color>
+    <color name="paleBlue">#B3E5FC</color>
+    <color name="darkBlue">#0288D1</color>
+    <color name="blackish">#212121</color>
+
+    <color name="dayButton">#03A9F4</color>
+    <color name="dayButtonText">#FFFFFF</color>
 </resources>
