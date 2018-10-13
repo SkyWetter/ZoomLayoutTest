@@ -94,7 +94,7 @@ import kotlin.math.*
 class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     /** Bluetooth Variables */
-
+    private val debugging = false
     var messages : StringBuilder? = null
     private val tag = "MainActivityDebug"  //Tag for debug
     private var mBluetoothAdapter : BluetoothAdapter? = null
@@ -290,13 +290,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
 
         btnReturn.setOnClickListener {
-            /*
-            bluetoothContainer.visibility = View.GONE
-            mainScreenContainer.visibility = View.VISIBLE*/
-
-            debugWindow.visibility = View.VISIBLE
-            btnReset.visibility = View.GONE
-            btnReturn.visibility = View.GONE
+            if(!debugging){
+                bluetoothContainer.visibility = View.GONE
+                mainScreenContainer.visibility = View.VISIBLE
+            }
+            else {
+                debugWindow.visibility = View.VISIBLE
+                btnReset.visibility = View.GONE
+                btnReturn.visibility = View.GONE
+            }
 
         }
 
@@ -467,8 +469,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             }
         })
 
-
-
         paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
         constraintSet.clone(gridContainer)                  //Clones the bguttonContainer constraint layout settings
         val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
@@ -579,9 +579,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         when(thisDay[tag]){
             0-> {thisDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_day_button_1)}
-            1-> {thisDay[tag] = 2 ; v.setBackgroundResource(R.drawable.btn_day_button_2)}
-            2-> {thisDay[tag] = 3 ; v.setBackgroundResource(R.drawable.btn_day_button_3)}
-            3-> {thisDay[tag] = 0 ; v.setBackgroundResource(R.drawable.btn_day_button_0)}
+            1-> {thisDay[tag] = 0 ; v.setBackgroundResource(R.drawable.btn_day_button_0)}
+
         }
     }
 
@@ -661,6 +660,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 setWaterLevelText()
             }
         })
+
+        btn_confirmBedSettings.setOnClickListener{
+            openBedSettings()
+        }
 
     }
 
@@ -1080,8 +1083,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 when(thisDay[i]){
                     0-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_0)}
                     1-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_1)}
-                    2-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_2)}
-                    3-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_3)}
+
                 }
             }
 

@@ -15,6 +15,7 @@
     <color name="paleBlue">#B3E5FC</color>
     <color name="darkBlue">#0288D1</color>
     <color name="blackish">#212121</color>
+    <color name="teal">#009688</color>
 
     <color name="dayButton">#03A9F4</color>
     <color name="dayButtonText">#FFFFFF</color>
