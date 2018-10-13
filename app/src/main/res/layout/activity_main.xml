@@ -275,10 +275,12 @@
 
                     <Button
                         android:id="@+id/btn_timeSu"
+                        android:tag="0"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="16dp"
+                        android:onClick="amPmClick"
                         android:background="@drawable/btn_am"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/sundayButton"
@@ -287,8 +289,10 @@
 
                     <Button
                         android:id="@+id/btn_timeM"
+                        android:tag="1"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:onClick="amPmClick"
                         android:background="@drawable/btn_am"
                         app:layout_constraintBaseline_toBaselineOf="@+id/btn_timeSu"
                         app:layout_constraintEnd_toEndOf="@+id/mondayButton"
@@ -296,8 +300,10 @@
 
                     <Button
                         android:id="@+id/btn_timeT"
+                        android:tag="2"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:onClick="amPmClick"
                         android:background="@drawable/btn_am"
                         app:layout_constraintBaseline_toBaselineOf="@+id/btn_timeM"
                         app:layout_constraintEnd_toEndOf="@+id/tuesdayButton"
@@ -305,8 +311,10 @@
 
                     <Button
                         android:id="@+id/btn_timeW"
+                        android:tag="3"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:onClick="amPmClick"
                         android:background="@drawable/btn_am"
                         app:layout_constraintBaseline_toBaselineOf="@+id/btn_timeT"
                         app:layout_constraintEnd_toEndOf="@+id/wednesdayButton"
@@ -314,8 +322,10 @@
 
                     <Button
                         android:id="@+id/btn_timeTh"
+                        android:tag="4"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:onClick="amPmClick"
                         android:background="@drawable/btn_am"
                         app:layout_constraintBaseline_toBaselineOf="@+id/btn_timeW"
                         app:layout_constraintEnd_toEndOf="@+id/thursdayButton"
@@ -323,8 +333,10 @@
 
                     <Button
                         android:id="@+id/btn_timeF"
+                        android:tag="5"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:onClick="amPmClick"
                         android:background="@drawable/btn_am"
                         app:layout_constraintBaseline_toBaselineOf="@+id/btn_timeTh"
                         app:layout_constraintEnd_toEndOf="@+id/fridayButton"
@@ -332,14 +344,17 @@
 
                     <Button
                         android:id="@+id/btn_timeS"
+                        android:tag="6"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:onClick="amPmClick"
                         android:background="@drawable/btn_am"
                         tools:layout_editor_absoluteX="335dp"
                         tools:layout_editor_absoluteY="44dp"
                         app:layout_constraintBaseline_toBaselineOf="@+id/btn_timeF"
                         app:layout_constraintEnd_toEndOf="@+id/saturdayButton"
                         app:layout_constraintStart_toStartOf="@+id/saturdayButton"/>
+
                 </android.support.constraint.ConstraintLayout>
 
                 <View
@@ -362,6 +377,7 @@
                     android:editable="true"
                     android:gravity="center_horizontal"
                     android:padding="0dp"
+                    android:paddingBottom="8dp"
                     android:text="Days to Water"
                     android:textColor="#FFFFFF"
                     android:textSize="20dp"

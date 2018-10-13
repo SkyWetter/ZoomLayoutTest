@@ -575,12 +575,39 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     fun dayOfWeekClick(v: View){
 
         val thisDay = rvBedList[bedBeingEdited.position].daysOfWeek //Shortens code
+        val thisAmPmDay = rvBedList[bedBeingEdited.position].amPm
         val tag = v.tag.toString().toInt()  //Converts tag type Any to Int
+        var amPmButton : Button? = null
 
+        for(i in 0 until 7){
+            when(tag){
+                0 -> amPmButton = findViewById(R.id.btn_timeSu)
+                1 -> amPmButton = findViewById(R.id.btn_timeM)
+                2 -> amPmButton = findViewById(R.id.btn_timeT)
+                3 -> amPmButton = findViewById(R.id.btn_timeW)
+                4 -> amPmButton = findViewById(R.id.btn_timeTh)
+                5 -> amPmButton = findViewById(R.id.btn_timeF)
+                6 -> amPmButton = findViewById(R.id.btn_timeS)
+            }
+        }
         when(thisDay[tag]){
-            0-> {thisDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_day_button_1)}
-            1-> {thisDay[tag] = 0 ; v.setBackgroundResource(R.drawable.btn_day_button_0)}
+            0-> {thisDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_day_button_1)
+                                    ; thisAmPmDay[tag] = 1;amPmButton?.setBackgroundResource(R.drawable.btn_am) }
+            1-> {thisDay[tag] = 0 ; v.setBackgroundResource(R.drawable.btn_day_button_0)
+                ; thisAmPmDay[tag] = 0;amPmButton?.setBackgroundResource(R.drawable.btn_no_am_pm) }
 
+        }
+    }
+
+    fun amPmClick(v: View){
+
+        val thisAmPmDay = rvBedList[bedBeingEdited.position].amPm
+        val tag = v.tag.toString().toInt()
+
+        when(thisAmPmDay[tag]){
+            1-> {thisAmPmDay[tag] = 2 ; v.setBackgroundResource(R.drawable.btn_pm)}
+            2 ->{thisAmPmDay[tag] = 3 ; v.setBackgroundResource(R.drawable.btn_am_pm)}
+            3 ->{thisAmPmDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_am)}
         }
     }
 
@@ -1086,6 +1113,20 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                 }
             }
+
+            for(i in bedBeingEdited.amPm.indices){
+                val amPmButtons = arrayListOf<Button>(btn_timeSu,btn_timeM,btn_timeT, btn_timeW, btn_timeTh,btn_timeF,btn_timeS)
+                val thisAmPm = bedBeingEdited.amPm
+                when(thisAmPm[i]){
+                    0 -> { amPmButtons[i].setBackgroundResource(R.drawable.btn_no_am_pm)}
+                    1 -> { amPmButtons[i].setBackgroundResource(R.drawable.btn_am)}
+                    2 -> { amPmButtons[i].setBackgroundResource(R.drawable.btn_pm)}
+                    3 -> { amPmButtons[i].setBackgroundResource(R.drawable.btn_am_pm)}
+
+                }
+            }
+
+
 
             paramMenuContainer.visibility = View.VISIBLE
             doneButtonContainer.visibility = View.INVISIBLE
