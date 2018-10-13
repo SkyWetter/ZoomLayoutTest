@@ -14,16 +14,16 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.io.IOException;
 import java.util.UUID;
+
 
 public class BluetoothConnectionService {
 
@@ -42,17 +42,12 @@ public class BluetoothConnectionService {
     ProgressDialog mProgressDialog;
     private ConnectedThread mConnectedThread;
 
-    public String incomingMessage = new String();
-
 
 
     public BluetoothConnectionService(Context context) {
         mContext = context;
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         start();
-
-
-
 
     }
 
@@ -125,7 +120,7 @@ public class BluetoothConnectionService {
     private class ConnectThread extends Thread{
         private BluetoothSocket mmSocket; //Socket for the incoming connected device?
 
-        public ConnectThread(BluetoothDevice device, UUID uuid){
+        private ConnectThread(BluetoothDevice device, UUID uuid){
             Log.d(TAG,"ConnectThread: started.");
             mmDevice = device;
             deviceUUID = uuid;
@@ -224,7 +219,6 @@ public class BluetoothConnectionService {
         public final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
-
         public String incomingMessage= "";
 
         public ConnectedThread(BluetoothSocket socket) {
@@ -267,8 +261,12 @@ public class BluetoothConnectionService {
 
                     bytes = mmInStream.read(buffer);
                     incomingMessage = new String(buffer, 0, bytes);
-
                     Log.d(TAG,"InputStream: " + incomingMessage);
+
+                    Intent incomingMessageIntent = new Intent("incomingMessage");
+                    incomingMessageIntent.putExtra("theMessage",incomingMessage);
+                    LocalBroadcastManager.getInstance(mContext).sendBroadcast(incomingMessageIntent);
+
                 } catch (IOException e){
                     Log.e(TAG,"write: Error reading inputStream. " + e.getMessage());
                     break;

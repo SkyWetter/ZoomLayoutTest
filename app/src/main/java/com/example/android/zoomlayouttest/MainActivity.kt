@@ -69,6 +69,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v4.content.LocalBroadcastManager
@@ -83,6 +84,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.StringBuilder
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.math.*
@@ -93,8 +95,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     /** Bluetooth Variables */
 
+    var messages : StringBuilder? = null
     private val tag = "MainActivityDebug"  //Tag for debug
-
     private var mBluetoothAdapter : BluetoothAdapter? = null
     var mBTDevices = mutableListOf<BluetoothDevice>()
     var mDeviceListAdapter: DeviceListAdapter? = null
@@ -222,6 +224,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
+    private val mReceiver: BroadcastReceiver = object :BroadcastReceiver(){
+        override fun onReceive(context: Context?, intent: Intent?) {
+           var text = intent?.getStringExtra("theMessage")
+
+            messages?.append(text + "\n")
+
+            incomingTextBox.text = messages
+        }
+    }
+
 
     override fun onDestroy(){
         Log.d(tag,"onDestroy: called.")
@@ -245,6 +257,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
          * NEW BLUETOOTH STUFF
          *
          * */
+
+        messages = StringBuilder()
+        var incomingMessages = findViewById<TextView>(R.id.incomingTextBox)
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, IntentFilter("incomingMessage"))
 
         lvNewDevices = findViewById(R.id.lvNewDevices)
         val etSend: EditText = findViewById(R.id.editText)
@@ -435,11 +451,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         btnSend.setOnClickListener{
             val tempString = etSend.text.toString()
             val bytes: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-
             mBluetoothConnection!!.write(bytes)
         }
 
-        incomingText.addTextChangedListener(object : TextWatcher {
+        incomingTextBox.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
 
             }
@@ -533,6 +548,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     private fun initUiVisibility(){
 
         bluetoothContainer.visibility = View.GONE
+        debugWindow.visibility = View.GONE
         btnONOFF.visibility = View.VISIBLE
         btnDiscover.visibility =View.GONE
         btnEnableDisable_Discoverable.visibility = View.GONE
@@ -1087,7 +1103,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
     private fun getAngleDistance(targetSquare: Square, turretSquare: Square) {
-
 
         val x = (targetSquare.column - turretSquare.column)
         val y = (targetSquare.row - turretSquare.column)
