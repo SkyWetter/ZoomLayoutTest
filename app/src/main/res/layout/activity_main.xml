@@ -756,6 +756,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="300dp"
                 android:text="E.T. Dome Home"
+                android:tag ="0"
+                android:onClick="onDebugButtonClick"
                 app:layout_constraintEnd_toStartOf="@+id/btn_domeSteps_ten"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editText" />
@@ -767,6 +769,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="Dome 10 Steps"
+                android:tag ="a"
+                android:onClick="onDebugButtonClick"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btn_domeHome"
                 app:layout_constraintTop_toTopOf="@+id/btn_domeHome" />
@@ -778,6 +782,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="Dome CCW"
+                android:tag ="b"
+                android:onClick="onDebugButtonClick"
                 app:layout_constraintEnd_toStartOf="@+id/btn_domeCW"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_domeHome" />
@@ -789,6 +795,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="Dome CW"
+                android:tag ="c"
+                android:onClick="onDebugButtonClick"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btn_domeCCW"
                 app:layout_constraintTop_toTopOf="@+id/btn_domeCCW" />
@@ -800,6 +808,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
                 android:text="Valve Home"
+                android:tag ="1"
+                android:onClick="onDebugButtonClick"
                 app:layout_constraintEnd_toStartOf="@+id/btn_valveSteps_one"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_domeCCW" />
@@ -811,6 +821,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="Valve 1 Step"
+                android:tag ="d"
+                android:onClick="onDebugButtonClick"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btn_valveHome"
                 app:layout_constraintTop_toTopOf="@+id/btn_valveHome" />
@@ -822,6 +834,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="Valve Close"
+                android:tag ="e"
+                android:onClick="onDebugButtonClick"
                 app:layout_constraintEnd_toStartOf="@+id/btn_valveOpen"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_valveHome" />
@@ -833,6 +847,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="Valve Open"
+                android:tag ="f"
+                android:onClick="onDebugButtonClick"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btn_valveClose"
                 app:layout_constraintTop_toTopOf="@+id/btn_valveClose" />
@@ -845,6 +861,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="8dp"
                 android:text="Read Freq"
+                android:tag ="g"
+                android:onClick="onDebugButtonClick"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_valveOpen" />

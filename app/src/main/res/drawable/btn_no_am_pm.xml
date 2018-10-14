@@ -5,9 +5,7 @@
         <shape android:shape="oval">
             <solid android:color="@color/offWhite"/>
             <size android:width="50dp" android:height="50dp"/>
-
         </shape>
-
     </item>
 
     <item android:drawable="@drawable/ic_not_interested_black_48dp" android:height="33dp" android:width="33dp" android:gravity="center"/>

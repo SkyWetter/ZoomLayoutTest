@@ -65,12 +65,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v4.content.LocalBroadcastManager
@@ -94,10 +92,13 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
-    /** Bluetooth Variables */
-    private val debugging = false
-    var messages : StringBuilder? = null
+    private val debugging = false // Set true to access control debug menu within the bluetooth settings tab
     private val tag = "MainActivityDebug"  //Tag for debug
+
+
+    /** Bluetooth Variables */
+
+    var messages : StringBuilder? = null  // Used by broadcast receiver for
     private var mBluetoothAdapter : BluetoothAdapter? = null
     var mBTDevices = mutableListOf<BluetoothDevice>()
     var mDeviceListAdapter: DeviceListAdapter? = null
@@ -225,7 +226,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-    private val mReceiver: BroadcastReceiver = object :BroadcastReceiver(){
+    /**  Broadcast receiver for receiving text from the Bluetooth Connection Service*/
+
+    private val mMessageReceiver: BroadcastReceiver = object :BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
            var text = intent?.getStringExtra("theMessage")
 
@@ -234,7 +237,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             incomingTextBox.text = messages
         }
     }
-
 
     override fun onDestroy(){
         Log.d(tag,"onDestroy: called.")
@@ -261,7 +263,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         messages = StringBuilder()
         var incomingMessages = findViewById<TextView>(R.id.incomingTextBox)
-        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, IntentFilter("incomingMessage"))
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, IntentFilter("incomingMessage"))
 
         lvNewDevices = findViewById(R.id.lvNewDevices)
         val etSend: EditText = findViewById(R.id.editText)
@@ -394,81 +396,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
          *
          */
 
-        btn_domeHome.setOnClickListener {
-            val tempString = "0"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-
-            mBluetoothConnection!!.write(tempByte)
-        }
-
-        btn_valveHome.setOnClickListener {
-            val tempString = "1"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-
-            mBluetoothConnection!!.write(tempByte)
-        }
-
-        btn_domeSteps_ten.setOnClickListener {
-            val tempString = "a"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
-
-        btn_domeCCW.setOnClickListener {
-            val tempString = "b"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
-
-        btn_domeCW.setOnClickListener {
-            val tempString = "c"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
-
-        btn_valveSteps_one.setOnClickListener {
-            val tempString = "d"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
-
-        btn_valveClose.setOnClickListener {
-            val tempString = "e"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
-
-
-        btn_valveOpen.setOnClickListener {
-            val tempString = "f"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
-
-        btn_readFreq.setOnClickListener {
-            val tempString = "g"
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(tempByte)
-        }
-
         btnSend.setOnClickListener{
             val tempString = etSend.text.toString()
             val bytes: ByteArray = tempString.toByteArray(Charset.defaultCharset())
             mBluetoothConnection!!.write(bytes)
         }
-
-        incomingTextBox.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-        })
 
         paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
         constraintSet.clone(gridContainer)                  //Clones the bguttonContainer constraint layout settings
@@ -594,7 +526,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             }
         }
 
-
         when(thisDay[tag]){
             0-> {thisDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_day_button_1) ; dayButton?.setTextColor(ColorData.uiColorPureWhite)
                                     ; thisAmPmDay[tag] = 1;amPmButton?.setBackgroundResource(R.drawable.btn_am) }
@@ -614,6 +545,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             2 ->{thisAmPmDay[tag] = 3 ; v.setBackgroundResource(R.drawable.btn_am_pm)}
             3 ->{thisAmPmDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_am)}
         }
+    }
+
+    fun onDebugButtonClick(v: View){
+        val tempString = v.tag.toString()
+        val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+        mBluetoothConnection!!.write(tempByte)
     }
 
     private fun initializeButtons(context: Context, doneButton: Button, bluetoothOpenMenuButton:Button)
