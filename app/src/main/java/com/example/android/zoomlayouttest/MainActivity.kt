@@ -509,7 +509,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         topBar.setBackgroundColor(ColorData.uiColorLightGreen)
         zoomLayout.setBackgroundColor(ColorData.uiInvisible)
-        bottomText.setBackgroundColor(ColorData.uiColor_white)
+        bottomText.setBackgroundColor(ColorData.uiColorOffWhite)
         gridContainer.setBackgroundColor(ColorData.uiInvisible)
         topText.setBackgroundColor(ColorData.uiColorLightGreen)
 
