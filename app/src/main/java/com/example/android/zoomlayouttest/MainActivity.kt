@@ -56,7 +56,8 @@ Added edit button + functionality
 
 package com.example.android.zoomlayouttest
 
-
+import android.graphics.Matrix;
+import android.widget.ImageView;
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
@@ -810,6 +811,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         val thisSquare = allSquares[button.id - 10000]      //square you have just clicke don
 
 
+        turretSquare?.button?.rotation = thisSquare.angle!!.toFloat()
 
         if (!paramMenuOpen) {
             if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
