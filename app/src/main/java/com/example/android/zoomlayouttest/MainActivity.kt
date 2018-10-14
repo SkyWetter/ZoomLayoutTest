@@ -404,8 +404,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         btnSend.setOnClickListener{
             val tempString = etSend.text.toString()
-            val bytes: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            mBluetoothConnection!!.write(bytes)
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            if(mBluetoothConnection!=null) {
+                mBluetoothConnection!!.write(tempByte)
+            }
         }
 
         paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
@@ -560,7 +562,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     fun onDebugButtonClick(v: View){
         val tempString = v.tag.toString()
         val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-        mBluetoothConnection!!.write(tempByte)
+        if(mBluetoothConnection!=null) {
+            mBluetoothConnection!!.write(tempByte)
+        }
     }
 
     private fun initializeButtons(context: Context, doneButton: Button, bluetoothOpenMenuButton:Button)
