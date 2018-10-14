@@ -503,6 +503,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         doneButtonContainer.visibility = View.GONE
         paramMenuContainer.visibility = View.GONE
         zoomLayout.visibility = View.VISIBLE
+        topBarBottomSpacer.visibility = View.VISIBLE
     }
 
     private fun initColorsFonts(){
@@ -1035,6 +1036,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
     private fun openBedSettings(){
+
+
         val thisBed = rvBedList[bedBeingEdited.position]
 
         //If bed settings is already open, makes sure RvBedData of edited bed is updated
@@ -1047,10 +1050,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             thisBed.daysOfWeek = bedBeingEdited.daysOfWeek
             thisBed.waterLevel = bedBeingEdited.waterLevel
             thisBed.amPm = bedBeingEdited.amPm
-
+            topText.text = "Rainbow"
             paramMenuContainer.visibility = View.GONE
             doneButtonContainer.visibility = View.VISIBLE
             bottomText.visibility = View.VISIBLE
+            globalButtonContainer.visibility = View.VISIBLE
+            topBarBottomSpacer.visibility = View.VISIBLE
             paramMenuOpen = !paramMenuOpen
         }
 
@@ -1061,6 +1066,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             waterLevelBar.progress = bedBeingEdited.waterLevel
             setWaterLevelText()
             bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
+
 
             //Loads in the day settings for the bed
 
@@ -1090,11 +1096,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 }
             }
 
-
-
+            topText.text = "Bed Settings"
+            globalButtonContainer.visibility = View.INVISIBLE
             paramMenuContainer.visibility = View.VISIBLE
             doneButtonContainer.visibility = View.INVISIBLE
             bottomText.visibility = View.GONE
+            topBarBottomSpacer.visibility = View.GONE
             paramMenuOpen = !paramMenuOpen
         }
     }
