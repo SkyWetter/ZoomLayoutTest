@@ -34,6 +34,27 @@ class ColorData {
         val uiColorBlackish = Color.parseColor("#212121")
         val uiColorLightGrey = Color.parseColor("#BDBDBD")
 
+
+        /** Garden Bed Color Sets*/
+
+        val gardenBedColor500_red = Color.parseColor("#f44336")
+        val gardenBedColor500_pink = Color.parseColor("#e91e63")
+        val gardenBedColor500_purple = Color.parseColor("#9c27b0")
+        val gardenBedColor500_deepPurple = Color.parseColor("#673ab7")
+        val gardenBedColor500_indigo = Color.parseColor("#3f51b5")
+        val gardenBedColor500_blue = Color.parseColor("#2196f3")
+        val gardenBedColor500_lightBlue = Color.parseColor("#03a9f4")
+        val gardenBedColor500_cyan = Color.parseColor("#00bcd4")
+        val gardenBedColor500_teal = Color.parseColor("#009688")
+        val gardenBedColor500_green = Color.parseColor("#4caf50")
+        val gardenBedColor500_lightGreen = Color.parseColor("#8bc34a")
+        val gardenBedColor500_lime = Color.parseColor("#cddc39")
+        val gardenBedColor500_yellow = Color.parseColor("#ffeb3b")
+        val gardenBedColor500_amber = Color.parseColor("#ffc107")
+        val gardenBedColor500_orange = Color.parseColor("#ff9800")
+        val gardenBedColor500_deepOrange = Color.parseColor("#ff5722")
+
+
         val uiColor1_dark = Color.argb(255,0,178,72)
         val uiColor1_medium = Color.argb(255,0,229,117)  //Med Green
         val uiColor1_light = Color.argb(255,102,255,166) //Light Green
@@ -55,12 +76,12 @@ class ColorData {
         val dayButtonOff     = Color.parseColor("#D32F2F")
 
         // Objects to be colored
-        val deselectedSquare = uiColor_white
-        val selected = uiColor2_medium
+        val deselectedSquare = Color.argb(255,230,241,235)
+        val selected = Color.argb(255,29,233,182)
         val adjacentSquare = Color.argb(50,110,255,232)   //Light Blue
 
         val turret = Color.argb(255,255,0,0)
-        val listOfColors = mutableListOf(deselectedSquare, selected, adjacentSquare,turret)
+        private val listOfColors = mutableListOf(deselectedSquare, selected, adjacentSquare,turret)
         var nextBedColor : Int? = null
 
         /**
@@ -68,8 +89,12 @@ class ColorData {
          * Add any color vals above in to the below squareColorList to include it in the rotation for bed colors
          */
 
-        val squareColorList = mutableListOf<Int>(uiColor1_dark, uiColor1_medium, uiColor1_dark, uiColor2_dark, uiColor2_medium, uiColor2_light)
-        var nextColorIndex = 0
+        private val squareColorList = mutableListOf<Int>(gardenBedColor500_red, gardenBedColor500_pink,
+                gardenBedColor500_purple, gardenBedColor500_deepPurple, gardenBedColor500_indigo, gardenBedColor500_blue,
+                gardenBedColor500_lightBlue, gardenBedColor500_cyan, gardenBedColor500_teal, gardenBedColor500_green,
+                gardenBedColor500_lightGreen, gardenBedColor500_lime, gardenBedColor500_yellow, gardenBedColor500_amber,
+                gardenBedColor500_orange, gardenBedColor500_deepOrange)
+        private var nextColorIndex = 0
 
         /** Color ranges --> Used in random color generation, keeping colors within the bounds described
          * Color range must be added to listColorRange to be used in generation

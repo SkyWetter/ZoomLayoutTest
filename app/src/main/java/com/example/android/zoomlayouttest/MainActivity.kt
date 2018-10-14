@@ -236,7 +236,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     private val mMessageReceiver: BroadcastReceiver = object :BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
-           var text = intent?.getStringExtra("theMessage")
+           val text = intent?.getStringExtra("theMessage")
 
             messages?.append(text + "\n")
 
@@ -268,7 +268,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
          * */
 
         messages = StringBuilder()
-        var incomingMessages = findViewById<TextView>(R.id.incomingTextBox)
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, IntentFilter("incomingMessage"))
 
         lvNewDevices = findViewById(R.id.lvNewDevices)
@@ -444,7 +443,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
         turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]  //Gets the location of the central square of the garden bed
         turretSquare?.button?.setBackgroundResource(R.drawable.turret)
-        initializeButtons(this@MainActivity, doneButton,bluetoothButton)  //Initializes button listeners
+        initializeButtons( doneButton,bluetoothButton)  //Initializes button listeners
         getAngleDistanceAll(allSquares,turretSquare!!)
 
 
@@ -567,7 +566,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-    private fun initializeButtons(context: Context, doneButton: Button, bluetoothOpenMenuButton:Button)
+    private fun initializeButtons(doneButton: Button, bluetoothOpenMenuButton:Button)
     {
 
 //Functions global to multiple listeners
@@ -759,9 +758,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 
     /** Checks for adjacentSquare squares to current bed being created/edited */
-    fun spraySingleSquare(){
-
-    }
 
    private fun adjacentSquareColorCheck(squareID: Int) {
 
@@ -1038,7 +1034,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         adjacentSquares.clear()
     }
 
-    fun openBedSettings(){
+    private fun openBedSettings(){
         val thisBed = rvBedList[bedBeingEdited.position]
 
         //If bed settings is already open, makes sure RvBedData of edited bed is updated
@@ -1118,9 +1114,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         val x = (targetSquare.column - turretSquare.column)
         val y = (targetSquare.row - turretSquare.column)
         val squaredCoords = (x * x) + (y * y)
-        val quadrant: Int?
+        var quadrant: Int?
 
         targetSquare.distance = sqrt(squaredCoords.toDouble())
+
+
 
         if (x != 0 && y != 0) {
 
