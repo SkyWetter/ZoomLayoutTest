@@ -83,11 +83,15 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
+import com.otaliastudios.zoom.ZoomLayout
+import com.transitionseverywhere.Rotate
+import com.transitionseverywhere.TransitionManager
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.StringBuilder
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.math.*
+import com.transitionseverywhere.*
 
 
 
@@ -810,8 +814,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         val thisSquare = allSquares[button.id - 10000]      //square you have just clicke don
 
-
+        TransitionManager.beginDelayedTransition(mainLayout,Rotate())
         turretSquare?.button?.rotation = thisSquare.angle!!.toFloat()
+
+
+      //  turretSquare?.button?.rotation = thisSquare.angle!!.toFloat()
 
         if (!paramMenuOpen) {
             if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
