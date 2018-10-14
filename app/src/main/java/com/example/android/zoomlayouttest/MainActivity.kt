@@ -93,6 +93,7 @@ import kotlin.math.*
 class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     private val debugging = false // Set true to access control debug menu within the bluetooth settings tab
+    private val sprayEachSquare = false // set to true to have every square press send a spray command
     private val tag = "MainActivityDebug"  //Tag for debug
 
 
@@ -435,7 +436,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         initUiVisibility()
         gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
         turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]  //Gets the location of the central square of the garden bed
+        turretSquare?.button?.setBackgroundResource(R.drawable.turret)
         initializeButtons(this@MainActivity, doneButton,bluetoothButton)  //Initializes button listeners
+        getAngleDistanceAll(allSquares,turretSquare!!)
+
+
 
     }
 
@@ -725,7 +730,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                     button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                     {
-
                         buildBed(button)                         //add/remove tiles from bed when clicked
                     }
 
@@ -746,6 +750,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 
     /** Checks for adjacentSquare squares to current bed being created/edited */
+    fun spraySingleSquare(){
+
+    }
 
    private fun adjacentSquareColorCheck(squareID: Int) {
 
@@ -801,6 +808,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     private fun buildBed(button: Button) {
 
         val thisSquare = allSquares[button.id - 10000]      //square you have just clicke don
+
+
+
         if (!paramMenuOpen) {
             if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
             {
@@ -966,11 +976,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     private fun bedClicked(bed : RVBedData)
     {
-        editBed(bed.rvBedID)
-        bedBeingEdited = bed
-        openBedSettings()
-
-        Toast.makeText(this, "Editing: ${bed.name}", Toast.LENGTH_LONG).show()
+        if(doneButtonContainer.visibility != View.VISIBLE) {
+            editBed(bed.rvBedID)
+            bedBeingEdited = bed
+            openBedSettings()
+        }
     }
 
     //creates bed object, adds completed bed to list, sets stage for next bed
