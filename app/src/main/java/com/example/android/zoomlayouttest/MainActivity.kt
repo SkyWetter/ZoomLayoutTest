@@ -65,6 +65,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
@@ -548,6 +549,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     private fun initUiVisibility(){
 
         bluetoothContainer.visibility = View.GONE
+        bottomText.visibility = View.VISIBLE
         debugWindow.visibility = View.GONE
         btnONOFF.visibility = View.VISIBLE
         btnDiscover.visibility =View.GONE
@@ -578,22 +580,25 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         val thisAmPmDay = rvBedList[bedBeingEdited.position].amPm
         val tag = v.tag.toString().toInt()  //Converts tag type Any to Int
         var amPmButton : Button? = null
+        var dayButton : Button? = null
 
         for(i in 0 until 7){
             when(tag){
-                0 -> amPmButton = findViewById(R.id.btn_timeSu)
-                1 -> amPmButton = findViewById(R.id.btn_timeM)
-                2 -> amPmButton = findViewById(R.id.btn_timeT)
-                3 -> amPmButton = findViewById(R.id.btn_timeW)
-                4 -> amPmButton = findViewById(R.id.btn_timeTh)
-                5 -> amPmButton = findViewById(R.id.btn_timeF)
-                6 -> amPmButton = findViewById(R.id.btn_timeS)
+                0 -> {amPmButton = findViewById(R.id.btn_timeSu) ; dayButton = findViewById(R.id.sundayButton)}
+                1 -> { amPmButton = findViewById(R.id.btn_timeM) ; dayButton = findViewById(R.id.mondayButton)}
+                2 -> { amPmButton = findViewById(R.id.btn_timeT) ; dayButton = findViewById(R.id.tuesdayButton)}
+                3 -> { amPmButton = findViewById(R.id.btn_timeW) ; dayButton = findViewById(R.id.wednesdayButton)}
+                4 -> { amPmButton = findViewById(R.id.btn_timeTh); dayButton = findViewById(R.id.thursdayButton)}
+                5 -> { amPmButton = findViewById(R.id.btn_timeF); dayButton = findViewById(R.id.fridayButton)}
+                6 -> { amPmButton = findViewById(R.id.btn_timeS); dayButton = findViewById(R.id.saturdayButton)}
             }
         }
+
+
         when(thisDay[tag]){
-            0-> {thisDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_day_button_1)
+            0-> {thisDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_day_button_1) ; dayButton?.setTextColor(ColorData.uiColorPureWhite)
                                     ; thisAmPmDay[tag] = 1;amPmButton?.setBackgroundResource(R.drawable.btn_am) }
-            1-> {thisDay[tag] = 0 ; v.setBackgroundResource(R.drawable.btn_day_button_0)
+            1-> {thisDay[tag] = 0 ; v.setBackgroundResource(R.drawable.btn_day_button_0)  ; dayButton?.setTextColor(ColorData.uiColorLightGrey)
                 ; thisAmPmDay[tag] = 0;amPmButton?.setBackgroundResource(R.drawable.btn_no_am_pm) }
 
         }
@@ -1085,6 +1090,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             //Loads edited bed values into rvBedData data class
             thisBed.daysOfWeek = bedBeingEdited.daysOfWeek
             thisBed.waterLevel = bedBeingEdited.waterLevel
+            thisBed.amPm = bedBeingEdited.amPm
 
             paramMenuContainer.visibility = View.GONE
             doneButtonContainer.visibility = View.VISIBLE
@@ -1108,8 +1114,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 val thisDay = bedBeingEdited.daysOfWeek
 
                 when(thisDay[i]){
-                    0-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_0)}
-                    1-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_1)}
+                    0-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_0)
+                            ; dayButtons[i].setTextColor(ColorData.uiColorLightGrey)}
+                    1-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_1)
+                            ; dayButtons[i].setTextColor(ColorData.uiColorPureWhite)}
 
                 }
             }
@@ -1130,7 +1138,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
             paramMenuContainer.visibility = View.VISIBLE
             doneButtonContainer.visibility = View.INVISIBLE
-            bottomText.visibility = View.INVISIBLE
+            bottomText.visibility = View.GONE
             paramMenuOpen = !paramMenuOpen
         }
     }

@@ -32,6 +32,7 @@ class ColorData {
         val uiColorPaleBlue = Color.parseColor("#B3E5FC")
         val uiColorDarkBlue = Color.parseColor("#0288D1")
         val uiColorBlackish = Color.parseColor("#212121")
+        val uiColorLightGrey = Color.parseColor("#BDBDBD")
 
         val uiColor1_dark = Color.argb(255,0,178,72)
         val uiColor1_medium = Color.argb(255,0,229,117)  //Med Green
