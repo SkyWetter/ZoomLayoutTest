@@ -142,7 +142,7 @@
             android:animateLayoutChanges="true"
             android:background="#ffffff"
             android:elevation="1dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/zoomLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

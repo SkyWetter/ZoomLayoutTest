@@ -128,9 +128,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         var bedBeingEdited  = RVBedData("",999999,Color.argb(255,0,0,0))  //Blank bedData class to hold currently edited bed
         var bedCount = 1
         var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
-        private val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
+        val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
-        private var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
+        var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
         private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
 
     }
@@ -438,6 +438,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         bedList.add(bedZero)
 
         /** Init code*/
+
         initColorsFonts()   //Sets colors of various UI elements
         initUiVisibility()
         gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
@@ -465,6 +466,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         var button: Button? = null
         var color: Int = ColorData.deselectedSquare
         var isInvisible = false
+
 
         fun changeColor(newColor: Int) {
             button!!.setBackgroundColor(newColor)
@@ -539,9 +541,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
 
         when(thisDay[tag]){
-            0-> {thisDay[tag] = 1 ; v.setBackgroundResource(R.drawable.btn_day_button_1) ; dayButton?.setTextColor(ColorData.uiColorPureWhite)
+            false-> {thisDay[tag] = true ; v.setBackgroundResource(R.drawable.btn_day_button_1) ; dayButton?.setTextColor(ColorData.uiColorPureWhite)
                                     ; thisAmPmDay[tag] = 1;amPmButton?.setBackgroundResource(R.drawable.btn_am) }
-            1-> {thisDay[tag] = 0 ; v.setBackgroundResource(R.drawable.btn_day_button_0)  ; dayButton?.setTextColor(ColorData.uiColorLightGrey)
+            true -> {thisDay[tag] = false ; v.setBackgroundResource(R.drawable.btn_day_button_0)  ; dayButton?.setTextColor(ColorData.uiColorLightGrey)
                 ; thisAmPmDay[tag] = 0;amPmButton?.setBackgroundResource(R.drawable.btn_no_am_pm) }
 
         }
@@ -571,7 +573,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     {
 
 //Functions global to multiple listeners
+        settingsButton.setOnClickListener {
 
+
+        }
 
         doneButton.setOnClickListener()
         {
@@ -587,8 +592,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         }
 
-        settingsButton.setOnClickListener {
-        }
 
 
 
@@ -688,8 +691,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     tempSquare.column = i                 //set rows and columns
                     tempSquare.row = row
                     tempSquare.button = button
-                    button.tag = getXY(i,row)
-                    Log.d("Coords","Button id = " + button.id.toString() + " and coord = " + button.tag )
+                   // button.tag = getXY(i,row)
+
 
                     allSquares.add(tempSquare)              //add to master list of tiles
 
@@ -858,6 +861,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 }
             } else  //if in editing mode
             {
+
                 adjacentSquares.removeAll(Collections.singleton(thisSquare))
 
                 if (thisSquare.bedID == bedEdit[1])     //remove square from selected bed
@@ -1015,10 +1019,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 finalBed.squaresInBed.add(tempBed[i])
             }
 
+            //Takes the list of squares and sorts them by id (ascending order) for spray pattern
+            finalBed.squaresInBed = GardenData.sortBed(finalBed.squaresInBed)
+
             bedList.add(finalBed)               //add completed Bed to master list and set up for the next
             tempBed.clear()
-
             bedCount++
+
             removeAdjacentSquares()
 
         } else {
@@ -1076,9 +1083,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 val thisDay = bedBeingEdited.daysOfWeek
 
                 when(thisDay[i]){
-                    0-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_0)
+                    false-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_0)
                             ; dayButtons[i].setTextColor(ColorData.uiColorLightGrey)}
-                    1-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_1)
+                    true-> { dayButtons[i].setBackgroundResource(R.drawable.btn_day_button_1)
                             ; dayButtons[i].setTextColor(ColorData.uiColorPureWhite)}
 
                 }
@@ -1105,6 +1112,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             paramMenuOpen = !paramMenuOpen
         }
     }
+
 
 /* Angle and Distance Function
    b Takes a target square and a central turret square
