@@ -45,116 +45,33 @@ class GardenData{
                 arrayListOf(bedList_sat_am, bedList_sat_pm)
         )
 
+        /** Used for sorting squares in a bed by square id # in ascending order*/
+
         fun sortBed(squareList: MutableList<Square>): MutableList<Square> {
             return squareList.sortedBy { it.squareId }.toMutableList()
         }
 
-        fun getDailyBedSchedule_v2(){
-            for(bed in rvBedList){
-                for(day in bed.daysOfWeek){
-                    if(day){
-                        val newBed = finalBedData(bedList[bed.rvBedID],bed.waterLevel)
-                        when(bed.amPm[bed.daysOfWeek.indexOf(day)]){
+        /** Takes the list of currents beds and puts them in the weekly schedule array ,
+         * organized by am/pm, along with a given waterlevel for each bed
+         *
+         */
+
+        fun getDailyBedSchedule(){
+            for(bed in rvBedList){                      //for each bed in the rvBedList
+                for(day in bed.daysOfWeek){             //For each day in a bed's RVData
+                    if(day){                             //If bed is to be watered on that day
+
+                        val newBed = finalBedData(bedList[bed.rvBedID],bed.waterLevel)              //Create a new bed, with bed and water level
+
+                        when(bed.amPm[bed.daysOfWeek.indexOf(day)]){                               //When the amPm var for that given day is, at to appropriate bedList
                             1 -> { weeklySchedule[bed.daysOfWeek.indexOf(day)][0].add(newBed)}
                             2 -> { weeklySchedule[bed.daysOfWeek.indexOf(day)][1].add(newBed)}
                             3 -> { weeklySchedule[bed.daysOfWeek.indexOf(day)][0].add(newBed)
-                                    ; weeklySchedule[bed.daysOfWeek.indexOf(day)][1].add(newBed)}
+                                 ; weeklySchedule[bed.daysOfWeek.indexOf(day)][1].add(newBed)}
                         }
                     }
                 }
             }
         }
-
-        fun getDailyBedSchedule(){
-            for(bed in rvBedList){
-                //Sun
-                if(bed.daysOfWeek[0]){
-
-                    val newBed = finalBedData(bedList[bed.rvBedID],bed.waterLevel)
-
-                    when(bed.amPm[0]){
-                        1 -> { bedList_sun_am.add(newBed) }
-                        2 -> { bedList_sun_pm.add(newBed) }
-                        3 -> { bedList_sun_am.add(newBed) ; bedList_sun_pm.add(newBed) }
-                    }
-                }
-                //Mon
-                if(bed.daysOfWeek[1]){
-
-                    val newBed = finalBedData(bedList[bed.rvBedID],bed.waterLevel)
-
-                    when(bed.amPm[0]){
-                        1 -> { bedList_mon_am.add(newBed) }
-                        2 -> { bedList_mon_pm.add(newBed) }
-                        3 -> { bedList_mon_am.add(newBed) ; bedList_mon_pm.add(newBed) }
-                    }
-
-                }
-                //Tue
-                if(bed.daysOfWeek[2]){
-
-                    val newBed = finalBedData(bedList[bed.rvBedID],bed.waterLevel)
-
-                    when(bed.amPm[0]){
-                        1 -> { bedList_tue_am.add(newBed) }
-                        2 -> { bedList_tue_pm.add(newBed) }
-                        3 -> { bedList_tue_am.add(newBed) ; bedList_tue_pm.add(newBed) }
-                    }
-                }
-                //Wed
-                if(bed.daysOfWeek[3]){
-
-                    val newBed = finalBedData(bedList[bed.rvBedID],bed.waterLevel)
-
-                    when(bed.amPm[0]){
-                        1 -> { bedList_wed_am.add(newBed) }
-                        2 -> { bedList_wed_pm.add(newBed) }
-                        3 -> { bedList_wed_am.add(newBed) ; bedList_wed_pm.add(newBed) }
-                    }
-
-                }
-                //Thu
-                if(bed.daysOfWeek[4]){
-
-                    val newBed = finalBedData(bedList[bed.rvBedID],bed.waterLevel)
-
-                    when(bed.amPm[0]){
-                        1 -> { bedList_thu_am.add(newBed) }
-                        2 -> { bedList_thu_pm.add(newBed) }
-                        3 -> { bedList_thu_am.add(newBed) ; bedList_thu_pm.add(newBed) }
-                    }
-
-                }
-                //Fri
-                if(bed.daysOfWeek[5]){
-
-                    val newBed = finalBedData(bedList[bed.rvBedID],bed.waterLevel)
-
-                    when(bed.amPm[0]){
-                        1 -> { bedList_fri_am.add(newBed) }
-                        2 -> { bedList_fri_pm.add(newBed) }
-                        3 -> { bedList_fri_am.add(newBed) ; bedList_fri_pm.add(newBed) }
-                    }
-
-                }
-                //Sat
-                if(bed.daysOfWeek[6]){
-
-                    val newBed = finalBedData(bedList[bed.rvBedID],bed.waterLevel)
-
-                    when(bed.amPm[0]){
-                        1 -> { bedList_sat_am.add(newBed) }
-                        2 -> { bedList_sat_pm.add(newBed) }
-                        3 -> { bedList_sat_am.add(newBed) ; bedList_sat_pm.add(newBed) }
-                    }
-                }
-            }
-        }
-
-        fun finalCommandList(){
-
-        }
-
-
     }
 }
