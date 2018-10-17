@@ -1,11 +1,9 @@
 package com.example.android.zoomlayouttest
 
-import android.text.TextUtils.indexOf
 import android.util.Log
 import com.example.android.zoomlayouttest.MainActivity.*
 import com.example.android.zoomlayouttest.MainActivity.Companion.bedList
 import com.example.android.zoomlayouttest.MainActivity.Companion.rvBedList
-import com.pawegio.kandroid.w
 
 /**
  * Garden Bed Data -- Functions and data for packaging outgoing garden bed information
@@ -13,21 +11,10 @@ import com.pawegio.kandroid.w
 
 class GardenData{
 
-    var commandList = mutableListOf<String>()
+
 
     companion object {
-
-
-        /** Used for sorting squares in a bed by square id # in ascending order*/
-
-        fun sortBed(squareList: MutableList<Square>): MutableList<Square> {
-            return squareList.sortedBy { it.squareId }.toMutableList()
-        }
-
-        fun sortBedLists(){
-
-        }
-
+        var testProgram = String()  // Test string for sending data
 
         data class finalBedData(val bed: Bed, val waterLevel: Int)
 
@@ -57,17 +44,35 @@ class GardenData{
                 arrayListOf(bedList_sat_am, bedList_sat_pm)
         )
 
+
+        /** Used for sorting squares in a bed by square id # in ascending order*/
+
+        fun sortBed(squareList: MutableList<Square>): MutableList<Square> {
+            return squareList.sortedBy { it.squareId }.toMutableList()
+        }
+
         /** Takes the list of currents beds and puts them in the weekly schedule array ,
          * organized by am/pm, along with a given waterlevel for each bed
          *
          */
 
+
+
         fun getBedSchedule() {
-            for(i in 0 until 7){
-                for(j in 0 until 2){
-                    weeklySchedule[i][j].clear()
+
+            //Function clears the previous weekly schedule
+
+            fun clearSchedule(){
+                for(i in 0 until 7){
+                    for(j in 0 until 2){
+                        weeklySchedule[i][j].clear()
+                    }
                 }
             }
+
+            clearSchedule()
+
+
             for (bed in rvBedList) {                      //for each bed in the rvBedList
                 for (day in weeklySchedule.indices) {             //For each day in a bed's RVData
                     if (bed.daysOfWeek[day]) {                             //If bed is to be watered on that day
@@ -82,12 +87,65 @@ class GardenData{
                     }
                 }
             }
-
         }
 
-        fun printBedsToLog(){
-            Log.d("tester","sun_am: $bedList_sun_am  || sun_pm: $bedList_sun_pm")
-            Log.d("tester","mon_am: $bedList_mon_am  || mon_pm: $bedList_mon_pm")
+        /** Takes weekly schedule and turns it into a continuous string. Might be chopped up into 14 separate strings (one per day + time combo)*/
+
+        fun prepDatData(){
+            testProgram = ""   //Clear the program string
+
+            for(day in weeklySchedule.indices){  //For each day of the week
+
+                for(time in weeklySchedule[day].indices){  //For each time of day
+
+                    for(finalBed in weeklySchedule[day][time]){  //For each finalBed in the given day + time
+
+                        when(day){                              //Starts the string with the current day
+                            0 -> testProgram += "Sun"
+                            1 -> testProgram += "Mon"
+                            2 -> testProgram += "Tue"
+                            3 -> testProgram += "Wed"
+                            4 -> testProgram += "Thu"
+                            5 -> testProgram += "Fri"
+                            6 -> testProgram += "Sat"
+                        }
+
+                        when(time){
+                            0 -> testProgram += "_AM: "       //Appends the current time
+                            1 -> testProgram += "_PM: "
+                        }
+
+                        testProgram += "Bed " + finalBed.bed.bedID.toString() + " -> "   // Shows the start of a bed
+
+                        for(i in 0..finalBed.waterLevel){                                // Repeats the bed by the given waterLevel value (aka > waterlevel = more bed repetition
+
+                            for(j in finalBed.bed.squaresInBed){                         // For each square in the bed
+                                testProgram += j.squareId.toString() + ","              //Append the square id
+                            }
+                        }
+
+                       testProgram += " || "                                            //Signifies the end of a bed
+                    }
+                }
+            }
+
+
+            // Prints the current string testProgram to the logcat. Function below exists in case the string is larger than the maximum allowed in logcat
+
+            if (testProgram.length > 4000) {
+
+                val chunkCount = testProgram.length / 4000     // integer division
+                for (i in 0..chunkCount) {
+                    val max = 4000 * (i + 1)
+                    if (max >= testProgram.length) {
+                        Log.d("itsWorking", testProgram.substring(4000 * i))
+                    } else {
+                        Log.d("itsWorking", testProgram.substring(4000 * i, max))
+                    }
+                }
+            } else {
+                Log.d("itsWorking", testProgram)
+            }
         }
     }
 }

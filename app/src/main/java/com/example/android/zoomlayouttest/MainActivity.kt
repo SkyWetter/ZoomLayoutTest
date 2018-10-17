@@ -569,8 +569,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 //Functions global to multiple listeners
         settingsButton.setOnClickListener {
             GardenData.getBedSchedule()
-            GardenData.printBedsToLog()
-
+            GardenData.prepDatData()
         }
 
         doneButton.setOnClickListener()
