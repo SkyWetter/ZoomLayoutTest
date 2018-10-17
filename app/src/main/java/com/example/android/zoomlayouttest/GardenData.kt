@@ -14,7 +14,7 @@ class GardenData{
 
 
     companion object {
-        var testProgram = String()  // Test string for sending data
+        var dataToSendFull = arrayListOf<String>()
 
         data class finalBedData(val bed: Bed, val waterLevel: Int)
 
@@ -44,6 +44,8 @@ class GardenData{
                 arrayListOf(bedList_sat_am, bedList_sat_pm)
         )
 
+      //  private var dataToSend = arrayListOf<String>("SuAM: ","SuPM: ","MoAM: ","MoPM: ","TuAM: ","TuPM: ","WeAM","WePM: ","ThAM: ","ThPM: ","FrAM: ","FrPm: ","SaAM: ","SaPM: ")
+
 
         /** Used for sorting squares in a bed by square id # in ascending order*/
 
@@ -55,8 +57,6 @@ class GardenData{
          * organized by am/pm, along with a given waterlevel for each bed
          *
          */
-
-
 
         fun getBedSchedule() {
 
@@ -91,61 +91,63 @@ class GardenData{
 
         /** Takes weekly schedule and turns it into a continuous string. Might be chopped up into 14 separate strings (one per day + time combo)*/
 
-        fun prepDatData(){
-            testProgram = ""   //Clear the program string
+        fun prepDatData():ArrayList<String>{
+
+            //Clear the program
+            val dataToSend = arrayListOf<String>("SuAM: ","SuPM: ","MoAM: ","MoPM: ","TuAM: ","TuPM: ","WeAM: ","WePM: ","ThAM: ","ThPM: ","FrAM: ","FrPm: ","SaAM: ","SaPM: ")
+
+            var index = -1
 
             for(day in weeklySchedule.indices){  //For each day of the week
 
                 for(time in weeklySchedule[day].indices){  //For each time of day
 
+                    when(day){          // gets index for
+
+                        0 -> when(time){ 0 -> index = 0
+                                         1 -> index = 1 }
+
+                        1 -> when(time){ 0 -> index = 2
+                                         1 -> index = 3 }
+
+                        2 -> when(time){ 0 -> index = 4
+                                         1 -> index = 5 }
+
+                        3 -> when(time){ 0 -> index = 6
+                                         1 -> index = 7 }
+
+                        4 -> when(time){ 0 -> index = 8
+                                         1 -> index = 9 }
+
+                        5 -> when(time){ 0 -> index = 10
+                                         1 -> index = 11 }
+
+                        6 -> when(time){ 0 -> index = 12
+                                         1 -> index = 13 }
+                    }
+
                     for(finalBed in weeklySchedule[day][time]){  //For each finalBed in the given day + time
 
-                        when(day){                              //Starts the string with the current day
-                            0 -> testProgram += "Sun"
-                            1 -> testProgram += "Mon"
-                            2 -> testProgram += "Tue"
-                            3 -> testProgram += "Wed"
-                            4 -> testProgram += "Thu"
-                            5 -> testProgram += "Fri"
-                            6 -> testProgram += "Sat"
-                        }
 
-                        when(time){
-                            0 -> testProgram += "_AM: "       //Appends the current time
-                            1 -> testProgram += "_PM: "
-                        }
-
-                        testProgram += "Bed " + finalBed.bed.bedID.toString() + " -> "   // Shows the start of a bed
+                        dataToSend[index] += "%%"   // Shows the start of a bed
 
                         for(i in 0..finalBed.waterLevel){                                // Repeats the bed by the given waterLevel value (aka > waterlevel = more bed repetition
 
                             for(j in finalBed.bed.squaresInBed){                         // For each square in the bed
-                                testProgram += j.squareId.toString() + ","              //Append the square id
+                                dataToSend[index] += (j.squareId - 10000).toString() + ","              //Append the square id
                             }
                         }
 
-                       testProgram += " || "                                            //Signifies the end of a bed
                     }
                 }
             }
 
-
-            // Prints the current string testProgram to the logcat. Function below exists in case the string is larger than the maximum allowed in logcat
-
-            if (testProgram.length > 4000) {
-
-                val chunkCount = testProgram.length / 4000     // integer division
-                for (i in 0..chunkCount) {
-                    val max = 4000 * (i + 1)
-                    if (max >= testProgram.length) {
-                        Log.d("itsWorking", testProgram.substring(4000 * i))
-                    } else {
-                        Log.d("itsWorking", testProgram.substring(4000 * i, max))
-                    }
-                }
-            } else {
-                Log.d("itsWorking", testProgram)
+            for(i in dataToSend.indices){
+                if(dataToSend[i].length > 6)
+                Log.d("itsWorking",dataToSend[i])
             }
+
+            return dataToSend
         }
     }
 }
