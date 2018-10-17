@@ -56,8 +56,6 @@ Added edit button + functionality
 
 package com.example.android.zoomlayouttest
 
-import android.graphics.Matrix;
-import android.widget.ImageView;
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
@@ -83,7 +81,6 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
-import com.otaliastudios.zoom.ZoomLayout
 import com.transitionseverywhere.Rotate
 import com.transitionseverywhere.TransitionManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -91,8 +88,6 @@ import java.lang.StringBuilder
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.math.*
-import com.transitionseverywhere.*
-
 
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
@@ -129,7 +124,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         var bedCount = 1
         var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
         val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
-
         var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
         private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
 
@@ -574,7 +568,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 //Functions global to multiple listeners
         settingsButton.setOnClickListener {
-
+            GardenData.getBedSchedule()
+            GardenData.printBedsToLog()
 
         }
 
@@ -591,8 +586,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             mainScreenContainer.visibility = View.GONE
 
         }
-
-
 
 
         /**
