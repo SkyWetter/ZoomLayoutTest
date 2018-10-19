@@ -334,36 +334,34 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         var thisString = string                     //the string to send
         var squarePacketNumberString : String       //packet number str
+        var checkSumValue = 0
+
+        squarePacketNumberString = squarePacketNumber.toString()// Convert packet # to string
+
+        while(squarePacketNumberString.length < 3) {   //Append 0's to make the packet length uniform
+            squarePacketNumberString = "0$squarePacketNumberString"
+        }
 
         while (thisString.length < 3){              //Add spacer to front of string
             thisString = "0$thisString"
         }
 
-        val charset = Charset.defaultCharset()      //
-        val stringCheckSum = thisString.toByteArray(charset)
+        val stringCheckSum = thisString.toByteArray(Charset.defaultCharset())  //convert string (without packet#, start char and chksm) to byte array
 
-
-        var checkSumValue = 0
-        for(i in stringCheckSum){
+        for(i in stringCheckSum){   //Calculate checksum
             checkSumValue += i
         }
 
-        squarePacketNumberString = squarePacketNumber.toString()
-
-        while(squarePacketNumberString.length < 3) {
-            squarePacketNumberString = "0$squarePacketNumberString"
-        }
-
-        thisString = "%" + squarePacketNumberString + thisString
+        thisString = "%$squarePacketNumberString$thisString"   //Create final packet string to send
 
         Log.d("checksum","Char: $thisString Chksm: $checkSumValue")
 
-        if(connectedToRainbow) {
+        if(connectedToRainbow) {  //Send it
 
            writeToSerial(thisString)
         }
 
-        squarePacketNumber ++
+        squarePacketNumber ++  //Increment packet #
 
         if(squarePacketNumber >= 10){
             squarePacketNumber = 0
