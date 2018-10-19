@@ -92,6 +92,7 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
+    private var squarePacketNumber = 0
     private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
 
     private val debugging = false // Set true to access control debug menu within the bluetooth settings tab
@@ -239,7 +240,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -322,8 +322,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
      * INIT FUNCTIONS // LISTENERS
      */
 
-
-
     fun writeToSerial(string : String){
         val tempString = string
         val tempByte: ByteArray = string.toByteArray(Charset.defaultCharset())
@@ -333,9 +331,44 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
     fun sendSingleSquareData(string: String){
-       if(connectedToRainbow) {
-           writeToSerial(string)
-       }
+
+        var thisString = string                     //the string to send
+        var squarePacketNumberString : String       //packet number str
+
+        while (thisString.length < 3){              //Add spacer to front of string
+            thisString = "0$thisString"
+        }
+
+        val charset = Charset.defaultCharset()      //
+        val stringCheckSum = thisString.toByteArray(charset)
+
+
+        var checkSumValue = 0
+        for(i in stringCheckSum){
+            checkSumValue += i
+        }
+
+        squarePacketNumberString = squarePacketNumber.toString()
+
+        while(squarePacketNumberString.length < 3) {
+            squarePacketNumberString = "0$squarePacketNumberString"
+        }
+
+        thisString = "%" + squarePacketNumberString + thisString
+
+        Log.d("checksum","Char: $thisString Chksm: $checkSumValue")
+
+        if(connectedToRainbow) {
+
+           writeToSerial(thisString)
+        }
+
+        squarePacketNumber ++
+
+        if(squarePacketNumber >= 10){
+            squarePacketNumber = 0
+        }
+
     }
 
     fun setWaterLevelText(){
@@ -652,7 +685,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }*/
 
 
-
 //GRID CREATE
 /* Function for populating a list of all squares in garden grid */
 
@@ -783,8 +815,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             {
                 doneButtonContainer.visibility = View.VISIBLE   //If creating a bed, make doneButton appear
 
-                if (thisSquare.bedID == 0)          //check if tile is currently in any bed, do nothing if already in bed
+                if (thisSquare.bedID == 0)          //If tile isn't already in a bed, do some things
                 {
+
                     if (thisSquare.hasBed)    //remove selected square from tempbed
                     {
                         thisSquare.hasBed = false
@@ -797,19 +830,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         }
 
 
-                    } else         //add selected square to tempbed
-                    {
+                    } else {                                //add selected square to tempbed
+
                         if (isSquareAdjacent(button, tempBed))         //check is square is adjacentSquare
                         {
+
+
                             adjacentSquareColorCheck(thisSquare.squareId - 10000)
                             thisSquare.hasBed = true
                             thisSquare.changeColor(ColorData.selected)
                             adjacentSquares.removeAll(Collections.singleton(thisSquare))
                             tempBed.add(thisSquare)
-
-                            Log.d("tempBed", "tempBed has: $tempBed")
-                            Log.d("tempBed", "adjSq has $adjacentSquares")
-
+                            sendSingleSquareData((thisSquare.squareId - 10000).toString())
                         }
                     }
                 }
@@ -833,6 +865,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         thisSquare.hasBed = true
                         thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
                         bedList[bedEdit[1]].squaresInBed.add(thisSquare)
+                        sendSingleSquareData((thisSquare.squareId - 10000).toString())
                     }
                 }
 

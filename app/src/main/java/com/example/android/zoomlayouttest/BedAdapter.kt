@@ -34,9 +34,6 @@ class BedAdapter (val bedList: MutableList<RVBedData>, val clickListener: (RVBed
 
     override fun getItemCount()= bedList.size
 
-    fun updateSingleitem(){
-
-    }
 
     fun removeAt(position: Int) {
 
@@ -51,7 +48,6 @@ class BedAdapter (val bedList: MutableList<RVBedData>, val clickListener: (RVBed
             itemView.textViewBed.text = bed.name
             itemView.setOnClickListener {clickListener(bed)}
             itemView.bedListColor.setBackgroundColor(bed.bedColor)
-            Log.d("BedViewHold.bind",itemId.toString())
 
         }
     }

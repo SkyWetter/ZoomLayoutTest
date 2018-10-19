@@ -91,7 +91,8 @@ class GardenData{
 
             //Clear the program, set each day with given day prefix. Added for clarity in debugger, will be removed in final program
 
-            val dataToSend = arrayListOf<String>("#","SuPM: ","MoAM: ","MoPM: ","TuAM: ","TuPM: ","WeAM: ","WePM: ","ThAM: ","ThPM: ","FrAM: ","FrPm: ","SaAM: ","SaPM: ")
+           // val dataToSend = arrayListOf("sum#","sue#","mom#","moe#","tum#","tue#","wem#","wee#","thm#","the#","frm#","fre#","sam#","sae#")
+             val dataToSend = arrayListOf("#","#","#","#","#","#","#","#","#","#","#","#","#","#")
 
             var index = -1
 
@@ -128,13 +129,25 @@ class GardenData{
 
                         /**  Concat dataToSend[index] here to attach bed-specific prefix data */
 
-                        for(i in 0..finalBed.waterLevel){                                // Repeats the bed by the given waterLevel value (aka > waterlevel = more bed repetition
+                        for(i in 0..finalBed.waterLevel) {                                // Repeats the bed by the given waterLevel value (aka > waterlevel = more bed repetition
 
-                            for(j in finalBed.bed.squaresInBed){                         // For each square in the bed
-                                dataToSend[index] += (j.squareId - 10000).toString() + ","              //Append the square id as a straight
+                            for (j in finalBed.bed.squaresInBed) {                         // For each square in the bed
+
+                                    dataToSend[index] += (j.squareId - 10000).toString()              //Append the square id as a straight
+
+                                if(weeklySchedule[day][time].indexOf(finalBed) < weeklySchedule[day][time].size - 1){
+                                    dataToSend[index] += ","
+                                }
+                                else if(i < finalBed.waterLevel){
+                                    dataToSend[index] += ","
+                                }
+
+                                else if(finalBed.bed.squaresInBed.indexOf(j) < finalBed.bed.squaresInBed.size - 1){
+                                    dataToSend[index] += ","
+                                }
+
                             }
                         }
-
                         /**  Concat dataToSend[index] here to attach bed-specific suffix data */
                     }
                 }
@@ -142,11 +155,20 @@ class GardenData{
 
             //Print each string of beds to Logcat
             for(i in dataToSend.indices) {
-                if(dataToSend[i].length > 6)
-                Log.d("itsWorking",dataToSend[i])
+                if (dataToSend[i].length > 1) {
+                    Log.d("itsWorking", dataToSend[i])
+                }
             }
-
             return dataToSend
         }
+
+        fun addCheckSum(){
+
+        }
+
+        fun addPacketNumber(){
+
+        }
+
     }
 }
