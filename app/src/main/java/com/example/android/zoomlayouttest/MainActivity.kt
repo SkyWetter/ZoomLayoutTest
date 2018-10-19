@@ -323,7 +323,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
      */
 
     fun writeToSerial(string : String){
-        val tempString = string
         val tempByte: ByteArray = string.toByteArray(Charset.defaultCharset())
         if(mBluetoothConnection!=null){
             mBluetoothConnection!!.write(tempByte)
@@ -363,7 +362,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         squarePacketNumber ++  //Increment packet #
 
-        if(squarePacketNumber >= 10){
+        if(squarePacketNumber >= 1000){
             squarePacketNumber = 0
         }
 
