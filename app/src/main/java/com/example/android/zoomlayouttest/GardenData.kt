@@ -11,8 +11,6 @@ import com.example.android.zoomlayouttest.MainActivity.Companion.rvBedList
 
 class GardenData{
 
-
-
     companion object {
         var dataToSendFull = arrayListOf<String>()
 
@@ -55,8 +53,7 @@ class GardenData{
 
         /** Takes the list of currents beds and puts them in the weekly schedule array ,
          * organized by am/pm, along with a given waterlevel for each bed
-         *
-         */
+          */
 
         fun getBedSchedule() {
 
@@ -71,7 +68,6 @@ class GardenData{
             }
 
             clearSchedule()
-
 
             for (bed in rvBedList) {                      //for each bed in the rvBedList
                 for (day in weeklySchedule.indices) {             //For each day in a bed's RVData
@@ -93,8 +89,9 @@ class GardenData{
 
         fun prepDatData():ArrayList<String>{
 
-            //Clear the program
-            val dataToSend = arrayListOf<String>("SuAM: ","SuPM: ","MoAM: ","MoPM: ","TuAM: ","TuPM: ","WeAM: ","WePM: ","ThAM: ","ThPM: ","FrAM: ","FrPm: ","SaAM: ","SaPM: ")
+            //Clear the program, set each day with given day prefix. Added for clarity in debugger, will be removed in final program
+
+            val dataToSend = arrayListOf<String>("#","SuPM: ","MoAM: ","MoPM: ","TuAM: ","TuPM: ","WeAM: ","WePM: ","ThAM: ","ThPM: ","FrAM: ","FrPm: ","SaAM: ","SaPM: ")
 
             var index = -1
 
@@ -102,7 +99,7 @@ class GardenData{
 
                 for(time in weeklySchedule[day].indices){  //For each time of day
 
-                    when(day){          // gets index for
+                    when(day){          // gets index for give day + time combination
 
                         0 -> when(time){ 0 -> index = 0
                                          1 -> index = 1 }
@@ -129,20 +126,22 @@ class GardenData{
                     for(finalBed in weeklySchedule[day][time]){  //For each finalBed in the given day + time
 
 
-                        dataToSend[index] += "%%"   // Shows the start of a bed
+                        /**  Concat dataToSend[index] here to attach bed-specific prefix data */
 
                         for(i in 0..finalBed.waterLevel){                                // Repeats the bed by the given waterLevel value (aka > waterlevel = more bed repetition
 
                             for(j in finalBed.bed.squaresInBed){                         // For each square in the bed
-                                dataToSend[index] += (j.squareId - 10000).toString() + ","              //Append the square id
+                                dataToSend[index] += (j.squareId - 10000).toString() + ","              //Append the square id as a straight
                             }
                         }
 
+                        /**  Concat dataToSend[index] here to attach bed-specific suffix data */
                     }
                 }
             }
 
-            for(i in dataToSend.indices){
+            //Print each string of beds to Logcat
+            for(i in dataToSend.indices) {
                 if(dataToSend[i].length > 6)
                 Log.d("itsWorking",dataToSend[i])
             }

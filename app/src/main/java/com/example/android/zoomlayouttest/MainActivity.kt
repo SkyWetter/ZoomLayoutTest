@@ -238,43 +238,17 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-    override fun onDestroy(){
-        Log.d(tag,"onDestroy: called.")
-        super.onDestroy()
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver1)
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver2)
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver3)
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver4)
-
-    }
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getSupportActionBar()!!.hide()        //Removes the top action bar of the android ui
         setContentView(R.layout.activity_main)
-
-
-        /**
-         *
-         * NEW BLUETOOTH STUFF
-         *
-         * */
+        getSupportActionBar()!!.hide()        //Removes the top action bar of the android ui
 
         messages = StringBuilder()
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, IntentFilter("incomingMessage"))
-
         lvNewDevices = findViewById(R.id.lvNewDevices)
         val etSend: EditText = findViewById(R.id.editText)
-        bluetoothContainer.visibility = View.GONE
-        btnONOFF.visibility = View.VISIBLE
-        btnDiscover.visibility =View.GONE
-        btnEnableDisable_Discoverable.visibility = View.GONE
-        btnStartConnection.visibility = View.GONE
-        btnReset.visibility = View.GONE
-        btnReturn.visibility = View.GONE
-
-
         messageText.text = "Hey there! Let's get your bluetooth started. \n Just press the BIG BUTTON"
 
         //Broadcasts when bond state changes (ie: pairing)
@@ -285,24 +259,224 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         lvNewDevices!!.onItemClickListener = this@MainActivity
 
+        //load bedList[0] so bed1 can be in bedList[1] lol
+        val bedZero = Bed(0)
+        bedList.add(bedZero)
+        constraintSet.clone(gridContainer)                  //Clones the bguttonContainer constraint layout settings
+        val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
+        val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = BedAdapter(rvBedList){bed : RVBedData -> bedClicked(bed)}
+
+        /** Init code*/
+
+        initColorsFonts()                                               //Sets colors of various UI elements
+        initUiVisibility()                                              //Sets UI elements visibility on start up
+        gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
+        initializeButtons( doneButton,bluetoothButton)                  //Initializes button listeners
+        initializeBluetoothButtons()                                    //Init bluetooth buttons
+
+
+
+    }
+
+    override fun onDestroy(){
+        Log.d(tag,"onDestroy: called.")
+        super.onDestroy()
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver1)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver2)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver3)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver4)
+
+    }
+
+    /***
+     * DATA CLASSES
+     */
+
+    data class Square(val squareId: Int)        //object containing tile information
+    {
+        var row: Int = 0
+        var column: Int = 0
+        var bedID: Int = 0
+        var hasBed: Boolean = false
+        var angle: Double? = null
+        var distance: Double? = null
+        var button: Button? = null
+        var color: Int = ColorData.deselectedSquare
+        var isInvisible = false
+
+
+        fun changeColor(newColor: Int) {
+            button!!.setBackgroundColor(newColor)
+        }
+    }
+
+    data class Bed(val bedID: Int) {
+        var squaresInBed = mutableListOf<Square>()
+        var bedColor: Int? = null
+        //other variables
+    }
+
+    /***
+     * INIT FUNCTIONS // LISTENERS
+     */
+
+    fun setWaterLevelText(){
+        when(bedBeingEdited.waterLevel){
+            0 -> currentWaterLevel.text = "Low"
+            1 -> currentWaterLevel.text = "Medium"
+            2 -> currentWaterLevel.text = "High"
+        }
+    }
+
+    private fun initUiVisibility(){
+
+        //Bluetooth container schtuff
+        bluetoothContainer.visibility = View.GONE
+        btnONOFF.visibility = View.VISIBLE
+        btnDiscover.visibility =View.GONE
+        btnEnableDisable_Discoverable.visibility = View.GONE
+        btnStartConnection.visibility = View.GONE
+        btnReset.visibility = View.GONE
+        btnReturn.visibility = View.GONE
+
+        paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
+        bottomText.visibility = View.VISIBLE
+        debugWindow.visibility = View.GONE
+        doneButtonContainer.visibility = View.GONE
+        paramMenuContainer.visibility = View.GONE
+        zoomLayout.visibility = View.VISIBLE
+        topBarBottomSpacer.visibility = View.VISIBLE
+    }
+
+    private fun initColorsFonts(){
+
+        topBar.setBackgroundColor(ColorData.uiColorLightGreen)
+        zoomLayout.setBackgroundColor(ColorData.uiInvisible)
+        bottomText.setBackgroundColor(ColorData.uiColorOffWhite)
+        gridContainer.setBackgroundColor(ColorData.uiInvisible)
+        topText.setBackgroundColor(ColorData.uiColorLightGreen)
+
+        val titleFont = Typeface.createFromAsset(assets,"fonts/MontserratAlternates-Medium.ttf")
+        bedNameText.typeface = titleFont
+    }
+
+    private fun initializeButtons(doneButton: Button, bluetoothOpenMenuButton:Button)
+    {
+
+        val swipeHandler = object : SwipeToDeleteCallback(this)
+        {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
+            {
+                bedEdit[0] = 0
+                removeAdjacentSquares()
+                val adapter = recyclerView.adapter as BedAdapter
+                adapter.removeAt(viewHolder.adapterPosition)
+                deleteBed()
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+//Functions global to multiple listeners
+        settingsButton.setOnClickListener {
+            GardenData.getBedSchedule()
+            GardenData.dataToSendFull = GardenData.prepDatData()
+        }
+
+        doneButton.setOnClickListener()
+        {
+
+            doneBed()
+
+        }
+
+        bluetoothOpenMenuButton.setOnClickListener {
+
+            bluetoothContainer.visibility = View.VISIBLE
+            mainScreenContainer.visibility = View.GONE
+
+        }
+
+
+        /**
+         * Bed name text listener -- needs to be adjusted for focus change actions
+         */
+        bedNameText.setOnClickListener{
+            bedNameText.inputType = InputType.TYPE_CLASS_TEXT
+        }
+
+        //Edit text listener for Bed Name (all functions are required, even empty ones)
+
+        bedNameText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+
+                recyclerView.adapter.notifyDataSetChanged()
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                //Change name of the rvBedList value to that of the current edit Text string
+                rvBedList[bedBeingEdited.position].name = bedNameText.text.toString()
+
+
+            }
+        })
+
+        //Seekbar listener for waterLevel bar, all functions (even empty ones) are required
+
+        waterLevelBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+
+            override
+            fun onStopTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+            override
+            fun onStartTrackingTouch(seekbar: SeekBar) {
+
+            }
+
+            override
+            fun onProgressChanged(seekBar: SeekBar, progress : Int,fromUser : Boolean) {
+
+                // Gets and sets value from progress bar to RVBedData
+                bedBeingEdited.waterLevel = waterLevelBar.progress
+                rvBedList[bedBeingEdited.position].waterLevel = bedBeingEdited.waterLevel
+
+                setWaterLevelText()
+            }
+        })
+
+        btn_confirmBedSettings.setOnClickListener{
+            openBedSettings()
+        }
+
+    }
+
+    private fun initializeBluetoothButtons(){
+        val etSend = findViewById<EditText>(R.id.editText)
+        btnSend.setOnClickListener{
+            val tempString = etSend.text.toString()
+            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
+            if(mBluetoothConnection!=null) {
+                mBluetoothConnection!!.write(tempByte)
+            }
+        }
+
         btnReset.setOnClickListener {
             btnReturn.visibility = View.GONE
             btnReset.visibility = View.GONE
             btnDiscover.visibility = View.VISIBLE
         }
 
-        btnReturn.setOnClickListener {
-            if(!debugging){
-                bluetoothContainer.visibility = View.GONE
-                mainScreenContainer.visibility = View.VISIBLE
-            }
-            else {
-                debugWindow.visibility = View.VISIBLE
-                btnReset.visibility = View.GONE
-                btnReturn.visibility = View.GONE
-            }
 
-        }
 
         btnONOFF.setOnClickListener{
 
@@ -390,128 +564,19 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         "Must be paired to a device before opening connection", Toast.LENGTH_LONG).show()
             }
         }
-        /***
-         * DEBUG STEPPER CONTROL BUTTONS -- set to View.GONE at runtime
-         *
-         */
 
-        btnSend.setOnClickListener{
-            val tempString = etSend.text.toString()
-            val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
-            if(mBluetoothConnection!=null) {
-                mBluetoothConnection!!.write(tempByte)
+        btnReturn.setOnClickListener {
+            if(!debugging){
+                bluetoothContainer.visibility = View.GONE
+                mainScreenContainer.visibility = View.VISIBLE
             }
-        }
-
-        paramMenuContainer.visibility = View.GONE //Hides the bed settings menu on start
-        constraintSet.clone(gridContainer)                  //Clones the bguttonContainer constraint layout settings
-        val constraintLayout = findViewById<ConstraintLayout>(R.id.gridContainer)   //gets the layout of the garden bed container
-        val doneButton = findViewById<Button>(R.id.doneButton)      //saves the current bed in tempbed to bedlist
-
-        //this sets up the recyclerview
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = BedAdapter(rvBedList){bed : RVBedData -> bedClicked(bed)}
-
-        val swipeHandler = object : SwipeToDeleteCallback(this)
-        {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
-            {
-                bedEdit[0] = 0
-                removeAdjacentSquares()
-                val adapter = recyclerView.adapter as BedAdapter
-                adapter.removeAt(viewHolder.adapterPosition)
-                deleteBed()
+            else {
+                debugWindow.visibility = View.VISIBLE
+                btnReset.visibility = View.GONE
+                btnReturn.visibility = View.GONE
             }
+
         }
-
-        val itemTouchHelper = ItemTouchHelper(swipeHandler)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
-
-        //load bedList[0] so bed1 can be in bedList[1] lol
-        val bedZero = Bed(0)
-        bedList.add(bedZero)
-
-        /** Init code*/
-
-        initColorsFonts()   //Sets colors of various UI elements
-        initUiVisibility()
-        gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
-        turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]  //Gets the location of the central square of the garden bed
-        turretSquare?.button?.setBackgroundResource(R.drawable.turret)
-        initializeButtons( doneButton,bluetoothButton)  //Initializes button listeners
-        getAngleDistanceAll(allSquares,turretSquare!!)
-
-
-
-    }
-
-    /***
-     * DATA CLASSES
-     */
-
-    data class Square(val squareId: Int)        //object containing tile information
-    {
-        var row: Int = 0
-        var column: Int = 0
-        var bedID: Int = 0
-        var hasBed: Boolean = false
-        var angle: Double? = null
-        var distance: Double? = null
-        var button: Button? = null
-        var color: Int = ColorData.deselectedSquare
-        var isInvisible = false
-
-
-        fun changeColor(newColor: Int) {
-            button!!.setBackgroundColor(newColor)
-        }
-    }
-
-    data class Bed(val bedID: Int) {
-        var squaresInBed = mutableListOf<Square>()
-        var bedColor: Int? = null
-        //other variables
-    }
-
-    /***
-     * INIT FUNCTIONS // LISTENERS
-     */
-
-    fun setWaterLevelText(){
-        when(bedBeingEdited.waterLevel){
-            0 -> currentWaterLevel.text = "Low"
-            1 -> currentWaterLevel.text = "Medium"
-            2 -> currentWaterLevel.text = "High"
-        }
-    }
-
-    private fun initUiVisibility(){
-
-        bluetoothContainer.visibility = View.GONE
-        bottomText.visibility = View.VISIBLE
-        debugWindow.visibility = View.GONE
-        btnONOFF.visibility = View.VISIBLE
-        btnDiscover.visibility =View.GONE
-        btnEnableDisable_Discoverable.visibility = View.GONE
-        btnStartConnection.visibility = View.GONE
-        btnReset.visibility = View.GONE
-        btnReturn.visibility = View.GONE
-        doneButtonContainer.visibility = View.GONE
-        paramMenuContainer.visibility = View.GONE
-        zoomLayout.visibility = View.VISIBLE
-        topBarBottomSpacer.visibility = View.VISIBLE
-    }
-
-    private fun initColorsFonts(){
-
-        topBar.setBackgroundColor(ColorData.uiColorLightGreen)
-        zoomLayout.setBackgroundColor(ColorData.uiInvisible)
-        bottomText.setBackgroundColor(ColorData.uiColorOffWhite)
-        gridContainer.setBackgroundColor(ColorData.uiInvisible)
-        topText.setBackgroundColor(ColorData.uiColorLightGreen)
-
-        val titleFont = Typeface.createFromAsset(assets,"fonts/MontserratAlternates-Medium.ttf")
-        bedNameText.typeface = titleFont
     }
 
     fun dayOfWeekClick(v: View){
@@ -563,87 +628,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
     }
 
-    private fun initializeButtons(doneButton: Button, bluetoothOpenMenuButton:Button)
-    {
 
-//Functions global to multiple listeners
-        settingsButton.setOnClickListener {
-            GardenData.getBedSchedule()
-            GardenData.dataToSendFull = GardenData.prepDatData()
-        }
-
-        doneButton.setOnClickListener()
-        {
-
-            doneBed()
-
-        }
-
-        bluetoothOpenMenuButton.setOnClickListener {
-
-            bluetoothContainer.visibility = View.VISIBLE
-            mainScreenContainer.visibility = View.GONE
-
-        }
-
-
-        /**
-         * Bed name text listener -- needs to be adjusted for focus change actions
-         */
-        bedNameText.setOnClickListener{
-            bedNameText.inputType = InputType.TYPE_CLASS_TEXT
-       }
-
-        //Edit text listener for Bed Name (all functions are required, even empty ones)
-
-        bedNameText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-
-                recyclerView.adapter.notifyDataSetChanged()
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-                //Change name of the rvBedList value to that of the current edit Text string
-                rvBedList[bedBeingEdited.position].name = bedNameText.text.toString()
-
-
-            }
-        })
-
-        //Seekbar listener for waterLevel bar, all functions (even empty ones) are required
-
-        waterLevelBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
-
-            override
-            fun onStopTrackingTouch(seekBar: SeekBar) {
-
-            }
-
-            override
-            fun onStartTrackingTouch(seekbar: SeekBar) {
-
-            }
-
-            override
-            fun onProgressChanged(seekBar: SeekBar, progress : Int,fromUser : Boolean) {
-
-              // Gets and sets value from progress bar to RVBedData
-                bedBeingEdited.waterLevel = waterLevelBar.progress
-                rvBedList[bedBeingEdited.position].waterLevel = bedBeingEdited.waterLevel
-
-                setWaterLevelText()
-            }
-        })
-
-        btn_confirmBedSettings.setOnClickListener{
-            openBedSettings()
-        }
-
-    }
 
 //GRID CREATE
 /* Function for populating a list of all squares in garden grid */
@@ -735,6 +720,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     button.setOnClickListener()                                         //TEST FUNCTION FOR CLICK OF SQUARE
                     {
                         buildBed(button)                         //add/remove tiles from bed when clicked
+
                     }
 
                     previousButton = button
@@ -745,66 +731,19 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             Log.i("ERROR!", "You can't have gridCreate" +
                     " buttonsPerRow == an even number")
         }
+
+        turretSquare = allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2]  //Gets the location of the central square of the garden bed
+        turretSquare?.button?.setBackgroundResource(R.drawable.turret)
+        getAngleDistanceAll(allSquares,turretSquare!!)
     }
 
 
     /**
      * POST-INIT FUCTIONS
      * */
+    private fun instantSend(){
 
-
-    /** Checks for adjacentSquare squares to current bed being created/edited */
-
-   private fun adjacentSquareColorCheck(squareID: Int) {
-
-
-        //Holds the square id for squares surrounding the current square
-        var leftSquare : Square? = null
-        var rightSquare : Square? = null
-        var aboveSquare : Square? = null
-        var belowSquare : Square? = null
-
-        /** get adj square ids -- null if square is beyond bed bounds */
-
-        if(squareID % buttonsPerRow == 0){ }
-        else{ leftSquare = allSquares[squareID - 1]}         //Left
-
-        if((squareID + 1) % buttonsPerRow == 0) { }
-        else{ rightSquare = allSquares[squareID + 1]}    //Right
-
-        if(squareID < buttonsPerRow){}
-        else {aboveSquare = allSquares[squareID - buttonsPerRow]}   //Above
-
-        if(squareID >= ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){}
-        else {belowSquare = allSquares[squareID + buttonsPerRow]}   //Below
-
-
-        /** Checks adjacentSquare areas for either the turret or null (no square), in which case do nothing
-         * Otherwise, if the square in question doesn't belong to a bed, color it with the adjacentSquare square color*/
-
-        if (leftSquare == null || leftSquare == turretSquare) { }
-        else if (!leftSquare.hasBed)
-        {
-            leftSquare.changeColor(ColorData.adjacentSquare)
-            adjacentSquares.add(leftSquare)
-        }
-        if (rightSquare == null || rightSquare == turretSquare) { }
-        else if (!rightSquare.hasBed) {
-            rightSquare.changeColor(ColorData.adjacentSquare)
-            adjacentSquares.add(rightSquare)
-        }
-        if (belowSquare == null || belowSquare == turretSquare) { }
-        else if (!belowSquare.hasBed) {
-            belowSquare.changeColor(ColorData.adjacentSquare)
-            adjacentSquares.add(belowSquare)
-        }
-        if (aboveSquare == null || aboveSquare == turretSquare) { }
-        else if (!aboveSquare.hasBed) {
-            aboveSquare.changeColor(ColorData.adjacentSquare)
-            adjacentSquares.add(aboveSquare)
-        }
     }
-
 
     private fun buildBed(button: Button) {
 
@@ -969,6 +908,59 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         return squareIsAdjacent
     }
 
+    /** Checks for adjacentSquare squares to current bed being created/edited */
+
+    private fun adjacentSquareColorCheck(squareID: Int) {
+
+
+        //Holds the square id for squares surrounding the current square
+        var leftSquare : Square? = null
+        var rightSquare : Square? = null
+        var aboveSquare : Square? = null
+        var belowSquare : Square? = null
+
+        /** get adj square ids -- null if square is beyond bed bounds */
+
+        if(squareID % buttonsPerRow == 0){ }
+        else{ leftSquare = allSquares[squareID - 1]}         //Left
+
+        if((squareID + 1) % buttonsPerRow == 0) { }
+        else{ rightSquare = allSquares[squareID + 1]}    //Right
+
+        if(squareID < buttonsPerRow){}
+        else {aboveSquare = allSquares[squareID - buttonsPerRow]}   //Above
+
+        if(squareID >= ((buttonsPerRow * buttonsPerRow)- buttonsPerRow)){}
+        else {belowSquare = allSquares[squareID + buttonsPerRow]}   //Below
+
+
+        /** Checks adjacentSquare areas for either the turret or null (no square), in which case do nothing
+         * Otherwise, if the square in question doesn't belong to a bed, color it with the adjacentSquare square color*/
+
+        if (leftSquare == null || leftSquare == turretSquare) { }
+        else if (!leftSquare.hasBed)
+        {
+            leftSquare.changeColor(ColorData.adjacentSquare)
+            adjacentSquares.add(leftSquare)
+        }
+        if (rightSquare == null || rightSquare == turretSquare) { }
+        else if (!rightSquare.hasBed) {
+            rightSquare.changeColor(ColorData.adjacentSquare)
+            adjacentSquares.add(rightSquare)
+        }
+        if (belowSquare == null || belowSquare == turretSquare) { }
+        else if (!belowSquare.hasBed) {
+            belowSquare.changeColor(ColorData.adjacentSquare)
+            adjacentSquares.add(belowSquare)
+        }
+        if (aboveSquare == null || aboveSquare == turretSquare) { }
+        else if (!aboveSquare.hasBed) {
+            aboveSquare.changeColor(ColorData.adjacentSquare)
+            adjacentSquares.add(aboveSquare)
+        }
+    }
+
+
     //adds numbered cards to recyclerview for each bed/
     private fun addBedToRV(bedColor : Int)
     {
@@ -1050,11 +1042,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             thisBed.waterLevel = bedBeingEdited.waterLevel
             thisBed.amPm = bedBeingEdited.amPm
             topText.text = "Rainbow"
+
+            //Change Visibility of given UI elements
+
             paramMenuContainer.visibility = View.GONE
             doneButtonContainer.visibility = View.VISIBLE
             bottomText.visibility = View.VISIBLE
             globalButtonContainer.visibility = View.VISIBLE
             topBarBottomSpacer.visibility = View.VISIBLE
+
             paramMenuOpen = !paramMenuOpen
         }
 
@@ -1065,7 +1061,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             waterLevelBar.progress = bedBeingEdited.waterLevel
             setWaterLevelText()
             bedNameText.setText(bedBeingEdited.name,TextView.BufferType.EDITABLE)
-
 
             //Loads in the day settings for the bed
 
@@ -1084,8 +1079,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             }
 
             for(i in bedBeingEdited.amPm.indices){
+
                 val amPmButtons = arrayListOf<Button>(btn_timeSu,btn_timeM,btn_timeT, btn_timeW, btn_timeTh,btn_timeF,btn_timeS)
                 val thisAmPm = bedBeingEdited.amPm
+
                 when(thisAmPm[i]){
                     0 -> { amPmButtons[i].setBackgroundResource(R.drawable.btn_no_am_pm)}
                     1 -> { amPmButtons[i].setBackgroundResource(R.drawable.btn_am)}
@@ -1101,6 +1098,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             doneButtonContainer.visibility = View.INVISIBLE
             bottomText.visibility = View.GONE
             topBarBottomSpacer.visibility = View.GONE
+
             paramMenuOpen = !paramMenuOpen
         }
     }
