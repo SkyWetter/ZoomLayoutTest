@@ -92,13 +92,14 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
+    private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
+
     private val debugging = false // Set true to access control debug menu within the bluetooth settings tab
     private val sprayEachSquare = false // set to true to have every square press send a spray command
     private val tag = "MainActivityDebug"  //Tag for debug
 
-
     /** Bluetooth Variables */
-
+    var connectedToRainbow = false
     var messages : StringBuilder? = null  // Used by broadcast receiver for
     private var mBluetoothAdapter : BluetoothAdapter? = null
     var mBTDevices = mutableListOf<BluetoothDevice>()
@@ -107,24 +108,24 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     var mBTDevice : BluetoothDevice? = null
     private val myUUIDInsecure = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private var mBluetoothConnection : BluetoothConnectionService? = null
-    //Moved turretSquare outside of companion object under IDE recommendation to avoid memory leaks
-    private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
 
     /** Main Menu Variables */
 
     companion object {
 
+        private var paramMenuOpen = false
+        var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
 
         private val adjacentSquares = mutableListOf<Square>()//List of squares adjacentSquare to a given bed
-        var bedList = mutableListOf<Bed>()              //list of all saved beds
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
+        var bedList = mutableListOf<Bed>()              //list of all saved beds
+
         private var tempBed = mutableListOf<Square>()       //bed containing newly selected squares pre-save
-        private var paramMenuOpen = false
         var bedBeingEdited  = RVBedData("",999999,Color.argb(255,0,0,0))  //Blank bedData class to hold currently edited bed
         var bedCount = 1
         var bedEdit = intArrayOf(0, 0)   //[0] is "boolean" for editing mode, [1] is bedID to be edited
         val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
-        var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
+
         private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
 
     }
@@ -276,8 +277,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         initializeButtons( doneButton,bluetoothButton)                  //Initializes button listeners
         initializeBluetoothButtons()                                    //Init bluetooth buttons
 
-
-
     }
 
     override fun onDestroy(){
@@ -322,6 +321,22 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     /***
      * INIT FUNCTIONS // LISTENERS
      */
+
+
+
+    fun writeToSerial(string : String){
+        val tempString = string
+        val tempByte: ByteArray = string.toByteArray(Charset.defaultCharset())
+        if(mBluetoothConnection!=null){
+            mBluetoothConnection!!.write(tempByte)
+        }
+    }
+
+    fun sendSingleSquareData(string: String){
+       if(connectedToRainbow) {
+           writeToSerial(string)
+       }
+    }
 
     fun setWaterLevelText(){
         when(bedBeingEdited.waterLevel){
@@ -558,6 +573,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                 startBTConnection(mBTDevice!!, myUUIDInsecure)
 
+                connectedToRainbow = true
+
+
             }
             else{
                 Toast.makeText(this,
@@ -567,6 +585,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         btnReturn.setOnClickListener {
             if(!debugging){
+
                 bluetoothContainer.visibility = View.GONE
                 mainScreenContainer.visibility = View.VISIBLE
             }
@@ -621,12 +640,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
     fun onDebugButtonClick(v: View){
+        writeToSerial(v.tag.toString())
+    }
+    /*
+    fun onDebugButtonClick(v: View){
         val tempString = v.tag.toString()
         val tempByte: ByteArray = tempString.toByteArray(Charset.defaultCharset())
         if(mBluetoothConnection!=null) {
             mBluetoothConnection!!.write(tempByte)
         }
-    }
+    }*/
 
 
 
