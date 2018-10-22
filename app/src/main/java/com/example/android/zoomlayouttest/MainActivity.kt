@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     private val tag = "MainActivityDebug"  //Tag for debug
 
     /** Bluetooth Variables */
-    var connectedToRainbow = false
+
     var messages : StringBuilder? = null  // Used by broadcast receiver for
     private var mBluetoothAdapter : BluetoothAdapter? = null
     var mBTDevices = mutableListOf<BluetoothDevice>()
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     /** Main Menu Variables */
 
     companion object {
-
+        var connectedToRainbow = false
         private var paramMenuOpen = false
         var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
 
@@ -322,6 +322,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
      * INIT FUNCTIONS // LISTENERS
      */
 
+    fun getCheckSum(string: String):Int{
+        val stringCheckSum = string.toByteArray(Charset.defaultCharset())  //convert string (without packet#, start char and chksm) to byte array
+        var checkSumValue = 0
+        for(i in stringCheckSum){   //Calculate checksum
+            checkSumValue += i
+        }
+
+        return checkSumValue
+    }
+
     fun writeToSerial(string : String){
         val tempByte: ByteArray = string.toByteArray(Charset.defaultCharset())
         if(mBluetoothConnection!=null){
@@ -345,15 +355,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             thisString = "0$thisString"
         }
 
-        val stringCheckSum = thisString.toByteArray(Charset.defaultCharset())  //convert string (without packet#, start char and chksm) to byte array
+        checkSumValue = getCheckSum(thisString)                             // Gets value of checksum
+        thisString = "%$squarePacketNumberString$thisString$checkSumValue"   //Create final packet string to send
 
-        for(i in stringCheckSum){   //Calculate checksum
-            checkSumValue += i
-        }
 
-        thisString = "%$squarePacketNumberString$thisString"   //Create final packet string to send
-
-        Log.d("checksum","Char: $thisString Chksm: $checkSumValue")
+        Log.d("checksum","SerialData: $thisString")
 
         if(connectedToRainbow) {  //Send it
 
@@ -764,6 +770,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         allSquares[((buttonsPerRow * buttonsPerRow) - 1) / 2].bedID = 56789              //arbitrary number to trigger 'unclickable' bed status
                     } else {
                         tempSquare.changeColor(ColorData.deselectedSquare)                            //Sets color (To be replaced with final button styling)
+
                     }
 
                     constraintLayout.addView(button)                                    //Add button into Constraint Layout view
