@@ -4,12 +4,13 @@ import android.util.Log
 import com.example.android.zoomlayouttest.MainActivity.*
 import com.example.android.zoomlayouttest.MainActivity.Companion.bedList
 import com.example.android.zoomlayouttest.MainActivity.Companion.rvBedList
+import java.nio.charset.Charset
 
 /**
  * Garden Bed Data -- Functions and data for packaging outgoing garden bed information
  */
 
-class GardenData{
+class SerialDataService{
 
     companion object {
         var dataToSendFull = arrayListOf<String>()
@@ -162,12 +163,54 @@ class GardenData{
             return dataToSend
         }
 
-        fun addCheckSum(){
+        fun sendSingleData(string: String, squarePacketNumber:Int) : Int{
+            var currentPacketNumber = squarePacketNumber
+            var thisString = string                     //the string to send
+            var squarePacketNumberString : String       //packet number str
+            var checkSumValue = 0
 
+            squarePacketNumberString = currentPacketNumber.toString()// Convert packet # to string
+
+            while(squarePacketNumberString.length < 3) {   //Append 0's to make the packet length uniform
+                squarePacketNumberString = "0$squarePacketNumberString"
+            }
+
+            while (thisString.length < 3){              //Add spacer to front of string
+                thisString = "0$thisString"
+            }
+
+            checkSumValue = getCheckSum(thisString)                     // Gets value of checksum
+            thisString = "%$squarePacketNumberString$thisString$checkSumValue"   //Create final packet string to send
+
+
+            Log.d("checksum","SerialData: $thisString")
+
+            if(MainActivity.connectedToRainbow) {  //Send it
+
+                MainActivity.writeToSerial(thisString)
+            }
+
+            currentPacketNumber ++  //Increment packet #
+
+            if(currentPacketNumber >= 1000){
+                currentPacketNumber = 0
+            }
+
+            return currentPacketNumber
         }
 
-        fun addPacketNumber(){
+        fun getCheckSum(string: String):Int{
+            val stringCheckSum = string.toByteArray(Charset.defaultCharset())  //convert string (without packet#, start char and chksm) to byte array
+            var checkSumValue = 0
+            for(i in stringCheckSum){   //Calculate checksum
+                checkSumValue += i
+            }
 
+            return checkSumValue
+        }
+
+        fun addPacketNumber(string: String) : String{
+            return ""
         }
 
     }
