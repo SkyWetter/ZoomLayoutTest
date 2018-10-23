@@ -81,7 +81,11 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
-import com.example.android.zoomlayouttest.SerialDataService.Companion.sendSingleData
+import com.example.android.zoomlayouttest.SerialDataService.Companion.getBedSchedule
+import com.example.android.zoomlayouttest.SerialDataService.Companion.prepDatData
+import com.example.android.zoomlayouttest.SerialDataService.Companion.sendData
+import com.example.android.zoomlayouttest.SerialDataService.Companion.sendFullData
+import com.example.android.zoomlayouttest.SerialDataService.Companion.writeToSerial
 import com.transitionseverywhere.Rotate
 import com.transitionseverywhere.TransitionManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -93,7 +97,7 @@ import kotlin.math.*
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
-    private var squarePacketNumber = 0
+
     private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
 
     private val debugging = false // Set true to access control debug menu within the bluetooth settings tab
@@ -109,12 +113,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     var lvNewDevices : ListView? = null
     var mBTDevice : BluetoothDevice? = null
     private val myUUIDInsecure = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-
+    var mBluetoothConnection : BluetoothConnectionService? = null
 
     /** Main Menu Variables */
 
     companion object {
-        private var mBluetoothConnection : BluetoothConnectionService? = null
+
+        var squarePacketNumber = 0
+        var bedPacketNumber = 0
+
         var connectedToRainbow = false
         private var paramMenuOpen = false
         var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
@@ -131,12 +138,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
 
-        fun writeToSerial(string : String){
-            val tempByte: ByteArray = string.toByteArray(Charset.defaultCharset())
-            if(mBluetoothConnection!=null){
-                mBluetoothConnection!!.write(tempByte)
-            }
-        }
+
 
     }
 
@@ -248,6 +250,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             incomingTextBox.text = messages
         }
     }
+
+//    fun writeToSerial(string : String){
+//        val tempByte: ByteArray = string.toByteArray(Charset.defaultCharset())
+//        if(mBluetoothConnection!=null){
+//            mBluetoothConnection!!.write(tempByte)
+//        }
+//    }
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -393,8 +402,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 //Functions global to multiple listeners
         settingsButton.setOnClickListener {
-            SerialDataService.getBedSchedule()
-            SerialDataService.dataToSendFull = SerialDataService.prepDatData()
+            getBedSchedule()
+            sendFullData(prepDatData(),mBluetoothConnection)
+
         }
 
         doneButton.setOnClickListener()
@@ -635,7 +645,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     }
 
     fun onDebugButtonClick(v: View){
-        writeToSerial(v.tag.toString())
+        writeToSerial(v.tag.toString(),mBluetoothConnection)
     }
     /*
     fun onDebugButtonClick(v: View){
@@ -804,7 +814,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                             thisSquare.changeColor(ColorData.selected)
                             adjacentSquares.removeAll(Collections.singleton(thisSquare))
                             tempBed.add(thisSquare)
-                            sendSingleData((thisSquare.squareId - 10000).toString(),squarePacketNumber)
+                            sendData((thisSquare.squareId - 10000).toString(),squarePacketNumber,mBluetoothConnection,"%")
                         }
                     }
                 }
@@ -828,7 +838,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         thisSquare.hasBed = true
                         thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
                         bedList[bedEdit[1]].squaresInBed.add(thisSquare)
-                        sendSingleData((thisSquare.squareId - 10000).toString(),squarePacketNumber)
+                        sendData((thisSquare.squareId - 10000).toString(),squarePacketNumber,mBluetoothConnection,"%")
                     }
                 }
 

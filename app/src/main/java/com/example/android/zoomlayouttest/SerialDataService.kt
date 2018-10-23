@@ -1,8 +1,10 @@
 package com.example.android.zoomlayouttest
 
+import android.bluetooth.BluetoothAdapter
 import android.util.Log
 import com.example.android.zoomlayouttest.MainActivity.*
 import com.example.android.zoomlayouttest.MainActivity.Companion.bedList
+import com.example.android.zoomlayouttest.MainActivity.Companion.bedPacketNumber
 import com.example.android.zoomlayouttest.MainActivity.Companion.rvBedList
 import java.nio.charset.Charset
 
@@ -163,7 +165,39 @@ class SerialDataService{
             return dataToSend
         }
 
-        fun sendSingleData(string: String, squarePacketNumber:Int) : Int{
+        fun sendFullData(scheduleArray : ArrayList<String>,mBluetoothConnection: BluetoothConnectionService?){
+
+            var thisPacketNumber = bedPacketNumber.toString()
+
+            while(thisPacketNumber.length < 3) {   //Append 0's to make the packet length uniform
+                thisPacketNumber = "0$thisPacketNumber"
+            }
+
+            writeToSerial("***$thisPacketNumber",mBluetoothConnection) // Signifier for full program start
+
+            bedPacketNumber = incPacketNumber(bedPacketNumber)
+
+            var checkSumString = ""
+
+            for(i in scheduleArray){
+                checkSumString += i
+                writeToSerial(i,mBluetoothConnection)
+                writeToSerial("\n",mBluetoothConnection)
+            }
+
+            checkSumString = "&$checkSumString"
+
+            writeToSerial(getCheckSum(checkSumString).toString(),mBluetoothConnection)
+        }
+
+        fun writeToSerial(string : String,mBluetoothConnection : BluetoothConnectionService?){
+            val tempByte: ByteArray = string.toByteArray(Charset.defaultCharset())
+            if(mBluetoothConnection!=null){
+                mBluetoothConnection.write(tempByte)
+            }
+        }
+
+        fun sendData(string: String, squarePacketNumber:Int,mBluetoothConnection: BluetoothConnectionService?, startChar : String = "") : Int{
             var currentPacketNumber = squarePacketNumber
             var thisString = string                     //the string to send
             var squarePacketNumberString : String       //packet number str
@@ -180,24 +214,20 @@ class SerialDataService{
             }
 
             checkSumValue = getCheckSum(thisString)                     // Gets value of checksum
-            thisString = "%$squarePacketNumberString$thisString$checkSumValue"   //Create final packet string to send
+            thisString = "$startChar$squarePacketNumberString$thisString$checkSumValue"   //Create final packet string to send
 
 
             Log.d("checksum","SerialData: $thisString")
 
             if(MainActivity.connectedToRainbow) {  //Send it
 
-                MainActivity.writeToSerial(thisString)
+                writeToSerial(thisString,mBluetoothConnection)
             }
 
-            currentPacketNumber ++  //Increment packet #
-
-            if(currentPacketNumber >= 1000){
-                currentPacketNumber = 0
-            }
-
-            return currentPacketNumber
+            return incPacketNumber(squarePacketNumber)
         }
+
+        // Turns string to byte array, adds value of each byte, returns as Int
 
         fun getCheckSum(string: String):Int{
             val stringCheckSum = string.toByteArray(Charset.defaultCharset())  //convert string (without packet#, start char and chksm) to byte array
@@ -209,8 +239,16 @@ class SerialDataService{
             return checkSumValue
         }
 
-        fun addPacketNumber(string: String) : String{
-            return ""
+        fun incPacketNumber(packetNumber : Int) : Int{
+
+            var newPacketNumber = packetNumber
+            newPacketNumber ++
+
+            if(newPacketNumber > 999){
+                newPacketNumber = 0
+            }
+
+            return newPacketNumber
         }
 
     }
