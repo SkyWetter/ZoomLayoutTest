@@ -124,6 +124,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
         var connectedToRainbow = false
         private var paramMenuOpen = false
+        private var globalMenuOpen = false
+
         var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
 
         private val adjacentSquares = mutableListOf<Square>()//List of squares adjacentSquare to a given bed
@@ -137,8 +139,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         val rvBedList = ArrayList<RVBedData>()      //bedlist for the recyclerview
 
         private val constraintSet = ConstraintSet()    //Used to define constraint parameters of each square of garden bed
-
-
 
     }
 
@@ -401,10 +401,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
 //Functions global to multiple listeners
-        settingsButton.setOnClickListener {
+        programButton.setOnClickListener {
             getBedSchedule()
             sendFullData(prepDatData(),mBluetoothConnection)
+            Log.d("State","State: Programmed")
 
+        }
+
+        settingsButton.setOnClickListener {
+            openGlobalSettings()
         }
 
         doneButton.setOnClickListener()
@@ -783,7 +788,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
       //  turretSquare?.button?.rotation = thisSquare.angle!!.toFloat()
 
-        if (!paramMenuOpen) {
+        if (!paramMenuOpen || !globalMenuOpen) {
             if (bedEdit[0] == 0)     //if not in editing mode (ie creating new bed)
             {
                 doneButtonContainer.visibility = View.VISIBLE   //If creating a bed, make doneButton appear
@@ -1080,12 +1085,24 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             globalButtonContainer.visibility = View.VISIBLE
             topBarBottomSpacer.visibility = View.VISIBLE
 
-            paramMenuOpen = !paramMenuOpen
+            globalMenuOpen = false
+
         }
 
         //If bed settings is current closed, prepare various bed settings values based on rvbed loaded intot bedBeingEdited var
         //Loading of rvbed data happens in bedClicked fxn in the bedClicked function located outside of initbuttons fxn
         else{
+
+            topText.text = "Bed Settings"
+            globalSettingsMenuContainer.visibility = View.GONE
+            globalButtonContainer.visibility = View.INVISIBLE
+            paramMenuContainer.visibility = View.VISIBLE
+            doneButtonContainer.visibility = View.INVISIBLE
+            bottomText.visibility = View.GONE
+            topBarBottomSpacer.visibility = View.GONE
+
+            globalMenuOpen = false
+
 
             waterLevelBar.progress = bedBeingEdited.waterLevel
             setWaterLevelText()
@@ -1120,18 +1137,45 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                 }
             }
+        }
 
-            topText.text = "Bed Settings"
+        paramMenuOpen = !paramMenuOpen
+    }
+
+    private fun openGlobalSettings(){
+
+        //Set visibility of ui elements
+        if(globalMenuOpen){
+
+
+            topText.text = "Rainbow"
+
+            //Change Visibility of given UI elements
+
+            paramMenuContainer.visibility = View.GONE
+            doneButtonContainer.visibility = View.VISIBLE
+            bottomText.visibility = View.VISIBLE
+            globalButtonContainer.visibility = View.VISIBLE
+            topBarBottomSpacer.visibility = View.VISIBLE
+
+            globalSettingsMenuContainer.visibility = View.GONE
+
+        }
+
+        else{
+            globalSettingsMenuContainer.visibility = View.VISIBLE
+
+            topText.text = "Global Settings"
             globalButtonContainer.visibility = View.INVISIBLE
-            paramMenuContainer.visibility = View.VISIBLE
+            paramMenuContainer.visibility = View.GONE
             doneButtonContainer.visibility = View.INVISIBLE
             bottomText.visibility = View.GONE
             topBarBottomSpacer.visibility = View.GONE
-
-            paramMenuOpen = !paramMenuOpen
         }
-    }
 
+        globalMenuOpen = !globalMenuOpen
+
+    }
 
 /* Angle and Distance Function
    b Takes a target square and a central turret square

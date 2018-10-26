@@ -148,7 +148,6 @@ class SerialDataService{
                                 else if(finalBed.bed.squaresInBed.indexOf(j) < finalBed.bed.squaresInBed.size - 1){
                                     dataToSend[index] += ","
                                 }
-
                             }
                         }
                         /**  Concat dataToSend[index] here to attach bed-specific suffix data */
@@ -181,6 +180,7 @@ class SerialDataService{
 
             for(i in scheduleArray){
                 checkSumString += i
+
                 writeToSerial(i,mBluetoothConnection)
                 writeToSerial("\n",mBluetoothConnection)
             }
@@ -229,7 +229,7 @@ class SerialDataService{
 
         // Turns string to byte array, adds value of each byte, returns as Int
 
-        fun getCheckSum(string: String):Int{
+       private fun getCheckSum(string: String):Int{
             val stringCheckSum = string.toByteArray(Charset.defaultCharset())  //convert string (without packet#, start char and chksm) to byte array
             var checkSumValue = 0
             for(i in stringCheckSum){   //Calculate checksum
@@ -239,7 +239,7 @@ class SerialDataService{
             return checkSumValue
         }
 
-        fun incPacketNumber(packetNumber : Int) : Int{
+       private fun incPacketNumber(packetNumber : Int) : Int{
 
             var newPacketNumber = packetNumber
             newPacketNumber ++

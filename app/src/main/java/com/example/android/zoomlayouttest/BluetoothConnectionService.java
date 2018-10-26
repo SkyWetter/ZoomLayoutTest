@@ -177,8 +177,6 @@ public class BluetoothConnectionService {
         }
     }
 
-
-
     /**
      * Start the chat service. Specifically, start AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume()
@@ -218,11 +216,13 @@ public class BluetoothConnectionService {
         private final BluetoothSocket mmSocket;
         public final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private Boolean bytesTooLarge = false;
 
         public String incomingMessage= "";
 
         public ConnectedThread(BluetoothSocket socket) {
             Log.d(TAG, "ConnectedThread: Starting.");
+
 
             mmSocket = socket;
             InputStream tmpIn = null;
@@ -276,13 +276,38 @@ public class BluetoothConnectionService {
 
         //Call this from the main activity to send data to the remote device */
         public void write(byte[] bytes){
+
+
+            byte[] bytesToWrite = new byte[256];
+
+            byte[] remainingBytes = new byte[returnArray(bytes)];
+
+            if(bytes.length > 256){
+                bytesTooLarge = true;  //Bytes to send is bigger than the buffer limit of ESP
+
+                for(int i = 0; i < 256; i++){   //Copy first 256 bytes of bytes array to bytesToWrite
+                    bytesToWrite[i]=bytes[i];
+                }
+
+                for(int i = 256; i < bytes.length;i++){ //Copy the rest of bytes array to remaining bytes
+                    remainingBytes[i-256] = bytes[i];
+                }
+
+            }
+
+            else{
+                bytesToWrite = bytes;
+            }
+
             String text = new String(bytes, Charset.defaultCharset());
             Log.d(TAG,"write: Writing to outputstream: " + text);
             try{
-                mmOutStream.write(bytes);
+                mmOutStream.write(bytesToWrite);
             }catch (IOException e){
                 Log.e(TAG,"write: Error writing to output stream. " + e.getMessage());
             }
+
+
         }
 
         /* Call this from the main activity to shutdown the connection */
@@ -319,4 +344,14 @@ public class BluetoothConnectionService {
         //perform the write
         mConnectedThread.write(out);
     }
+
+    public int returnArray(byte[] bytes){
+        if(bytes.length > 256){
+            return bytes.length - 256;
+        }
+
+        else return bytes.length;
+    }
+
 }
+

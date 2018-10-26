@@ -24,6 +24,81 @@
         app:layout_constraintVertical_bias="0.0">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/globalSettingsMenuContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/offWhite"
+            android:elevation="1dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/topBarContainer">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/totalWaterMenu"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="8dp"
+                android:background="@color/offWhite"
+                android:elevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView" />
+
+                <com.example.android.zoomlayouttest.CustomTextView
+                    android:id="@+id/totalWaterText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/lightBlue"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="Total Water"
+                    android:textSize="25dp"
+                    app:font_name="titleMed"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/waterTimesMenu"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginRight="8dp"
+                android:elevation="4dp"
+                android:background="@color/offWhite"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/totalWaterMenu">
+
+                <com.example.android.zoomlayouttest.CustomTextView
+                    android:id="@+id/waterTimesText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/lightBlue"
+
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="Times to Water"
+                    android:textSize="25dp"
+                    app:font_name="titleMed"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/topBarContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,7 +170,7 @@
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/globalButtonContainer"
-            android:layout_width="112dp"
+            android:layout_width="wrap_content"
             android:layout_height="94dp"
             android:layout_marginTop="16dp"
             android:animateLayoutChanges="true"
@@ -107,17 +182,31 @@
 
 
             <Button
+                android:id="@+id/programButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/btn_program"
+                android:elevation="1dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/settingsButton"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <Button
                 android:id="@+id/settingsButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/btn_global_settings"
                 android:elevation="1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/programButton"
                 app:layout_constraintRight_toLeftOf="@+id/bluetoothButton"
                 app:layout_constraintTop_toTopOf="parent" />
+
+
 
             <Button
                 android:id="@+id/bluetoothButton"
@@ -143,7 +232,7 @@
             android:background="#ffffff"
             android:elevation="1dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/zoomLayout"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/topBarContainer">
