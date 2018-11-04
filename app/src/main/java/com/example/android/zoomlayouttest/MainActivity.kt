@@ -85,6 +85,7 @@ import com.example.android.zoomlayouttest.SerialDataService.Companion.getBedSche
 import com.example.android.zoomlayouttest.SerialDataService.Companion.prepDatData
 import com.example.android.zoomlayouttest.SerialDataService.Companion.sendData
 import com.example.android.zoomlayouttest.SerialDataService.Companion.sendFullData
+import com.example.android.zoomlayouttest.SerialDataService.Companion.receivingData
 import com.example.android.zoomlayouttest.SerialDataService.Companion.writeToSerial
 import com.transitionseverywhere.Rotate
 import com.transitionseverywhere.TransitionManager
@@ -126,7 +127,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         private var paramMenuOpen = false
         private var globalMenuOpen = false
 
-        var buttonsPerRow = 11              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
+        var buttonsPerRow = 7              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
 
         private val adjacentSquares = mutableListOf<Square>()//List of squares adjacentSquare to a given bed
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
@@ -243,11 +244,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     private val mMessageReceiver: BroadcastReceiver = object :BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
-           val text = intent?.getStringExtra("theMessage")
+            val text = intent?.getStringExtra("theMessage")
 
             messages?.append(text + "\n")
 
             incomingTextBox.text = messages
+            Log.d("FromESP",incomingTextBox.text.toString())
+
+                receivingData(mBluetoothConnection,text)
+
         }
     }
 
@@ -294,6 +299,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         gridCreate(50, 2, constraintLayout, this@MainActivity)  //Creates the garden bed grid
         initializeButtons( doneButton,bluetoothButton)                  //Initializes button listeners
         initializeBluetoothButtons()                                    //Init bluetooth buttons
+//
+//        var button_new = Button(this)  //Used to fill in full 25x25 bed on start up
+//        for(i in 0 until 625){
+//            button_new.id = 10000 + i
+//            buildBed(button_new)
+//        }
 
     }
 
@@ -353,6 +364,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     private fun initUiVisibility(){
 
         //Bluetooth container schtuff
+        globalSettingsMenuContainer.visibility = View.GONE
         bluetoothContainer.visibility = View.GONE
         btnONOFF.visibility = View.VISIBLE
         btnDiscover.visibility =View.GONE
@@ -801,7 +813,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         thisSquare.hasBed = false
                         thisSquare.changeColor(ColorData.deselectedSquare)
                         tempBed.remove(thisSquare)
-
                         removeAdjacentSquares()
                         for (i in 0 until tempBed.size) {
                             adjacentSquareColorCheck(tempBed[i].squareId - 10000)
@@ -819,7 +830,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                             thisSquare.changeColor(ColorData.selected)
                             adjacentSquares.removeAll(Collections.singleton(thisSquare))
                             tempBed.add(thisSquare)
-                            sendData((thisSquare.squareId - 10000).toString(),squarePacketNumber,mBluetoothConnection,"%")
+                            squarePacketNumber = sendData((thisSquare.squareId - 10000).toString(),squarePacketNumber,mBluetoothConnection,"%")
                         }
                     }
                 }
@@ -836,6 +847,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
 
 
+
                 } else if (thisSquare.bedID == 0)     //add new adjacentSquare squares to selected bed
                 {
                     if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed)) {
@@ -843,7 +855,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                         thisSquare.hasBed = true
                         thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
                         bedList[bedEdit[1]].squaresInBed.add(thisSquare)
-                        sendData((thisSquare.squareId - 10000).toString(),squarePacketNumber,mBluetoothConnection,"%")
                     }
                 }
 

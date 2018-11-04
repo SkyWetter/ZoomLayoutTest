@@ -6,7 +6,13 @@ import com.example.android.zoomlayouttest.MainActivity.*
 import com.example.android.zoomlayouttest.MainActivity.Companion.bedList
 import com.example.android.zoomlayouttest.MainActivity.Companion.bedPacketNumber
 import com.example.android.zoomlayouttest.MainActivity.Companion.rvBedList
+import org.w3c.dom.Text
 import java.nio.charset.Charset
+import android.text.method.TextKeyListener.clear
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.TextView
+
 
 /**
  * Garden Bed Data -- Functions and data for packaging outgoing garden bed information
@@ -15,8 +21,12 @@ import java.nio.charset.Charset
 class SerialDataService{
 
     companion object {
+        var singleSquaresSent = mutableListOf<String>()
+        var singleSquaresSentPacketNumber = mutableListOf<String>()
+
         var dataToSendFull = arrayListOf<String>()
 
+        var lastSquareSent = "";
         data class finalBedData(val bed: Bed, val waterLevel: Int)
 
         private var bedList_sun_am = mutableListOf<finalBedData>()
@@ -164,6 +174,27 @@ class SerialDataService{
             return dataToSend
         }
 
+        fun incomingData(incomingTextBox : TextView)
+        {
+            incomingTextBox.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int)
+                {
+
+                }
+
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int)
+                {
+                    Log.d("textTest","Text was Changed!")
+                }
+
+                override fun afterTextChanged(s: Editable)
+                {
+
+                }
+            })
+
+        }
+
         fun sendFullData(scheduleArray : ArrayList<String>,mBluetoothConnection: BluetoothConnectionService?){
 
             var thisPacketNumber = bedPacketNumber.toString()
@@ -181,12 +212,18 @@ class SerialDataService{
             for(i in scheduleArray){
                 checkSumString += i
 
-                writeToSerial(i,mBluetoothConnection)
+
+                var stringLength = i
+                while(stringLength.length > 256){
+                    writeToSerial(stringLength.substring(0,256),mBluetoothConnection)
+                    stringLength = stringLength.substring(256)
+                }
+                writeToSerial(stringLength,mBluetoothConnection)
                 writeToSerial("\n",mBluetoothConnection)
             }
 
             checkSumString = "&$checkSumString"
-
+            Log.d("Serial","Checksum sent: ${getCheckSum(checkSumString)}")
             writeToSerial(getCheckSum(checkSumString).toString(),mBluetoothConnection)
         }
 
@@ -197,7 +234,11 @@ class SerialDataService{
             }
         }
 
+        //Send single square packet
+        // [%][000][000][000]
+
         fun sendData(string: String, squarePacketNumber:Int,mBluetoothConnection: BluetoothConnectionService?, startChar : String = "") : Int{
+
             var currentPacketNumber = squarePacketNumber
             var thisString = string                     //the string to send
             var squarePacketNumberString : String       //packet number str
@@ -214,18 +255,68 @@ class SerialDataService{
             }
 
             checkSumValue = getCheckSum(thisString)                     // Gets value of checksum
+
             thisString = "$startChar$squarePacketNumberString$thisString$checkSumValue"   //Create final packet string to send
 
 
             Log.d("checksum","SerialData: $thisString")
 
-            if(MainActivity.connectedToRainbow) {  //Send it
+            //Tracks the last 50 squares sent to the esp
+            singleSquaresSent.add(thisString)
+            singleSquaresSentPacketNumber.add(squarePacketNumberString)
 
-                writeToSerial(thisString,mBluetoothConnection)
+            if(singleSquaresSent.size > 50)
+            {
+                singleSquaresSentPacketNumber.removeAt(0)
+                singleSquaresSent.removeAt(0)
+            }
+
+            if(MainActivity.connectedToRainbow) {  //Send it
+                lastSquareSent = thisString;
+
+                for(i in 0..2)
+                {
+                    writeToSerial(thisString,mBluetoothConnection)
+                }
+
             }
 
             return incPacketNumber(squarePacketNumber)
         }
+
+        fun receivingData(mBluetoothConnection: BluetoothConnectionService?, text: String?)
+        {
+            if(MainActivity.connectedToRainbow)
+            {
+
+                // TEMPORARY -- currently only checking for single square packet train reset requests
+                if(text?.length == 3)
+                {
+                    //Looks for the packet being requested, removes preceeding packets as they are not needed
+                    for(i in singleSquaresSentPacketNumber)
+                    {
+                        //If the requested packet is found, stop removing packets from front of list
+                        if(i == text)
+                        {
+                            break
+                        }
+
+                        singleSquaresSentPacketNumber.removeAt(0)
+                        singleSquaresSent.removeAt(0)
+                    }
+
+                    //Resend packets remaining in list.
+                    for(i in singleSquaresSent)
+                    {
+                        writeToSerial(i,mBluetoothConnection)
+                    }
+
+                }
+
+
+            }
+        }
+
 
         // Turns string to byte array, adds value of each byte, returns as Int
 
