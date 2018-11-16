@@ -94,10 +94,13 @@ import java.lang.StringBuilder
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.math.*
+import java.util.Random
 
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
+
+    private var serialTest_packetNumber = 0;
 
     private var turretSquare: Square? = null         //The middle square of the bed, not to be used as a regular garden bed square
 
@@ -115,10 +118,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     var mBTDevice : BluetoothDevice? = null
     private val myUUIDInsecure = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     var mBluetoothConnection : BluetoothConnectionService? = null
-
+  //  var newVar = findViewById<TextView>(R.id.incomingTextBox)
     /** Main Menu Variables */
 
     companion object {
+
 
         var squarePacketNumber = 0
         var bedPacketNumber = 0
@@ -246,9 +250,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         override fun onReceive(context: Context?, intent: Intent?) {
             val text = intent?.getStringExtra("theMessage")
 
-            messages?.append(text + "\n")
 
-            incomingTextBox.text = messages
             Log.d("FromESP",incomingTextBox.text.toString())
 
                 receivingData(mBluetoothConnection,text)
@@ -412,10 +414,47 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
+
 //Functions global to multiple listeners
         programButton.setOnClickListener {
-            getBedSchedule()
-            sendFullData(prepDatData(),mBluetoothConnection)
+
+
+            var tempPacket = "#"
+            var thisPacketNumber : String = serialTest_packetNumber.toString()
+
+            while(thisPacketNumber.length < 4)
+            {
+                thisPacketNumber = "0" + thisPacketNumber
+            }
+
+            tempPacket += thisPacketNumber + "@0211"
+            serialTest_packetNumber += 1
+
+            if(serialTest_packetNumber > 9999)
+            {
+                serialTest_packetNumber = 0
+            }
+
+            var num = 0
+
+            for(i in 0..200)
+            {
+                tempPacket += num.toString()
+                num+= 1
+                if(num > 9)
+                {
+                    num = 0
+                }
+            }
+            if(connectedToRainbow) {
+                writeToSerial(tempPacket, mBluetoothConnection)
+            }
+
+            Log.d("LongPacket","Packet: $tempPacket")
+            //getBedSchedule()
+
+            /** Commented out to test long string serial input parse*/
+            //sendFullData(prepDatData(),mBluetoothConnection)
             Log.d("State","State: Programmed")
 
         }
@@ -596,6 +635,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 startBTConnection(mBTDevice!!, myUUIDInsecure)
 
                 connectedToRainbow = true
+
+
 
 
             }
@@ -1013,7 +1054,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         rvBedList[rvBedList.lastIndex].position = rvBedList.lastIndex    //Finds position of this bed being added, and stores it in the bed's data
 
         val adapter = BedAdapter(rvBedList){bed : RVBedData -> bedClicked(bed)}
-
         recyclerView.adapter = adapter
     }
 
@@ -1256,6 +1296,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             4 -> targetSquare.angle = 360 - (atan(temp) * 180) / PI
         }
 
+        Log.d("coolBoi",(targetSquare.angle.toString()))
     }
 
     /***

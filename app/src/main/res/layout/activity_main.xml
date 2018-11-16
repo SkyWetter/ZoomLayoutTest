@@ -693,7 +693,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -843,6 +843,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
+                android:scrollbarStyle="insideOverlay"
                 android:text="Incoming Data"
                 app:layout_constraintBottom_toTopOf="@+id/btn_domeHome"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -1040,18 +1041,12 @@
 
             <TextView
                 android:id="@+id/messageText"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_width="392dp"
+                android:layout_height="91dp"
                 android:gravity="center_vertical|center_horizontal"
                 android:text="TextView"
-                app:layout_constraintBottom_toTopOf="@+id/lvNewDevices"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="8dp" />
         </android.support.constraint.ConstraintLayout>
     </android.support.constraint.ConstraintLayout>
 

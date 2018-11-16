@@ -12,6 +12,9 @@ import android.text.method.TextKeyListener.clear
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
+import com.example.android.zoomlayouttest.R.id.incomingTextBox
+import kotlinx.android.synthetic.main.activity_main.*
+
 
 
 /**
@@ -23,6 +26,11 @@ class SerialDataService{
     companion object {
         var singleSquaresSent = mutableListOf<String>()
         var singleSquaresSentPacketNumber = mutableListOf<String>()
+
+        var espStat_LastPacketNumber = 0
+        var espStat_CurrentPacketNumber = 0
+        var espStat_Checksum = 0
+        var firstStatPacket = true
 
         var dataToSendFull = arrayListOf<String>()
 
@@ -174,27 +182,6 @@ class SerialDataService{
             return dataToSend
         }
 
-        fun incomingData(incomingTextBox : TextView)
-        {
-            incomingTextBox.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int)
-                {
-
-                }
-
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int)
-                {
-                    Log.d("textTest","Text was Changed!")
-                }
-
-                override fun afterTextChanged(s: Editable)
-                {
-
-                }
-            })
-
-        }
-
         fun sendFullData(scheduleArray : ArrayList<String>,mBluetoothConnection: BluetoothConnectionService?){
 
             var thisPacketNumber = bedPacketNumber.toString()
@@ -242,7 +229,7 @@ class SerialDataService{
             var currentPacketNumber = squarePacketNumber
             var thisString = string                     //the string to send
             var squarePacketNumberString : String       //packet number str
-            var checkSumValue = 0
+            var checkSumValue : Int
 
             squarePacketNumberString = currentPacketNumber.toString()// Convert packet # to string
 
@@ -311,12 +298,73 @@ class SerialDataService{
                         writeToSerial(i,mBluetoothConnection)
                     }
 
+                    writeToSerial("*",mBluetoothConnection)
+
                 }
 
+                /** Stats Data incoming from ESP*/
 
+                else if(text!!.startsWith("$"))
+                {
+
+                    espStat_packetHandler(text!!)
+
+                }
             }
         }
 
+        fun espStat_packetHandler(packet: String)
+        {
+
+            //Check packet length here (currently unknown)
+
+            //Assumes packet length okay.
+            if(firstStatPacket)
+            {
+                espStat_LastPacketNumber = checkPacketNumber(packet,1,4)
+            }
+
+            else
+            {
+                espStat_CurrentPacketNumber = checkPacketNumber(packet,1,4)
+
+                if(espStat_CurrentPacketNumber == espStat_LastPacketNumber +1)  //Correct in-sequence packet received
+                {
+                    //Check the checksum, excecute if statement
+                    if(checkChecksum(packet))
+                    {
+                        /**  GRAB DATA AND FEED TO DEBUG MONITOR*/
+
+                    }
+                }
+
+                else
+                {
+                    if(espStat_CurrentPacketNumber <= espStat_LastPacketNumber) //Old packet received
+                    {
+                        //Ignore packet, contains old or repeat data
+                    }
+
+                    else if(espStat_CurrentPacketNumber > espStat_LastPacketNumber + 1) //Missed a packet
+                    {
+                        //request missed packet -- Possibly ignore
+                    }
+                }
+            }
+        }
+
+        fun checkChecksum(packet: String) : Boolean
+        {
+            val calculatedChecksum = getCheckSum(packet.substring(4,packet.length-3))
+            val receivedChecksum = packet.substring(packet.length -3,packet.length).toInt()
+
+            return (calculatedChecksum == receivedChecksum)
+        }
+
+        fun checkPacketNumber(packet: String,start: Int,length: Int) : Int
+        {
+            return packet.substring(start,length).toInt()
+        }
 
         // Turns string to byte array, adds value of each byte, returns as Int
 
