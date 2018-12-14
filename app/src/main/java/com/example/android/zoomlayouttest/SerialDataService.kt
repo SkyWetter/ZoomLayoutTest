@@ -13,6 +13,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
 import com.example.android.zoomlayouttest.R.id.incomingTextBox
+import com.pawegio.kandroid.d
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -75,6 +76,8 @@ class SerialDataService{
         /** Takes the list of currents beds and puts them in the weekly schedule array ,
          * organized by am/pm, along with a given waterlevel for each bed
           */
+
+
 
         fun getBedSchedule() {
 
@@ -199,7 +202,6 @@ class SerialDataService{
             for(i in scheduleArray){
                 checkSumString += i
 
-
                 var stringLength = i
                 while(stringLength.length > 256){
                     writeToSerial(stringLength.substring(0,256),mBluetoothConnection)
@@ -217,6 +219,7 @@ class SerialDataService{
         fun writeToSerial(string : String,mBluetoothConnection : BluetoothConnectionService?){
             val tempByte: ByteArray = string.toByteArray(Charset.defaultCharset())
             if(mBluetoothConnection!=null){
+                Log.d("isSerial","inside WriteToSerial")
                 mBluetoothConnection.write(tempByte)
             }
         }
@@ -263,9 +266,9 @@ class SerialDataService{
 
                 for(i in 0..2)
                 {
+                    Log.d("isSerialWorking","$thisString");
                     writeToSerial(thisString,mBluetoothConnection)
                 }
-
             }
 
             return incPacketNumber(squarePacketNumber)
@@ -275,16 +278,21 @@ class SerialDataService{
         {
             if(MainActivity.connectedToRainbow)
             {
-
+                Log.d("BTresend","SerialDataService: receivingData: Some kind of data incoming")
                 // TEMPORARY -- currently only checking for single square packet train reset requests
                 if(text?.length == 3)
                 {
+                    Log.d("BTresend","SerialDataService: receivingData: Packet is 3 chars long")
+
                     //Looks for the packet being requested, removes preceeding packets as they are not needed
                     for(i in singleSquaresSentPacketNumber)
                     {
+                        Log.d("BTresend","SerialDataService: receivingData: Looking for requested packet")
+
                         //If the requested packet is found, stop removing packets from front of list
                         if(i == text)
                         {
+                            Log.d("BTresend","SerialDataService: receivingData: requested packet found: $i")
                             break
                         }
 
@@ -295,6 +303,7 @@ class SerialDataService{
                     //Resend packets remaining in list.
                     for(i in singleSquaresSent)
                     {
+                        Log.d("BTresend","SerialDataServ: receivingData: Sending square: $i")
                         writeToSerial(i,mBluetoothConnection)
                     }
 

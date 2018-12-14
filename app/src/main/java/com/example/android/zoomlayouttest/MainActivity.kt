@@ -131,7 +131,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         private var paramMenuOpen = false
         private var globalMenuOpen = false
 
-        var buttonsPerRow = 7              /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
+        var buttonsPerRow = 15             /** MUST BE ODD NUMBER*/  //Number of squares per row of the garden bed
+        var bigList = mutableListOf<Square>()
 
         private val adjacentSquares = mutableListOf<Square>()//List of squares adjacentSquare to a given bed
         private var allSquares = mutableListOf<Square>()       //full list of all squares in the grid
@@ -419,48 +420,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         programButton.setOnClickListener {
 
 
-            var tempPacket = "#"
-            var thisPacketNumber : String = serialTest_packetNumber.toString()
-
-            while(thisPacketNumber.length < 4)
-            {
-                thisPacketNumber = "0" + thisPacketNumber
-            }
-
-            tempPacket += thisPacketNumber + "@0211"
-            serialTest_packetNumber += 1
-
-            if(serialTest_packetNumber > 9999)
-            {
-                serialTest_packetNumber = 0
-            }
-
-            var num = 0
-
-            for(i in 0..200)
-            {
-                tempPacket += num.toString()
-                num+= 1
-                if(num > 9)
-                {
-                    num = 0
-                }
-            }
-            if(connectedToRainbow) {
-                writeToSerial(tempPacket, mBluetoothConnection)
-            }
-
-            Log.d("LongPacket","Packet: $tempPacket")
-            //getBedSchedule()
-
-            /** Commented out to test long string serial input parse*/
-            //sendFullData(prepDatData(),mBluetoothConnection)
-            Log.d("State","State: Programmed")
 
         }
 
         settingsButton.setOnClickListener {
             openGlobalSettings()
+        }
+
+        programButton.setOnClickListener {
+            programButton()
         }
 
         doneButton.setOnClickListener()
@@ -476,7 +444,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             mainScreenContainer.visibility = View.GONE
 
         }
-
 
         /**
          * Bed name text listener -- needs to be adjusted for focus change actions
@@ -639,6 +606,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
 
 
+
             }
             else{
                 Toast.makeText(this,
@@ -657,7 +625,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                 btnReset.visibility = View.GONE
                 btnReturn.visibility = View.GONE
             }
-
         }
     }
 
@@ -704,6 +671,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
     fun onDebugButtonClick(v: View){
         writeToSerial(v.tag.toString(),mBluetoothConnection)
+    }
+
+    fun onDebugExitClick(v: View)
+    {
+        bluetoothContainer.visibility = View.GONE
+        debugWindow.visibility = View.GONE
     }
     /*
     fun onDebugButtonClick(v: View){
@@ -827,7 +800,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     /**
      * POST-INIT FUCTIONS
      * */
-    private fun instantSend(){
+    private fun instantSend()
+    {
 
     }
 
@@ -851,27 +825,30 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
                     if (thisSquare.hasBed)    //remove selected square from tempbed
                     {
+
                         thisSquare.hasBed = false
                         thisSquare.changeColor(ColorData.deselectedSquare)
                         tempBed.remove(thisSquare)
+                        bigList.remove(thisSquare)
+                        Log.d("BigList squares: ", bigList.toString())
                         removeAdjacentSquares()
                         for (i in 0 until tempBed.size) {
                             adjacentSquareColorCheck(tempBed[i].squareId - 10000)
                         }
 
-
                     } else {                                //add selected square to tempbed
 
                         if (isSquareAdjacent(button, tempBed))         //check is square is adjacentSquare
                         {
-
-
                             adjacentSquareColorCheck(thisSquare.squareId - 10000)
                             thisSquare.hasBed = true
                             thisSquare.changeColor(ColorData.selected)
                             adjacentSquares.removeAll(Collections.singleton(thisSquare))
                             tempBed.add(thisSquare)
+                            bigList.add(thisSquare)
+                            Log.d("BigList squares: ", bigList.toString())
                             squarePacketNumber = sendData((thisSquare.squareId - 10000).toString(),squarePacketNumber,mBluetoothConnection,"%")
+
                         }
                     }
                 }
@@ -886,6 +863,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     thisSquare.hasBed = false
                     thisSquare.changeColor(ColorData.deselectedSquare)
                     bedList[bedEdit[1]].squaresInBed.remove(thisSquare)
+                    bigList.remove(thisSquare)
+                    Log.d("BigList squares: ", bigList.toString())
 
 
 
@@ -894,8 +873,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
                     if (isSquareAdjacent(button, bedList[bedEdit[1]].squaresInBed)) {
                         thisSquare.bedID = bedEdit[1]
                         thisSquare.hasBed = true
+                        bigList.add(thisSquare)
+                        Log.d("BigList squares: ", bigList.toString())
                         thisSquare.changeColor(bedList[bedEdit[1]].bedColor!!)
                         bedList[bedEdit[1]].squaresInBed.add(thisSquare)
+
                     }
                 }
 
@@ -933,8 +915,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
             bedList[bedEdit[1]].squaresInBed[i].hasBed = false
             bedList[bedEdit[1]].squaresInBed[i].color = ColorData.deselectedSquare
             bedList[bedEdit[1]].squaresInBed[i].changeColor(ColorData.deselectedSquare)
+            bigList.remove(bedList[bedEdit[1]].squaresInBed[i])
 
         }
+        Log.d("BigList squares: ", bigList.toString())
         bedList[bedEdit[1]].squaresInBed.clear()
         bedList[bedEdit[1]].bedColor = ColorData.deselectedSquare
 
@@ -1193,7 +1177,25 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         paramMenuOpen = !paramMenuOpen
     }
 
+    private fun programButton()
+    {
+        for(square in bigList)
+        {
+            Log.d("BigList","Loading square number ${square.squareId - 10000}")
+            squarePacketNumber = sendData((square.squareId - 10000).toString(),squarePacketNumber,mBluetoothConnection,"%")
+        }
+    }
+
+    private fun openDebugMenu()
+    {
+        bluetoothContainer.visibility = View.VISIBLE
+        debugWindow.visibility = View.VISIBLE
+    }
+
     private fun openGlobalSettings(){
+
+            openDebugMenu()
+            /*
 
         //Set visibility of ui elements
         if(globalMenuOpen){
@@ -1225,7 +1227,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         }
 
         globalMenuOpen = !globalMenuOpen
-
+*/
     }
 
 /* Angle and Distance Function
